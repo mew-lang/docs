@@ -8,7 +8,7 @@ const config = {
   title: 'Mew',
   tagline: 'A programming language under construction',
   url: 'https://mew-lang.org',
-  baseUrl: '/',
+  baseUrl: '/docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
