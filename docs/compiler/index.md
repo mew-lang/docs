@@ -15,6 +15,7 @@ flowchart LR;
     MIR-->LIR
     end
     subgraph Backend
+    LIR-->Interpreter
     LIR-->C#
     C#-->CIL
     LIR-. Future .->CIL
