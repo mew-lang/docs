@@ -4,7 +4,7 @@ Prism.languages.mew = Prism.languages.extend('clike', {
 		lookbehind: true,
 		greedy: true
 	},
-	'keyword': /\b(?:external|union|where|namespace|match|mut|static|pub|use|type|interface|impl|field|while|loop|break|continue|else|fn|if|return|let|for|in|as|print)\b/,
+	'keyword': /\b(?:new|external|union|where|namespace|match|mut|static|pub|use|type|interface|impl|field|while|loop|break|continue|else|fn|if|return|let|for|in|as|print)\b/,
 	'boolean': /\b(?:_|false|iota|nil|true)\b/,
 	'number': [
 		// binary and octal integers

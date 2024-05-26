@@ -4,8 +4,6 @@ sidebar_position: 80
 
 # Types
 
-_Work in progress_
-
 ### Fields
 
 :::note
@@ -20,7 +18,9 @@ pub type Person {
 
 ```mew
 // Usage:
-let person = Person(name: "Patrik");
+let person = new Person { 
+    name: "Patrik" 
+};
 ```
 
 ### Methods
@@ -37,7 +37,7 @@ pub type Clock {
 
 ```mew
 // Usage:
-let clock = Clock();
+let clock = new Clock();
 let now = clock.get_current_time();
 ```
 
@@ -75,5 +75,5 @@ pub type Person {
 
 ```mew
 // Usage:
-let person = Person::new(name: "Patrik");
+let person = Person::new("Patrik");
 ```
