@@ -8,7 +8,7 @@ sidebar_position: 20
 ### `loop`
 
 ```mew
-let foo = 0;
+let mut foo = 0;
 loop {
     if foo < 100 {
         foo = foo + 1;
@@ -22,7 +22,7 @@ loop {
 ### `while`
 
 ```mew
-let foo = 0;
+let mut foo = 0;
 while foo < 100 {
     foo = foo + 1;
 }

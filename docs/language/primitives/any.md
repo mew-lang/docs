@@ -6,5 +6,5 @@ sidebar_position: 30
 # Any
 
 ```mew
-let foo : any = 32; 
+let foo: any = 32; 
 ```

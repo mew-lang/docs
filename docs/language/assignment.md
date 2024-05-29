@@ -15,7 +15,7 @@ to be an integer `i32`, but in cases where you
 want to be explicit, you can specify the type.
 
 ```mew
-let x : i16 = 1;
+let x: i16 = 1;
 ```
 
 ### Mutability
@@ -27,7 +27,5 @@ use the `mut` keyword.
 ```mew
 let mut x = 1;
 x = 2; // Variable can now be updated
-
-print(x)  // => 2
 ```
 

@@ -12,7 +12,7 @@ All fields must be initialized when creating a class.
 
 ```mew
 pub type Person {
-    pub field name : string;
+    pub field name: string;
 }
 ```
 
@@ -65,7 +65,7 @@ one or more static methods; by convention called `new`.
 
 ```mew
 pub type Person {
-    pub field name : string;
+    pub field name: string;
 
     pub static fn new(name: string) -> Person {
         return Person(name: name)
