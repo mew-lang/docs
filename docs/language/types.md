@@ -26,8 +26,6 @@ let person = new Person {
 ### Methods
 
 ```mew
-use Mew;
-
 pub type Clock {
     pub fn get_current_time() -> Timestamp {
         return Timestamp::Now;
@@ -44,8 +42,6 @@ let now = clock.get_current_time();
 #### Static methods
 
 ```mew
-use Mew;
-
 pub type Clock {
     pub static fn get_current_time() -> Timestamp {
         return Timestamp::Now;
