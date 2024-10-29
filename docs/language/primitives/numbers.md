@@ -10,10 +10,17 @@ sidebar_position: 10
 Mew's integer types represent a "whole" number.
 
 ```mew
-1
--2
-0x2A
-0xDEADBEEF
+let foo = 1;
+let bar = -2;
+let baz = 0x2A;
+let qux = 0xDEADBEEF;
+```
+
+Large integers can also be separated with `_` to make
+them easier to read.
+
+```mew
+let foo = 100_000_000;
 ```
 
 ### Signed integers
@@ -54,8 +61,15 @@ Mew's integer types represent a "whole" number.
 Mew's float types represents a number with a decimal point.
 
 ```mew
-1.0
--2.0
+let foo = 1.0;
+let bar = -2.0;
+```
+
+Large floating point numbers can also be separated with `_` to make
+them easier to read.
+
+```mew
+let foo = 100_000.23_32;
 ```
 
 | Length | Type  | Approximate range | Precision     |
@@ -86,6 +100,7 @@ the integer/floating point kind:
 ```mew
 let foo = 32u8;
 let bar = 128.32i16;
+let qux = 0xDEADBEEFu64
 ```
 
 ## Coercion
