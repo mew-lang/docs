@@ -9,17 +9,19 @@ steps needed to compile Mew code.
 
 ```mermaid
 flowchart LR;
+    subgraph Compiler
     subgraph Frontend
     AST-->HIR
     HIR-->MIR
     MIR-->LIR
     end
     subgraph Backend
-    LIR-->Interpreter
-    LIR-->C#
-    C#-->CIL
-    LIR-. Future .->CIL
+    LIR-->ByteCode["Mew Byte Code"]
+    LIR-. Future .->LLVM["LLVM IR"]
     end
+    end
+    ByteCode-->Interpreter
+    LLVM-.->Executable
 ```
 
 ## 1. AST Parsing
@@ -36,7 +38,7 @@ Apart from being the basis for `HIR` generation, the AST
 is also used to interact with the source code programatically,
 i.e. from the LSP server.
 
-## 2. `HIR` generation
+## 2. HIR generation
 
 HIR, short for _High-level Intermediate Representation_, 
 represents a bound tree, where all types are known.  
@@ -60,22 +62,21 @@ the same symbol reference to that function.
 HIR might contain errors, represented as error symbols.
 :::
 
-## 3. `MIR` generation
+## 3. MIR generation
 
 MIR, short for _Medium-level Intermediate Representation_,
 is a lowered HIR, without constructs such as `while`/`loop`/`if`.
 
-All higher level constructs such as loops and conditions 
+* All higher level constructs such as loops and conditions 
 been lowered into labels and branches.
-
-Control flow analysis and some optimizations 
+* Control flow analysis and some optimizations 
 are done here as well.
 
 :::info
 MIR might contain errors, represented as error symbols.
 :::
 
-## 4. `LIR` generation
+## 4. LIR generation
 
 LIR, short for _Low-level Intermediate Representation_,
 is a lowered MIR, resembling the final byte code that will 
@@ -87,11 +88,11 @@ LIR **MUST NOT** contain any errors.
 
 ## 5. Emitting
 
-Finally, the LIR is transpiled into C# and compiled to
-native assembly code using NativeAOT, which in turn can be executed.
+Finally, the LIR is transpiled into Mew bytecode which can be
+interpreted by the Mew interpreter.
 
 :::note
-There are plans in the future to emit CIL directly.  
-This was done in the early prototype, but turned out to
-be too cumbersome while the language was in active development.
+There are plans in the future to create a LLVM IR emitter,
+but until the language settles a bit, the undertaking is 
+a bit too much.
 :::
