@@ -2,7 +2,9 @@
 sidebar_position: 50
 ---
 
-# Casting
+# Type Casting
+
+## Casting
 
 ```mew
 // This line declares a variable `i` and initializes 
@@ -13,7 +15,5 @@ let i: any = 32;
 
 // This line attempts to cast the value stored in `i` to the 
 // data type `i32` which is a signed 32-bit integer. 
-let j= i as i32;
+let j = i as i32;
 ```
-
-In summary, casting in this code snippet involves converting a value from the generic `any` type to the specific `i32` type, ensuring that the variable `j` is of the desired data type. This casting operation is possible because the original value in `i` is compatible with the target data type `i32`.
