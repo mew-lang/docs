@@ -14,7 +14,6 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
   organizationName: 'mew-lang', // Usually your GitHub org/user name.
   projectName: 'mew', // Usually your repo name.
   trailingSlash: false,
@@ -42,17 +41,8 @@ const config = {
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           sidebarCollapsed: false,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/mew-lang/docs/tree/main/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -79,9 +69,9 @@ const config = {
             position: 'left',
             label: 'Documentation',
           },
-          {
-            to: '/blog', label: 'Blog', position: 'left'
-          },
+          /* {
+             to: '/blog', label: 'Blog', position: 'left'
+          }, */
           {
             href: 'https://github.com/mew-lang',
             className: "header-github-link",
