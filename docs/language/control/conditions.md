@@ -18,9 +18,3 @@ else {
     // foo is greater than 0
 }
 ```
-
-### Ternary operator
-
-```mew
-let foo = bar == 1 ? true : false;
-```
