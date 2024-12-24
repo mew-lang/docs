@@ -4,7 +4,7 @@ sidebar_position: 130
 
 # Attributes
 
-Attributes, indicated by the `[]` symbols, allows attachment of metadata, annotations, or special instructions to various language constructs, such as types, fields, and functions.
+Attributes, indicated by the `[]` symbols, allows attachment of metadata, annotations, or special instructions to various language constructs, such as types, fields, and functions. Currently, only the built-in `ffi` attribute is supported.
 
 ### Example
 
