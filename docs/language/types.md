@@ -64,7 +64,7 @@ pub type Person {
     pub field name: string;
 
     pub static fn new(name: string) -> Person {
-        return Person(name: name)
+        return new Person { name: name };
     }
 }
 ```
