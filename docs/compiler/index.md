@@ -9,18 +9,15 @@ steps needed to compile Mew code.
 
 ```mermaid
 flowchart LR;
-    subgraph Compiler
     subgraph Frontend
     AST-->HIR
     HIR-->MIR
-    MIR-->LIR
+    MIR-..->LIR
     end
     subgraph Backend
-    LIR-->ByteCode["Mew Byte Code"]
+    MIR-->Interpreter
     LIR-. Future .->LLVM["LLVM IR"]
     end
-    end
-    ByteCode-->Interpreter
     LLVM-.->Executable
 ```
 
