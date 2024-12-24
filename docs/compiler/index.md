@@ -16,6 +16,7 @@ flowchart LR;
     end
     subgraph Backend
     MIR-->Interpreter
+    LIR-. Future .->Interpreter
     LIR-. Future .->LLVM["LLVM IR"]
     end
     LLVM-.->Executable
@@ -81,15 +82,4 @@ be emitted.
 
 :::warning
 LIR **MUST NOT** contain any errors.
-:::
-
-## 5. Emitting
-
-Finally, the LIR is transpiled into Mew bytecode which can be
-interpreted by the Mew interpreter.
-
-:::note
-There are plans in the future to create a LLVM IR emitter,
-but until the language settles a bit, the undertaking is 
-a bit too much.
 :::
