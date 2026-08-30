@@ -8,5 +8,5 @@ sidebar_position: 130
 namespace Foo;
 
 [ffi("mylib")]
-pub static external bar(first: i8);
+pub static external fn bar(first: i8) -> void;
 ```
