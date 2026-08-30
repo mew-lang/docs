@@ -137,7 +137,7 @@ _Example: `i8` can only be cast to `u8` explicitly._
 | **u32**  | e   | e   | e   | i   |     |     | i   | i   | i   | i   | e    |
 | **u64**  | e   | e   | e   | e   |     |     |     | i   | i   | i   | e    |
 | **f32**  | e   | e   | e   | e   | e   | e   | e   | e   | i   | i   | e    |
-| **f64**  | i   | i   | i   | i   | i   | i   | i   | i   |     | i   | e    |
+| **f64**  | e   | e   | e   | e   | e   | e   | e   | e   |     | i   | e    |
 | **char** | e   | e   | i   | i   | e   | i   | i   | i   | i   | i   | i    |
 
 #### Legend
@@ -145,5 +145,5 @@ _Example: `i8` can only be cast to `u8` explicitly._
 | Character | Meaning       |
 | --------- | ------------- |
 | i         | Implicit cast |
-| u         | Explicit cast |
+| e         | Explicit cast |
 | [blank]   | Not possible  |
