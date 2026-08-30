@@ -6,5 +6,5 @@ sidebar_position: 55
 
 ```mew
 let i: any = 32;
-let j: i is int;
+let j = i is int;
 ```
