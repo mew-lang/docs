@@ -12,15 +12,20 @@ flowchart LR;
     subgraph Frontend
     AST-->HIR
     HIR-->MIR
-    MIR-..->LIR
+    MIR-. Future .->LIR
     end
     subgraph Backend
-    MIR-->Interpreter
+    HIR-->CSharp["C# source"]
     LIR-. Future .->Interpreter
     LIR-. Future .->LLVM["LLVM IR"]
     end
+    CSharp-->Executable
     LLVM-.->Executable
 ```
+
+Everything drawn with a dotted line is planned rather than built. Today the
+only backend is the C# transpiler, and `MIR` exists for control flow analysis
+rather than for code generation.
 
 ## 1. AST Parsing
 
@@ -74,7 +79,27 @@ are done here as well.
 MIR might contain errors, represented as error symbols.
 :::
 
-## 4. LIR generation
+## 4. C# transpilation
+
+The only backend that exists today emits C# source, which is
+then built and run by the .NET SDK. It reads `HIR` rather than
+`MIR`, because C# has the structured control flow that `MIR`
+lowers away.
+
+The C# it emits is an implementation detail. Nothing about the
+language is defined in terms of what C# does, so a `bool` in an
+interpolated string is written `true` rather than the `True`
+that C# would produce on its own.
+
+:::info
+This step is a stepping stone, not the intended end state.
+:::
+
+## 5. LIR generation
+
+:::info
+This functionality is not yet implemented
+:::
 
 LIR, short for _Low-level Intermediate Representation_,
 is a lowered MIR, resembling the final byte code that will 
