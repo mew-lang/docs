@@ -35,7 +35,7 @@ pub type Clock {
 
 ```mew
 // Usage:
-let clock = new Clock();
+let clock = new Clock { };
 let now = clock.get_current_time();
 ```
 
