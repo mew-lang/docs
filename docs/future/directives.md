@@ -8,12 +8,8 @@ sidebar_position: 120
 This functionality is not yet implemented
 :::
 
-### Import source files
-
-```mew
-#load "foo.mew"
-#load "stuff/*.mew"
-```
+`#load` is already available, and is covered under
+[Directives](../language/directives.md) in the language section.
 
 ### Reference Mew projects
 
