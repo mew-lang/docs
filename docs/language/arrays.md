@@ -9,7 +9,7 @@ In the provided code snippet, we can see how arrays work:
 ```mew
 let foo = new string[] { "A", "B", "C" };
 
-let mut bar = i32[4];
+let mut bar = new i32[4];
 bar[0] = 0;
 bar[1] = 1;
 bar[2] = 2;
