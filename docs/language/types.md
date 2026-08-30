@@ -4,6 +4,19 @@ sidebar_position: 40
 
 # Types
 
+A type declaration takes `pub` and nothing else.
+
+```mew
+pub type Point { }
+
+type Internal { }
+```
+
+:::note
+`static` and `external` are not modifiers a type accepts, and using one is an
+error. `static` belongs on a method, and `external` on a function.
+:::
+
 ### Fields
 
 :::note
