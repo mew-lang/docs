@@ -100,7 +100,7 @@ the integer/floating point kind:
 ```mew
 let foo = 32u8;
 let bar = 128.32i16;
-let qux = 0xDEADBEEFu64
+let qux = 0xDEADBEEFu64;
 ```
 
 ## Coercion
