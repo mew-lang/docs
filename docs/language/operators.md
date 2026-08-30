@@ -40,11 +40,10 @@ sidebar_position: 60
 
 ### Types
 
-| Name           | Example       |
-| -------------- | ------------- |
-| Type cast      | `foo as bar`  |
-| Type equality  | `foo is bar`  |
-| Type retrieval | `typeof(foo)` |
+| Name          | Example      |
+| ------------- | ------------ |
+| Type cast     | `foo as bar` |
+| Type equality | `foo is bar` |
 
 ### Primary
 
