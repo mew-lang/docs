@@ -19,6 +19,17 @@ Strings are represented as UTF-8 under the hood.
 let text = "Hello World";
 ```
 
+#### Joining strings
+
+`+` joins two strings into a new one.
+
+```mew
+let greeting = "Hello, " + "world" + "!";
+```
+
+Only strings can be joined this way. To put a number or a `bool` into text, use
+[interpolation](#string-interpolation).
+
 #### Escape sequences
 
 A backslash begins an escape sequence.
