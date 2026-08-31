@@ -4,7 +4,10 @@ sidebar_position: 40
 
 # Types
 
-A type declaration takes `pub` and nothing else.
+A type declaration takes `pub` and nothing else. `pub` makes the type visible to
+other files. Without it the type belongs to the file that declares it, and that is
+narrower than its namespace: two files sharing a `namespace` still cannot see each
+other's private types.
 
 ```mew
 pub type Point { }
