@@ -8,29 +8,33 @@ sidebar_position: 90
 This functionality is not yet implemented
 :::
 
-```mew
-use Mew;
+An interface names a set of methods. A type implements one with an `impl`
+block, and a method reaches the value it was called on through `self`.
 
-interface Distance {
-    fn get_distance() -> f64;
+```mew
+pub interface Describable {
+    fn describe() -> string;
 }
 
-type Point {
-    pub field x : i32;
-    pub field y : i32;
-};
+pub type Point {
+    pub field x: i32;
+    pub field y: i32;
+}
 
-impl Distance for Point {
-    fn get_distance() -> f64 {
-        return Math::sqrt(
-            first: self.X * self.X +
-            second: self.Y * self.Y);
+impl Describable for Point {
+    pub fn describe() -> string {
+        return $"({self.x}, {self.y})";
     }
 }
 ```
 
 ```mew
 // Usage:
-let point = Point(x: 32, y: 40);
-let dist = point.get_distance();
+let point = new Point { x: 32, y: 40 };
+println(point.describe());
 ```
+
+:::note
+Interface members are public by definition, so `pub` is not written inside an
+`interface` block. The implementing methods are declared like any other method.
+:::

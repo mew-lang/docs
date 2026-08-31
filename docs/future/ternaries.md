@@ -1,8 +1,12 @@
 ---
-sidebar_position: 100
+sidebar_position: 120
 ---
 
 # Ternaries
+
+:::info
+This functionality is not yet implemented
+:::
 
 ### Ternary operator
 

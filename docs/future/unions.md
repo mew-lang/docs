@@ -27,7 +27,7 @@ let ipv6 = IpAddress::v6("fd1a:1021:aa58:4331:d462:421e:9e3c:1cd7");
 ```mew
 match ip {
     .none => {
-        print("No IP")
+        print("No IP");
     },
     .v4(a, b, c, d) => {
         print("IPV4");
@@ -45,19 +45,19 @@ let isv4 = match ip {
     .none => false,
     .v4(a, b, c, d) => true,
     .v6(a) => false,
-}
+};
 ```
 
 ### Add methods to union
 
 ```mew
 impl IpAddress {
-    fn is_v4() -> bool {
-        return match this {
+    pub fn is_v4() -> bool {
+        return match self {
             .none => false,
             .v4(a, b, c, d) => true,
             .v6(a) => false,
-        }
+        };
     }
 }
 ```
