@@ -55,6 +55,29 @@ let clock = new Clock { };
 let now = clock.get_current_time();
 ```
 
+#### self
+
+Inside a method, a field is read by name. `self` names the value the method was
+called on, and is only needed when something else has taken the name.
+
+```mew
+pub type Counter {
+    pub field value: i32;
+
+    pub fn plus(value: i32) -> i32 {
+        return self.value + value;
+    }
+}
+```
+
+Here `value` is the parameter and `self.value` is the field. Without a parameter of
+that name, `value` and `self.value` mean the same thing.
+
+:::note
+`self` is a reserved word, so it cannot be used as a name. It is an error outside a
+type, and in a `static fn`, which has no value to refer to.
+:::
+
 #### Static methods
 
 ```mew
