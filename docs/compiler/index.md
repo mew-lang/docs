@@ -81,10 +81,14 @@ MIR might contain errors, represented as error symbols.
 
 ## 4. C# transpilation
 
-The only backend that exists today emits C# source, which is
-then built and run by the .NET SDK. It reads `HIR` rather than
-`MIR`, because C# has the structured control flow that `MIR`
-lowers away.
+The only backend that exists today emits C# source. It reads
+`HIR` rather than `MIR`, because C# has the structured control
+flow that `MIR` lowers away.
+
+The C# is compiled in process, and the assembly is written to a
+`.mew` directory beside the file the program starts from. The
+.NET SDK is not involved, and neither is a project file. A build
+is skipped when nothing that decides the assembly has changed.
 
 The C# it emits is an implementation detail. Nothing about the
 language is defined in terms of what C# does, so a `bool` in an
