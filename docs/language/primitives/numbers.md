@@ -99,7 +99,7 @@ the integer/floating point kind:
 
 ```mew
 let foo = 32u8;
-let bar = 128.32i16;
+let bar = 128.32f64;
 let qux = 0xDEADBEEFu64;
 ```
 
