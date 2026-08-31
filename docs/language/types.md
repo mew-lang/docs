@@ -42,17 +42,19 @@ let person = new Person {
 ### Methods
 
 ```mew
-pub type Clock {
-    pub fn get_current_time() -> Timestamp {
-        return Timestamp::Now;
+pub type Counter {
+    pub field value: i32;
+
+    pub fn next() -> i32 {
+        return self.value + 1;
     }
 }
 ```
 
 ```mew
 // Usage:
-let clock = new Clock { };
-let now = clock.get_current_time();
+let counter = new Counter { value: 41 };
+let value = counter.next();
 ```
 
 #### self
@@ -81,16 +83,18 @@ type, and in a `static fn`, which has no value to refer to.
 #### Static methods
 
 ```mew
-pub type Clock {
-    pub static fn get_current_time() -> Timestamp {
-        return Timestamp::Now;
+pub type Counter {
+    pub field value: i32;
+
+    pub static fn zero() -> Counter {
+        return new Counter { value: 0 };
     }
 }
 ```
 
 ```mew
 // Usage:
-let now = Clock::get_current_time();
+let counter = Counter::zero();
 ```
 
 ### Constructors
