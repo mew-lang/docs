@@ -33,8 +33,31 @@ This applies to free functions. A function declared inside a `type` is scoped to
 that type rather than to the file.
 :::
 
+### Returning
+
+Every path through a function that declares a return type has to return a value.
+A path that falls off the end is an error.
+
+```mew
+pub fn sign(value: i32) -> i32 {
+    if value > 0 {
+        return 1;
+    }
+
+    return -1;
+}
+```
+
+A function that returns `void` needs no `return` at all. Anything written after a
+`return` is reported as unreachable.
+
 ### Calling functions
 
 ```mew
 let result = square(32);
 ```
+
+:::note
+A function can only be declared at the top level of a file. There are no
+functions inside other functions.
+:::
