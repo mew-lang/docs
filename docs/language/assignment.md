@@ -29,3 +29,5 @@ let mut x = 1;
 x = 2; // Variable can now be updated
 ```
 
+Fields work the same way. See [Mutability](./types.md#mutability) under Types.
+
