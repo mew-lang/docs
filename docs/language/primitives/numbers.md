@@ -72,10 +72,10 @@ them easier to read.
 let foo = 100_000.23_32;
 ```
 
-| Length | Type  | Approximate range | Precision     |
-| :----- | :---- | :---------------- | :------------ |
-| 32-bit | `f32` | N/A               | ~6-9 digits   |
-| 64-bit | `f64` | N/A               | ~15-17 digits |
+| Length | Type  | Alias   | Approximate range | Precision     |
+| :----- | :---- | :------ | :---------------- | :------------ |
+| 32-bit | `f32` | `float` | N/A               | ~6-9 digits   |
+| 64-bit | `f64` |         | N/A               | ~15-17 digits |
 
 ### Operators
 
