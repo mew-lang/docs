@@ -57,6 +57,31 @@ A function that returns `void` needs no `return` at all. Anything written after 
 let result = square(32);
 ```
 
+### Overloading
+
+Several functions can share a name as long as their parameters differ, either in
+type or in how many there are. The one whose parameters fit the arguments is the
+one that is called.
+
+```mew
+pub fn describe(value: i32) -> string {
+    return itoa(value);
+}
+
+pub fn describe(value: string) -> string {
+    return value;
+}
+```
+
+```mew
+// Usage:
+let a = describe(32);
+let b = describe("Patrik");
+```
+
+The return type is not part of what makes two functions different, so declaring
+the same parameters twice is an error however the results differ.
+
 :::note
 A function can only be declared at the top level of a file. There are no
 functions inside other functions.
