@@ -46,6 +46,39 @@ bar[1] = 1;
 
 Similarly, this line assigns 1 to the second element at index 1, and so on for the subsequent elements.
 
+### Counting the elements
+
+Every array has a `count`, which is the number of elements it holds. It is an
+`i32`, and it cannot be assigned to.
+
+```mew
+let foo = new string[] { "A", "B", "C" };
+let letters = foo.count; // 3
+
+let bar = new i32[8];
+let slots = bar.count;   // 8
+```
+
+`count` is what lets a function walk an array it was handed, since the length
+travels with the array rather than having to be passed alongside it.
+
+```mew
+pub fn sum(values: i32[]) -> i32 {
+    let mut total = 0;
+    let mut index = 0;
+    while index < values.count {
+        total += values[index];
+        index += 1;
+    }
+
+    return total;
+}
+```
+
+:::note
+`count` is the only member an array has. Reaching for anything else is an error.
+:::
+
 ### Array Initialization with Values
 
 ```mew
