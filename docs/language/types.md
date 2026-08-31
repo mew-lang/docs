@@ -44,6 +44,38 @@ A field cannot be `static`. A type holds fields for each of its values, and ther
 is nowhere for a shared one to live.
 :::
 
+#### Mutability
+
+A field is immutable once the value is created, the same way a `let` is. To
+assign to one afterwards, declare it `mut`.
+
+```mew
+pub type Counter {
+    pub mut field total: i32;
+    pub field name: string;
+}
+```
+
+```mew
+// Usage:
+let counter = new Counter { total: 0, name: "hits" };
+counter.total = 1;   // ok
+counter.name = "no"; // Error: cannot assign to 'name' because it is not mutable
+```
+
+This holds inside the type as well, so a method that writes a field needs that
+field to be `mut`.
+
+```mew
+pub type Counter {
+    pub mut field total: i32;
+
+    pub fn add(amount: i32) -> void {
+        self.total = self.total + amount;
+    }
+}
+```
+
 ### Methods
 
 ```mew
