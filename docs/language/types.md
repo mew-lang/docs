@@ -39,6 +39,11 @@ let person = new Person {
 };
 ```
 
+:::note
+A field cannot be `static`. A type holds fields for each of its values, and there
+is nowhere for a shared one to live.
+:::
+
 ### Methods
 
 ```mew
@@ -116,3 +121,8 @@ pub type Person {
 // Usage:
 let person = Person::new("Patrik");
 ```
+
+:::note
+A type can only be declared at the top level of a file. There are no types inside
+functions or inside other types.
+:::
