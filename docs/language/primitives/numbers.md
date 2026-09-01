@@ -138,7 +138,7 @@ _Example: `i8` can only be cast to `u8` explicitly._
 | **u64**  | e   | e   | e   | e   |     |     |     | i   | i   | i   | e    |
 | **f32**  | e   | e   | e   | e   | e   | e   | e   | e   | i   | i   | e    |
 | **f64**  | e   | e   | e   | e   | e   | e   | e   | e   |     | i   | e    |
-| **char** | e   | e   | i   | i   | e   | i   | i   | i   | i   | i   | i    |
+| **char** | e   | e   | i   | i   | e   | e   | i   | i   | i   | i   | i    |
 
 #### Legend
 

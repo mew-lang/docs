@@ -7,8 +7,9 @@ sidebar_position: 20
 
 ### Strings
 
-Mew's string type is called `string` and is written as text surrounded by quotes.  
-Strings are represented as UTF-8 under the hood.
+Mew's string type is called `string` and is written as text surrounded by quotes.
+A string is a sequence of characters. How those are stored is not part of the
+language, and a compiler is free to hold them however it likes.
 
 ```
 "Hello World"
@@ -109,15 +110,27 @@ let text = $"{{ and }}"; // => { and }
 
 ### Characters
 
-To represent a single UTF-16 character, there is the `char` type.
+The `char` type holds a single character. Any character, including one outside
+the first 65,536.
 
 ```mew
 let space = ' ';
+let world = '🌍';
 ```
+
+A character is also a number, its Unicode code point, so it takes part in
+arithmetic and comparison like the integer types do.
 
 ```mew
 let space : char = 32;
+let next = 'a' + 1;
 ```
+
+:::note
+A character is one code point, which is not always one thing a reader would
+point at. A flag or a letter followed by a combining accent is written with more
+than one, and counts as more than one.
+:::
 
 Escape sequences work the same way they do in a string.
 
