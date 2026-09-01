@@ -47,7 +47,8 @@ A backslash begins an escape sequence.
 | `\\`      | Backslash                               |
 | `\'`      | Single quote                            |
 | `\"`      | Double quote                            |
-| `\uXXXX`  | The character with that hexadecimal code |
+| `\uXXXX`  | The character with that four digit hexadecimal code |
+| `\u{XXXXXX}` | The character with that hexadecimal code, up to six digits |
 
 ```mew
 let path = "C:\\folder\\file";
@@ -55,6 +56,18 @@ let quoted = "she said \"hello\"";
 let tabbed = "left\tright";
 let letter = "\u0041";
 ```
+
+`\uXXXX` takes exactly four digits, which only reaches the first 65,536
+characters. The braced form reaches the rest.
+
+```mew
+let world = "\u{1F30D}";
+let letter = "\u{41}";
+```
+
+A braced escape that names no character is an error: there is nothing above
+`\u{10FFFF}`, and the surrogate range `\u{D800}` to `\u{DFFF}` exists only to
+encode other characters rather than to be one.
 
 Any other character after a backslash is an error.
 
