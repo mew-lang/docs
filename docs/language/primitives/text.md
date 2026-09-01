@@ -118,6 +118,10 @@ let text = "Hello";
 
 println(itoa(text.chars().count)); // 5
 println($"{text.chars()[0]}");     // H
+
+for letter in text.chars() {
+    println($"{letter}");
+}
 ```
 
 Indexing counts characters rather than storage, so it does not depend on how a

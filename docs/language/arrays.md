@@ -60,7 +60,8 @@ let slots = bar.count;   // 8
 ```
 
 `count` is what lets a function walk an array it was handed, since the length
-travels with the array rather than having to be passed alongside it.
+travels with the array rather than having to be passed alongside it. To visit
+every element, [`for`](./control/loops.md#for) says the same thing in less.
 
 ```mew
 pub fn sum(values: i32[]) -> i32 {
