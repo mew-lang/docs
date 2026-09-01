@@ -108,6 +108,26 @@ To put a curly brace in the text, double it.
 let text = $"{{ and }}"; // => { and }
 ```
 
+#### Walking a string
+
+A string cannot be indexed. `chars()` hands back its characters as an array,
+which can be indexed, counted and walked.
+
+```mew
+let text = "Hello";
+
+println(itoa(text.chars().count)); // 5
+println($"{text.chars()[0]}");     // H
+```
+
+Indexing counts characters rather than storage, so it does not depend on how a
+compiler holds the text.
+
+```mew
+let world = "Hello 🌍";
+let last = world.chars()[6]; // '🌍'
+```
+
 ### Characters
 
 The `char` type holds a single character. Any character, including one outside
