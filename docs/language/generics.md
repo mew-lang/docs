@@ -212,15 +212,28 @@ let number = first(new int[] { 3, 1, 2, });   // an i32
 let word = first(new string[] { "a", "b", }); // a string
 ```
 
-A parameter that appears nowhere in the argument types cannot be worked out, and
-naming it at the call is [not yet possible](../future/generics.md).
+A parameter that appears nowhere in the argument types cannot be worked out.
+Name it at the call instead.
 
 ```mew
-pub fn make<T>() -> T { ... }
+pub fn empty<T>() -> T[] {
+    return new T[0];
+}
 
-let x = make();
-// Error: 'T' cannot be worked out from the arguments to 'make'
+let a = empty();       // Error: 'T' cannot be worked out from the arguments
+let b = empty<i32>();  // an i32[]
 ```
+
+Type arguments are written the same way to reach a static method through the
+type that declares it.
+
+```mew
+let smallest = Smallest<i32>::new(41);
+```
+
+`<` still compares two values everywhere else. It opens a type argument list
+only when a matching `>` is followed by a call or a `::`, so `f(a < b, c > d)`
+stays the two comparisons it looks like.
 
 A method may declare its own, separately from the type's. They may even share a
 name, in which case the method's wins for as long as it lasts.
@@ -259,7 +272,6 @@ specialized one both apply. What that example usually wants is a
 
 ### Not yet
 
-One thing the [Generics](../future/generics.md) page describes does not work
-yet: **naming type arguments in an expression**. `Box<i32>::empty()` and
-`first<i32>(...)` do not parse, because `<` in an expression is still a
-comparison. Everything else is worked out from the arguments.
+Generics do not carry variance, defaults, or more than one constraint per
+parameter. A [union](../future/unions.md) will take type parameters the same
+way once unions exist.

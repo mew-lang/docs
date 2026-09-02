@@ -61,3 +61,15 @@ impl IpAddress {
     }
 }
 ```
+
+### Type parameters
+
+A union takes [type parameters](../language/generics.md) the same way a type
+does.
+
+```mew
+pub union Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
