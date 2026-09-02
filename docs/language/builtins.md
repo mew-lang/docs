@@ -9,8 +9,8 @@ and nothing declares them.
 
 | Signature                        | Does                                      |
 | :------------------------------- | :---------------------------------------- |
-| `print(value: any) -> void`      | Writes the value, with no line break       |
-| `println(value: any) -> void`    | Writes the value, followed by a line break |
+| `print(value: string) -> void`   | Writes the text, with no line break        |
+| `println(value: string) -> void` | Writes the text, followed by a line break  |
 | `itoa(value: i32) -> string`     | The text of an `i32`                       |
 | `atoi(value: string) -> i32`     | The `i32` a string spells                  |
 
@@ -24,15 +24,27 @@ let text = itoa(42);
 let number = atoi("42");
 ```
 
-`print` and `println` take `any`, so they accept a value of any type. To control
-how a value reads, build the text yourself with
-[interpolation](./primitives/text.md#string-interpolation).
+`print` and `println` take text, so anything else is turned into text first.
+[Interpolation](./primitives/text.md#string-interpolation) is how, and it is the
+only way a value becomes text, so what a program prints reads the same wherever
+it was written.
 
 ```mew
 let name = "world";
 let count = 3;
 
 println($"{name} has {count}");
+println($"{count}");
+println(itoa(count));
+```
+
+A value whose type is `any` cannot be printed. Interpolation has no text for it
+either, so say what it is first.
+
+```mew
+let boxed: any = 3;
+
+println($"{boxed as i32}");
 ```
 
 :::info
