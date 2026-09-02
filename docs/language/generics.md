@@ -180,8 +180,7 @@ pub type Smallest<T: Comparable<T>> {
     pub mut field current: T;
 
     pub fn add(item: T) -> void {
-        let held = self.current;
-        if item.compare_to(held) < 0 {
+        if item.compare_to(self.current) < 0 {
             self.current = item;
         }
     }
