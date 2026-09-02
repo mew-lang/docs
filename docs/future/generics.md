@@ -4,37 +4,13 @@ sidebar_position: 100
 
 # Generics
 
-A type and an interface [take type parameters](../language/generics.md) today.
-What remains is constraining them, and letting a function declare its own.
+A type and an interface [take type parameters](../language/generics.md) today,
+and a parameter can be [constrained](../language/generics.md#constraints). What
+remains is letting a function declare its own.
 
 :::info
 This functionality is not yet implemented
 :::
-
-### Constraints
-
-A parameter is constrained with `:`, and the constraint says what the type has,
-which is what makes a value of that type useful for more than storage.
-
-```mew
-pub interface Comparable<T> {
-    fn compare_to(other: T) -> i32;
-}
-
-pub type Smallest<T: Comparable<T>> {
-    field current: T;
-
-    pub fn add(item: T) {
-        if item.compare_to(self.current) < 0 {
-            self.current = item;
-        }
-    }
-
-    pub fn get() -> T {
-        return self.current;
-    }
-}
-```
 
 ### Functions
 

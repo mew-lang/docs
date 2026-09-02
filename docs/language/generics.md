@@ -136,6 +136,69 @@ pub fn read(holder: Holder<i32>) -> i32 {
 println(itoa(read(new Box<i32> { value: 5, })));
 ```
 
+### Constraints
+
+A parameter with nothing said about it can only be stored, passed and handed
+back, because nothing is known about what it can do. A constraint says it
+implements an interface, and everything that interface declares becomes
+available on a value of that type.
+
+```mew
+pub interface Describable {
+    fn describe() -> string;
+}
+
+pub type Box<T: Describable> {
+    pub field value: T;
+
+    pub fn show() -> string {
+        return self.value.describe();
+    }
+}
+```
+
+Filling the parameter in with a type that does not implement the interface is an
+error, reported where the type is named rather than inside the declaration.
+
+```mew
+let b = new Box<i32> { value: 1, };
+// Error: 'i32' does not implement 'Describable', which 'T' is constrained to
+```
+
+Only an interface can be a constraint. Naming a type is an error, since a type
+has no implementers.
+
+A constraint may name the parameters it constrains, which is how an interface
+says something about the type implementing it.
+
+```mew
+pub interface Comparable<T> {
+    fn compare_to(other: T) -> i32;
+}
+
+pub type Smallest<T: Comparable<T>> {
+    pub mut field current: T;
+
+    pub fn add(item: T) -> void {
+        let held = self.current;
+        if item.compare_to(held) < 0 {
+            self.current = item;
+        }
+    }
+}
+```
+
+`Comparable<T>` is filled in along with the parameter, so `Smallest<Score>`
+requires `Score` to implement `Comparable<Score>` rather than `Comparable<T>`.
+
+```mew
+impl Comparable<Score> for Score {
+    pub fn compare_to(other: Score) -> i32 {
+        return self.points - other.points;
+    }
+}
+```
+
 ### One filling in at a time
 
 `impl Describable for Box<i32>` is an error. There is no way to give one filling
@@ -145,16 +208,13 @@ This is not only a missing feature. A generic type is emitted once, with the
 parameters left open, and its interfaces are fixed where it is declared. Giving
 `Box<i32>` an interface that `Box<string>` lacks would mean emitting a separate
 type per filling in, and answering what happens when a general `impl` and a
-specialized one both apply. What that example usually wants is a constraint,
-which is [still to come](../future/generics.md#constraints).
+specialized one both apply. What that example usually wants is a
+[constraint](#constraints).
 
 ### Not yet
 
-Three things the [Generics](../future/generics.md) page describes do not work
-yet:
+Two things the [Generics](../future/generics.md) page describes do not work yet:
 
-- **Constraints.** `T` has no members, so nothing can be done with a value of
-  type `T` beyond storing it, passing it, and handing it back.
 - **Generic functions.** Only a type or an interface takes parameters. A free
   function or a method cannot declare its own.
 - **Calling a static method on a named type.** `Box<i32>::empty()` does not
