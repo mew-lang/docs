@@ -4,26 +4,14 @@ sidebar_position: 100
 
 # Generics
 
-A type and an interface [take type parameters](../language/generics.md) today,
-and a parameter can be [constrained](../language/generics.md#constraints). What
-remains is letting a function declare its own.
+Types, interfaces and [functions](../language/generics.md#functions) take type
+parameters today, and a parameter can be
+[constrained](../language/generics.md#constraints). What remains is naming a
+type argument where the compiler cannot work it out.
 
 :::info
 This functionality is not yet implemented
 :::
-
-### Functions
-
-A function should be able to take parameters of its own, and have them worked
-out from the arguments rather than written at the call.
-
-```mew
-pub fn first<T>(values: T[]) -> T {
-    return values[0];
-}
-
-let earliest = first(new i32[] { 3, 1, 2, });
-```
 
 ### Naming a type in an expression
 

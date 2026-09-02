@@ -198,6 +198,53 @@ impl Comparable<Score> for Score {
 }
 ```
 
+### Functions
+
+A function takes type parameters the same way, and they are worked out from the
+arguments rather than written at the call.
+
+```mew
+pub fn first<T>(items: T[]) -> T {
+    return items[0];
+}
+
+let number = first(new int[] { 3, 1, 2, });   // an i32
+let word = first(new string[] { "a", "b", }); // a string
+```
+
+A parameter that appears nowhere in the argument types cannot be worked out, and
+naming it at the call is [not yet possible](../future/generics.md).
+
+```mew
+pub fn make<T>() -> T { ... }
+
+let x = make();
+// Error: 'T' cannot be worked out from the arguments to 'make'
+```
+
+A method may declare its own, separately from the type's. They may even share a
+name, in which case the method's wins for as long as it lasts.
+
+```mew
+pub type Box<T> {
+    pub field value: T;
+
+    pub fn map<U>(other: U) -> U {
+        return other;
+    }
+}
+```
+
+Constraints work as they do on a type.
+
+```mew
+pub fn show<T: Describable>(value: T) -> string {
+    return value.describe();
+}
+
+show(42); // Error: 'i32' does not implement 'Describable'
+```
+
 ### One filling in at a time
 
 `impl Describable for Box<i32>` is an error. There is no way to give one filling
@@ -212,9 +259,7 @@ specialized one both apply. What that example usually wants is a
 
 ### Not yet
 
-Two things the [Generics](../future/generics.md) page describes do not work yet:
-
-- **Generic functions.** Only a type or an interface takes parameters. A free
-  function or a method cannot declare its own.
-- **Calling a static method on a named type.** `Box<i32>::empty()` does not
-  parse, because `<` in an expression is still a comparison.
+One thing the [Generics](../future/generics.md) page describes does not work
+yet: **naming type arguments in an expression**. `Box<i32>::empty()` and
+`first<i32>(...)` do not parse, because `<` in an expression is still a
+comparison. Everything else is worked out from the arguments.
