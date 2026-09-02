@@ -132,6 +132,32 @@ let world = "Hello 🌍";
 let last = world.chars()[6]; // '🌍'
 ```
 
+#### Building a string
+
+Adding a character to a string gives a string, so text can be built up a
+character at a time. An array of characters converts back with a cast.
+
+```mew
+let text = "Hello 🌍";
+let letters = text.chars();
+
+let mut reversed = "";
+let mut i = letters.count - 1;
+while i >= 0 {
+    reversed += letters[i];
+    i -= 1;
+}
+
+println(reversed);              // 🌍 olleH
+println(letters as string);     // Hello 🌍
+println("x" + 'y');             // xy
+println('a' as string);         // a
+```
+
+A character does not become a string on its own, only where `+` says the
+answer is text or where a cast asks for it. So `let text: string = 'a';` is an
+error, and comparing a string with a character is undefined rather than false.
+
 ### Characters
 
 The `char` type holds a single character. Any character, including one outside
