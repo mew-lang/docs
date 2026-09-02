@@ -5,7 +5,9 @@ sidebar_position: 45
 # Interfaces
 
 An interface names a set of methods. A type implements one with an `impl`
-block, and a method reaches the value it was called on through `self`.
+block, and a method reaches the value it was called on through `self`. An
+`impl` block that names no interface adds members instead, which
+[Extending a type](./extending.md) covers.
 
 ```mew
 pub interface Describable {
