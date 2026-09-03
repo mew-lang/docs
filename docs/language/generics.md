@@ -273,5 +273,5 @@ specialized one both apply. What that example usually wants is a
 ### Not yet
 
 Generics do not carry variance, defaults, or more than one constraint per
-parameter. A [union](../future/unions.md) will take type parameters the same
-way once unions exist.
+parameter. A [union](./unions.md) takes type parameters the same way a type
+does.
