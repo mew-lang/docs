@@ -44,7 +44,7 @@ impl i32 {
     }
 }
 
-println(itoa(21.doubled()));
+println($"{21.doubled()}");
 ```
 
 ```
@@ -93,7 +93,7 @@ impl Box<T> {
     }
 }
 
-println(itoa(new Box<i32> { value: 7 }.get()));
+println($"{new Box<i32> { value: 7 }.get()}");
 ```
 
 ```

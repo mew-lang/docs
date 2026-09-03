@@ -91,7 +91,7 @@ let first: Describable = new Point { x: 32, y: 40 };
 
 if first is Point {
     let point = first as Point;
-    println(itoa(point.x));
+    println($"{point.x}");
 }
 ```
 

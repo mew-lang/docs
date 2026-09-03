@@ -116,7 +116,7 @@ which can be indexed, counted and walked.
 ```mew
 let text = "Hello";
 
-println(itoa(text.chars().count)); // 5
+println($"{text.chars().count}"); // 5
 println($"{text.chars()[0]}");     // H
 
 for letter in text.chars() {

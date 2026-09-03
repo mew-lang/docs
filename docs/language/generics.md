@@ -69,7 +69,7 @@ An argument can itself be a type with arguments, to any depth.
 
 ```mew
 let n = new Box<Box<i32>> { value: new Box<i32> { value: 3, }, spares: new Box<i32>[0], };
-println(itoa(n.value.value)); // 3
+println($"{n.value.value}"); // 3
 ```
 
 A type may also name itself, which is what a list or a tree needs.
@@ -133,7 +133,7 @@ pub fn read(holder: Holder<i32>) -> i32 {
     return holder.held();
 }
 
-println(itoa(read(new Box<i32> { value: 5, })));
+println($"{read(new Box<i32> { value: 5, })}");
 ```
 
 ### Constraints

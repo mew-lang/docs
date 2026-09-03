@@ -65,7 +65,7 @@ one that is called.
 
 ```mew
 pub fn describe(value: i32) -> string {
-    return itoa(value);
+    return $"{value}";
 }
 
 pub fn describe(value: string) -> string {

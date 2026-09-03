@@ -36,7 +36,7 @@ while foo < 100 {
 let primes = new int[] { 2, 3, 5, 7, 11 };
 
 for prime in primes {
-    println(itoa(prime));
+    println($"{prime}");
 }
 ```
 
@@ -47,10 +47,10 @@ scope after the loop ends, and it may reuse a name from the enclosing scope.
 let value = 100;
 
 for value in primes {
-    println(itoa(value));
+    println($"{value}");
 }
 
-println(itoa(value)); // 100
+println($"{value}"); // 100
 ```
 
 The collection is evaluated once, before the first iteration.
@@ -117,7 +117,7 @@ impl Enumerable<i32> for Descending {
 }
 
 for value in new Descending { from: 3, } {
-    println(itoa(value));  // 3, 2, 1
+    println($"{value}");  // 3, 2, 1
 }
 ```
 
