@@ -40,7 +40,83 @@ nor a `use`.
 | `Enumerator<T>`     | `for` resolves it by name                        |
 
 `Enumerable<T>` and `Enumerator<T>` are described under
-[loops](../language/control/loops.md).
+[loops](../language/control/loops.md), and carry the operators
+[below](#sequences).
+
+## Sequences
+
+`Enumerable<T>` carries seven operators as
+[members the interface supplies](../language/interfaces.md#members-the-interface-supplies),
+so everything a `for` can walk has them, arrays included.
+
+| Signature                                       | Answers                                       |
+| :---------------------------------------------- | :-------------------------------------------- |
+| `map<U>(apply: fn(T) -> U) -> Enumerable<U>`    | Every element through `apply`                  |
+| `filter(keep: fn(T) -> bool) -> Enumerable<T>`  | The elements `keep` says to keep               |
+| `fold<A>(seed: A, combine: fn(A, T) -> A) -> A` | One value, `combine` run over every element    |
+| `find(keep: fn(T) -> bool) -> Option<T>`        | The first element `keep` says to keep          |
+| `any(keep: fn(T) -> bool) -> bool`              | Whether `keep` says to keep any of them        |
+| `count() -> i32`                                | How many elements there are                    |
+| `to_array() -> T[]`                             | The elements, in an array                      |
+
+Each takes a [lambda](../language/lambdas.md), and `map` and `filter` answer
+with a sequence, so they chain.
+
+```mew
+use std;
+
+pub type Person {
+    pub field name: string;
+    pub field age: i32;
+}
+
+let people = new Person[] {
+    new Person { name: "ada", age: 11 },
+    new Person { name: "patrik", age: 44 },
+    new Person { name: "valentina", age: 46 },
+};
+
+let adults = people
+    .filter(|p| p.age >= 18)
+    .map(|p| p.name)
+    .to_array();
+
+println($"{adults.count}");
+```
+
+```
+2
+```
+
+`map` and `filter` do no work when they are called. They answer with a sequence
+that walks the one it was built from, so a chain of them walks the source once,
+when something asks for the elements. The other five ask: `fold`, `count` and
+`to_array` walk all of it, and `find` and `any` stop at the first element that
+answers.
+
+```mew
+use std;
+
+let values = new i32[] { 1, 2, 3, 4 };
+
+println($"{values.fold(0, |total, n| total + n)}");
+println($"{values.any(|n| n > 3)}");
+println($"{values.find(|n| n > 2).unwrap()}");
+```
+
+```
+10
+true
+3
+```
+
+`find` answers with an [`Option<T>`](#optiont-and-resultt-e), since a sequence
+need not hold what was asked for.
+
+:::note
+`to_array` walks the sequence twice, once to measure it and once to fill the
+array, because an array is fixed size. Everything else walks once.
+:::
 
 ## `std`
 

@@ -77,7 +77,8 @@ pub fn sum(values: i32[]) -> i32 {
 ```
 
 :::note
-`count` is the only member an array has. Reaching for anything else is an error.
+`count` is the only member an array has of its own. The rest of what an array
+can do it gets for being a [sequence](../stdlib/index.md#sequences).
 :::
 
 ### Array Initialization with Values
