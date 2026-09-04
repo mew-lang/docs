@@ -55,6 +55,62 @@ Error [MEW2084]: Unexpected modifier
 The interface member 'make' cannot be static
 ```
 
+### Members the interface supplies
+
+An `impl` block on the interface itself gives every implementing type a member
+it does not have to write. A member with a body is supplied; one without is
+still required.
+
+```mew
+impl Describable {
+    pub fn shouted() -> string {
+        return $"{self.describe()}!";
+    }
+}
+```
+
+```mew
+// Usage:
+println(new Point { x: 32, y: 40 }.shouted());
+```
+
+```
+(32, 40)!
+```
+
+`self` inside one is the interface, so it can call the members the interface
+requires and nothing else.
+
+A type that wants its own answer declares the member, and that replaces what the
+interface supplied.
+
+```mew
+impl Describable for Circle {
+    pub fn describe() -> string {
+        return $"a circle of {self.radius}";
+    }
+
+    pub fn shouted() -> string {
+        return "ROUND";
+    }
+}
+```
+
+```mew
+// Usage:
+println(new Circle { radius: 3 }.shouted());
+```
+
+```
+ROUND
+```
+
+:::note
+An `impl` block on a generic interface covers every filling in of it, so write
+`Seq<T>` rather than `Seq<i32>`, the same rule an
+`impl ... for` block follows.
+:::
+
 ### Using a value through its interface
 
 A type that implements an interface can be used wherever that interface is
