@@ -35,6 +35,16 @@ A type on the left is a static access, so only what can be reached that way
 comes up. `self` is a value even though it names its own type, so it offers the
 instance members.
 
+What an [interface supplies](../language/interfaces.md#members-the-interface-supplies)
+is offered as well, on every type that implements it and on arrays, which are
+[sequences](../stdlib/index.md#sequences). Completion asks the compiler what
+members a type has rather than reading the declaration, so a member nobody
+wrote on the type still comes up.
+
+| Written                       | Offered                                     |
+| :---------------------------- | :------------------------------------------ |
+| `values.` where `values` is `i32[]` | `count`, and the seven sequence operators |
+
 A [union](../language/unions.md) offers its cases through `::`, since that is
 how a case is reached.
 
