@@ -68,6 +68,8 @@ let p = new Pair<i32, string> { first: 7, second: "seven", };
 An argument can itself be a type with arguments, to any depth.
 
 ```mew
+use std;
+
 let n = new Box<Box<i32>> { value: new Box<i32> { value: 3, }, spares: new Box<i32>[0], };
 println($"{n.value.value}"); // 3
 ```

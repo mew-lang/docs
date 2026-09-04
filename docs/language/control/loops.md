@@ -33,6 +33,8 @@ while foo < 100 {
 `for` walks an array, binding each element in turn.
 
 ```mew
+use std;
+
 let primes = new int[] { 2, 3, 5, 7, 11 };
 
 for prime in primes {

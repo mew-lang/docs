@@ -10,28 +10,53 @@ compilation, so nothing in it needs a `#load`.
 
 Being loaded is not the same as being in scope without a prefix. Those are
 decided separately: the shipped folder decides what is *loaded*, and each file's
-[namespace](../language/namespaces.md) decides what it is *called*. A few
-declarations are in the global namespace and are reachable by their own name;
-everything else is namespaced under `std`, and is reached either by qualifying
-it or by importing it with `use`.
+[namespace](../language/namespaces.md) decides what it is *called*. Most of the
+library is namespaced, and is reached either by qualifying it or by importing it
+with `use`.
 
 ```mew
+use std;
+
+println(std.convert.itoa(42));   // qualified
+```
+
+```mew
+use std;
 use std.convert;
 
 println(itoa(42));               // imported, so no prefix
-println(std.convert.itoa(42));   // the same call, qualified
 ```
 
 ## Always in scope
 
-These are in the global namespace, so they need neither a `#load` nor a `use`.
+Four declarations are in the global namespace, so they need neither a `#load`
+nor a `use`.
+
+| Name                | Why it is global                                |
+| :------------------ | :---------------------------------------------- |
+| `Option<T>`         | A value that may be absent, described [below](#optiont-and-resultt-e) |
+| `Result<T, E>`      | An operation that may fail, described [below](#optiont-and-resultt-e) |
+| `Enumerable<T>`     | `for` resolves it by name                        |
+| `Enumerator<T>`     | `for` resolves it by name                        |
+
+`Enumerable<T>` and `Enumerator<T>` are described under
+[loops](../language/control/loops.md).
+
+## `std`
+
+Writing text and stopping the program. Everything here needs `use std;` or the
+`std.` prefix.
 
 | Signature                        | Does                                     |
 | :------------------------------- | :--------------------------------------- |
 | `print(value: string) -> void`   | Writes the text, with no line break       |
 | `println(value: string) -> void` | Writes the text, followed by a line break |
+| `panic(reason: string) -> void`  | Writes the reason and ends the program with exit code 1 |
+| `exit(code: i32) -> void`        | Ends the program with the given code      |
 
 ```mew
+use std;
+
 println("Hello, world!");
 
 print("no newline here");
@@ -60,16 +85,9 @@ let boxed: any = 3;
 println($"{boxed as i32}");
 ```
 
-`Enumerable<T>` and `Enumerator<T>` are also global, because `for` resolves them
-by name. They are described under [loops](../language/control/loops.md).
+### Stopping early
 
-## `panic`
-
-Ends the program, for the case where carrying on would be worse than stopping.
-
-| Signature                       | Does                                        |
-| :------------------------------ | :------------------------------------------ |
-| `panic(reason: string) -> void` | Writes the reason and ends the program with exit code 1 |
+`panic` is for the case where carrying on would be worse than stopping.
 
 ```mew
 if count < 0 {
@@ -84,13 +102,22 @@ Unhandled error: a count cannot be negative
 The reason goes to standard error, where the runtime's own failures go, so it
 does not land in output a caller is reading.
 
-`panic` carries the [`noreturn`](../language/attributes.md#noreturn) attribute,
-so a path that ends in one owes no `return`. That is what makes `unwrap` below
+`exit` stops the program the same way without writing anything, and takes the
+code to stop with.
+
+```mew
+if count < 0 {
+    exit(2);
+}
+```
+
+Both carry the [`noreturn`](../language/attributes.md#noreturn) attribute, so a
+path that ends in either owes no `return`. That is what makes `unwrap` below
 possible.
 
 :::note
-This is the only way a Mew program stops early. There are no exceptions, so
-nothing catches a panic and nothing runs after it.
+These two are the only way a Mew program stops early. There are no exceptions,
+so nothing catches a panic and nothing runs after it.
 :::
 
 ## `Option<T>` and `Result<T, E>`
@@ -149,7 +176,7 @@ needs.
 | :------------------------- | :----------------------------------------------- |
 | `is_some() -> bool`        | Whether there is a value                          |
 | `is_none() -> bool`        | Whether there is not                              |
-| `unwrap() -> T`            | The value, or a [panic](#panic)                   |
+| `unwrap() -> T`            | The value, or a [panic](#stopping-early)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
 | `or(other: Option<T>)`     | This option if it has a value, otherwise `other`  |
 | `ok_or<E>(error: E)`       | A `Result<T, E>`, using `error` for `none`        |
@@ -158,7 +185,7 @@ needs.
 | :------------------------- | :----------------------------------------------- |
 | `is_ok() -> bool`          | Whether it succeeded                              |
 | `is_err() -> bool`         | Whether it failed                                 |
-| `unwrap() -> T`            | The value, or a [panic](#panic)                   |
+| `unwrap() -> T`            | The value, or a [panic](#stopping-early)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
 | `ok() -> Option<T>`        | The value as an option                            |
 | `err() -> Option<E>`       | The error as an option                            |
@@ -188,7 +215,7 @@ divide by zero
 true
 ```
 
-`unwrap` reads the value and [panics](#panic) when there is none, so reach for
+`unwrap` reads the value and [panics](#stopping-early) when there is none, so reach for
 it only where the absent case is a bug rather than something to handle.
 
 ```mew

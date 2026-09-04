@@ -114,6 +114,8 @@ A string cannot be indexed. `chars()` hands back its characters as an array,
 which can be indexed, counted and walked.
 
 ```mew
+use std;
+
 let text = "Hello";
 
 println($"{text.chars().count}"); // 5

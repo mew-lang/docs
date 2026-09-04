@@ -120,6 +120,8 @@ announce(.v6("fd1a::1"));  // the IpAddress one, since only it has 'v6'
 a block.
 
 ```mew
+use std;
+
 pub fn show(ip: IpAddress) -> void {
     match ip {
         .none => {

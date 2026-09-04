@@ -37,6 +37,8 @@ Getting the value back out is a [cast](../type-casting.md), and
 [`is`](../type-checking.md) is what asks what is in there first.
 
 ```mew
+use std;
+
 if boxed is Point {
     println($"{(boxed as Point).x}");
 }

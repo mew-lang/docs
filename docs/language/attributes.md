@@ -28,6 +28,8 @@ Says that a function never hands control back. Nothing after a call to one
 runs, so a path that ends in such a call owes no `return` of its own.
 
 ```mew
+use std;
+
 pub fn pick(flag: bool) -> i32 {
     if flag {
         return 1;
@@ -37,7 +39,7 @@ pub fn pick(flag: bool) -> i32 {
 }
 ```
 
-[`panic`](../stdlib/index.md#panic) carries the attribute, which is why `pick`
+[`panic`](../stdlib/index.md#stopping-early) carries the attribute, which is why `pick`
 compiles. Without it the compiler reports that not all code paths return a
 value, since nothing says the last statement is the end.
 

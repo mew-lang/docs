@@ -28,6 +28,8 @@ impl Describable for Point {
 
 ```mew
 // Usage:
+use std;
+
 let point = new Point { x: 32, y: 40 };
 println(point.describe());
 ```

@@ -10,6 +10,8 @@ the same block works on your own types, on types from another file, on generic
 types, and on the primitives the language defines itself.
 
 ```mew
+use std;
+
 pub type Point {
     pub field x: i32;
     pub field y: i32;

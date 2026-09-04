@@ -7,6 +7,8 @@ sidebar_position: 1
 A Mew program is a file called `main.mew`.
 
 ```mew
+use std;
+
 println("Hello, world!");
 ```
 
@@ -32,6 +34,8 @@ declarations, and a statement outside a declaration there is an error.
 
 ```mew
 // helper.mew
+use std;
+
 pub fn greet(name: string) -> void {
     println($"Hello, {name}!");
 }
@@ -55,6 +59,8 @@ A `return` at the top level ends the program and becomes its exit code. It has t
 be an `int`, since that is all an exit code can carry.
 
 ```mew
+use std;
+
 println("giving up");
 return 1;
 ```

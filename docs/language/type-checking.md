@@ -7,6 +7,8 @@ sidebar_position: 55
 `is` asks what a value is, and produces a `bool`.
 
 ```mew
+use std;
+
 let number: any = 32;
 println($"{number is i32}");
 println($"{number is string}");
