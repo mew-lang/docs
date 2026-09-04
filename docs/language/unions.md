@@ -150,6 +150,57 @@ inside its own arm.
 `break`, `continue` and `return` inside an arm mean what they mean anywhere
 else, so a match inside a loop can leave the loop.
 
+### Discarding what an arm does not read
+
+A binding written `_` names nothing. A case still has to be given one binding
+per value it carries, so `_` is how an arm says it matched on the case without
+reading what came with it.
+
+```mew
+use std;
+
+pub fn is_v4(ip: IpAddress) -> bool {
+    return match ip {
+        .none => false,
+        .v4(_, _, _, _) => true,
+        .v6(_) => false,
+    };
+}
+```
+
+`_` can be repeated in one pattern, which an ordinary name cannot, and it can
+sit beside names that are read.
+
+```mew
+use std;
+
+pub fn first(ip: IpAddress) -> i32 {
+    return match ip {
+        .none => -1,
+        .v4(a, _, _, _) => a,
+        .v6(_) => -1,
+    };
+}
+```
+
+It is a discard rather than a name, so nothing can be read back out of it.
+
+```mew
+match ip {
+    .v6(_) => {
+        println(_);
+    },
+}
+```
+
+```
+Error [MEW2009]: Undeclared variable
+Undeclared variable '_'
+```
+
+An arm written `_` on its own is a different thing: that is the
+[catch-all pattern](#every-case-has-to-be-covered), which matches any case.
+
 ### Every case has to be covered
 
 A union is closed, so the compiler knows every case and says which one an arm is
