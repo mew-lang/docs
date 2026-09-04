@@ -136,6 +136,50 @@ pub fn total(source: Enumerable<i32>) -> i32 {
 }
 ```
 
+An array counts as one, so it can be handed to that function directly.
+
+```mew
+// Usage:
+println($"{total(new i32[] { 1, 2, 3, 4 })}");
+```
+
+```
+10
+```
+
+It also reaches whatever an [`impl` block on the interface](../interfaces.md#members-the-interface-supplies)
+supplies, so a member written once is on every array.
+
+```mew
+impl Enumerable<T> {
+    pub fn size() -> i32 {
+        let mut n = 0;
+        for item in self {
+            n += 1;
+        }
+
+        return n;
+    }
+}
+```
+
+```mew
+// Usage:
+println($"{new i32[] { 1, 2, 3 }.size()}");
+println($"{new string[] { "a", "b" }.size()}");
+```
+
+```
+3
+2
+```
+
+:::note
+`for` over an array is still a plain index loop rather than a walk through the
+protocol, so nothing about this costs the most common loop in the language
+anything.
+:::
+
 A type is walkable one way. `iter` differs only in what it returns, and
 [two functions cannot](../functions.md#overloading), so a type that reads more than one way
 offers each as its own method returning its own collection.
