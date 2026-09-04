@@ -40,6 +40,19 @@ Interface members are public by definition, so `pub` is not written inside an
 A member the interface declares and the type does not supply is an error, and so
 is a method in an `impl` block that the interface never declared.
 
+A member is a signature and nothing more, so no modifier belongs on one.
+
+```mew
+pub interface Maker {
+    static fn make() -> i32;
+}
+```
+
+```
+Error [MEW2084]: Unexpected modifier
+The interface member 'make' cannot be static
+```
+
 ### Using a value through its interface
 
 A type that implements an interface can be used wherever that interface is
