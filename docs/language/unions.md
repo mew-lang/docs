@@ -46,12 +46,72 @@ are, so the `192` above is read as a `u8`.
 comes from one of the cases instead.
 :::
 
-A case belongs to the union rather than to a value, so it is always written
-with the union's name in front.
+A case belongs to the union rather than to a value, so it is never reached
+through one.
 
 ```mew
 let ip = IpAddress::none;
 let wrong = ip.none;  // Error: 'IpAddress::none' is reached through the union
+```
+
+### Leaving the union out
+
+Where the union is already known, the case can be written with just a `.` in
+front, the same way a [pattern](#reading-a-value) is.
+
+```mew
+pub fn loopback() -> IpAddress {
+    return .v4(127, 0, 0, 1);
+}
+```
+
+The union comes from wherever the value is going, so this works in every place
+that already knows what it wants: a `return`, a `let` with a type, an argument,
+a field, an array element, an assignment, and the value a `match` produces.
+
+```mew
+let nothing: IpAddress = .none;
+let addresses = new IpAddress[] { .none, .v6("fd1a::1") };
+let holder = new Route { address: .v4(10, 0, 0, 1) };
+
+let mut current: IpAddress = .none;
+current = .v6("fd1a::1");
+
+pub fn cleared(ip: IpAddress) -> IpAddress {
+    return match ip {
+        .none => .v4(0, 0, 0, 0),
+        _ => .none,
+    };
+}
+```
+
+Where nothing says which union is wanted, there is nothing to work it out
+from.
+
+```mew
+let ip = .none;
+```
+
+```
+Error [MEW2087]: No union to infer
+Nothing here expects a union, so there is no union for 'none' to be a case of
+```
+
+:::note
+A `let` needs its type written for this, because the initializer is the only
+thing that could say what the variable holds and `.none` does not say. Write
+`IpAddress::none`, or annotate the `let`.
+:::
+
+When a function is overloaded, the case name is what picks between two
+candidates taking different unions. Two candidates whose unions both have the
+case is ambiguous, and writing the union out is how to say which one.
+
+```mew
+pub fn announce(ip: IpAddress) -> void { }
+pub fn announce(visible: Visibility) -> void { }
+
+announce(.v6("fd1a::1"));  // the IpAddress one, since only it has 'v6'
 ```
 
 ## Reading a value
