@@ -179,6 +179,9 @@ needs.
 | `unwrap() -> T`            | The value, or a [panic](#stopping-early)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
 | `or(other: Option<T>)`     | This option if it has a value, otherwise `other`  |
+| `map<U>(f: fn(T) -> U)`    | An `Option<U>`, with `f` run over the value       |
+| `and_then<U>(f)`           | What `f` answers, for chaining one option onto another |
+| `filter(f: fn(T) -> bool)` | This option if `f` answers true, otherwise `none` |
 | `ok_or<E>(error: E)`       | A `Result<T, E>`, using `error` for `none`        |
 
 | On `Result<T, E>`          | Gives                                            |
@@ -187,6 +190,9 @@ needs.
 | `is_err() -> bool`         | Whether it failed                                 |
 | `unwrap() -> T`            | The value, or a [panic](#stopping-early)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
+| `map<U>(f: fn(T) -> U)`    | A `Result<U, E>`, with `f` run over the value     |
+| `map_err<F>(f: fn(E) -> F)`| A `Result<T, F>`, with `f` run over the error     |
+| `and_then<U>(f)`           | What `f` answers, for chaining one result onto another |
 | `ok() -> Option<T>`        | The value as an option                            |
 | `err() -> Option<E>`       | The error as an option                            |
 
@@ -235,8 +241,43 @@ any type and not every type has a text representation. Use `err()` and print
 that yourself when the reason matters.
 :::
 
-Nothing here takes a function, so there is no `map`, `and_then` or `filter`.
-A function is not a value in Mew yet, so those cannot be written.
+### Working on the value without unwrapping it
+
+`map`, `and_then` and `filter` take a [lambda](../language/lambdas.md) and leave
+the absent or failed case alone, so a chain of them says what to do with a value
+without asking whether there is one at every step.
+
+```mew
+// Usage:
+println($"{divide(6, 2).map(|n| n * 10).unwrap_or(0)}");
+println($"{divide(6, 0).map(|n| n * 10).unwrap_or(-1)}");
+println(divide(6, 0).map_err(|reason| $"failed: {reason}").err().unwrap_or(""));
+println($"{divide(12, 2).and_then(|n| divide(n, 3)).unwrap_or(0)}");
+```
+
+```
+30
+-1
+failed: divide by zero
+2
+```
+
+`map` changes what is held, `and_then` chains one of these onto another and
+flattens the result, and `filter` on an `Option<T>` drops a value that does not
+answer the question.
+
+```mew
+// Usage:
+let held: Option<i32> = .some(20);
+
+println($"{held.filter(|n| n > 10).unwrap_or(0)}");
+println($"{held.filter(|n| n > 100).is_none()}");
+```
+
+```
+20
+true
+```
 
 ## `std.convert`
 
