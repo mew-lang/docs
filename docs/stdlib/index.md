@@ -63,6 +63,36 @@ println($"{boxed as i32}");
 `Enumerable<T>` and `Enumerator<T>` are also global, because `for` resolves them
 by name. They are described under [loops](../language/control/loops.md).
 
+## `panic`
+
+Ends the program, for the case where carrying on would be worse than stopping.
+
+| Signature                       | Does                                        |
+| :------------------------------ | :------------------------------------------ |
+| `panic(reason: string) -> void` | Writes the reason and ends the program with exit code 1 |
+
+```mew
+if count < 0 {
+    panic("a count cannot be negative");
+}
+```
+
+```
+Unhandled error: a count cannot be negative
+```
+
+The reason goes to standard error, where the runtime's own failures go, so it
+does not land in output a caller is reading.
+
+`panic` carries the [`noreturn`](../language/attributes.md#noreturn) attribute,
+so a path that ends in one owes no `return`. That is what makes `unwrap` below
+possible.
+
+:::note
+This is the only way a Mew program stops early. There are no exceptions, so
+nothing catches a panic and nothing runs after it.
+:::
+
 ## `Option<T>` and `Result<T, E>`
 
 Two global [unions](../language/unions.md), for a value that may be absent and
@@ -119,6 +149,7 @@ needs.
 | :------------------------- | :----------------------------------------------- |
 | `is_some() -> bool`        | Whether there is a value                          |
 | `is_none() -> bool`        | Whether there is not                              |
+| `unwrap() -> T`            | The value, or a [panic](#panic)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
 | `or(other: Option<T>)`     | This option if it has a value, otherwise `other`  |
 | `ok_or<E>(error: E)`       | A `Result<T, E>`, using `error` for `none`        |
@@ -127,6 +158,7 @@ needs.
 | :------------------------- | :----------------------------------------------- |
 | `is_ok() -> bool`          | Whether it succeeded                              |
 | `is_err() -> bool`         | Whether it failed                                 |
+| `unwrap() -> T`            | The value, or a [panic](#panic)                   |
 | `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
 | `ok() -> Option<T>`        | The value as an option                            |
 | `err() -> Option<E>`       | The error as an option                            |
@@ -156,11 +188,24 @@ divide by zero
 true
 ```
 
+`unwrap` reads the value and [panics](#panic) when there is none, so reach for
+it only where the absent case is a bug rather than something to handle.
+
+```mew
+// Usage:
+println($"{divide(6, 2).unwrap()}");
+println($"{divide(6, 0).unwrap()}");
+```
+
+```
+3
+Unhandled error: unwrapped a result that failed
+```
+
 :::note
-There is no `unwrap` that reads the value and ends the program when there is
-none. Mew has no way to say that a function never returns, so the compiler
-would report that such a method does not return a value on every path. Use
-`unwrap_or`, or `match`.
+The message names neither the value nor the error, because `T` and `E` can be
+any type and not every type has a text representation. Use `err()` and print
+that yourself when the reason matters.
 :::
 
 Nothing here takes a function, so there is no `map`, `and_then` or `filter`.
@@ -170,20 +215,55 @@ A function is not a value in Mew yet, so those cannot be written.
 
 Conversions between text and numbers.
 
-| Signature                    | Does                       |
-| :--------------------------- | :------------------------- |
-| `itoa(value: i32) -> string` | The text of an `i32`       |
-| `atoi(value: string) -> i32` | The `i32` a string spells  |
+| Signature                                        | Does                          |
+| :----------------------------------------------- | :---------------------------- |
+| `itoa(value: i32) -> string`                     | The text of an `i32`          |
+| `atoi(value: string) -> Result<i32, ParseError>` | The `i32` a string spells, or why it does not |
 
 ```mew
 use std.convert;
 
 let text = itoa(42);
-let number = atoi("42");
+let number = atoi("42").unwrap_or(0);
 ```
 
-`atoi` answers `0` for anything it cannot read, including the empty string and
-text with a trailing remainder, so `atoi("12abc")` is `0` rather than `12`.
+Not every string spells a number, so `atoi` answers with a
+[`Result`](#optiont-and-resultt-e) rather than a number. `ParseError` says
+which way it failed.
+
+```mew
+pub union ParseError {
+    invalid,
+    overflow,
+}
+```
+
+```mew
+// Usage:
+match atoi(text) {
+    .ok(value) => {
+        println($"{value}");
+    },
+    .err(reason) => {
+        println(reason.describe());
+    },
+}
+```
+
+| Given                  | Answers                                     |
+| :--------------------- | :------------------------------------------ |
+| `"42"`                 | `ok(42)`                                     |
+| `""`                   | `err(invalid)`, "not a number"               |
+| `"abc"`                | `err(invalid)`, "not a number"               |
+| `"12abc"`              | `err(invalid)`, "not a number"               |
+| `"2147483648"`         | `err(overflow)`, "outside the range of an i32" |
+
+`describe()` is the text of a `ParseError`, for when the reason is going
+straight to a reader.
+
+`itoa` cannot fail, so it hands back a `string` rather than a `Result`. It
+writes into a buffer of its own choosing, and twelve bytes is always enough for
+an `i32`, the widest being the eleven characters of `-2147483648`.
 
 Printing a number needs neither of these. Interpolation already turns one into
 text, and `itoa` is for when the text itself is the value you want.
