@@ -63,6 +63,109 @@ println($"{boxed as i32}");
 `Enumerable<T>` and `Enumerator<T>` are also global, because `for` resolves them
 by name. They are described under [loops](../language/control/loops.md).
 
+## `Option<T>` and `Result<T, E>`
+
+Two global [unions](../language/unions.md), for a value that may be absent and
+an operation that may fail. They exist so that neither has to be answered with
+`null`.
+
+```mew
+pub union Option<T> {
+    none,
+    some(T),
+}
+
+pub union Result<T, E> {
+    ok(T),
+    err(E),
+}
+```
+
+A union is never `null` and a `match` has to handle every case, so a caller
+cannot read a value that is not there by forgetting to check.
+
+```mew
+pub fn head(values: i32[]) -> Option<i32> {
+    if values.count == 0 {
+        return Option<i32>::none;
+    }
+
+    return Option<i32>::some(values[0]);
+}
+```
+
+```mew
+// Usage:
+match head(new i32[] { 3, 4 }) {
+    .some(value) => {
+        println($"{value}");
+    },
+    .none => {
+        println("nothing there");
+    },
+}
+```
+
+```
+3
+```
+
+### Reading one without a match
+
+Both carry methods for the cases where a full `match` is more than the question
+needs.
+
+| On `Option<T>`             | Gives                                            |
+| :------------------------- | :----------------------------------------------- |
+| `is_some() -> bool`        | Whether there is a value                          |
+| `is_none() -> bool`        | Whether there is not                              |
+| `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
+| `or(other: Option<T>)`     | This option if it has a value, otherwise `other`  |
+| `ok_or<E>(error: E)`       | A `Result<T, E>`, using `error` for `none`        |
+
+| On `Result<T, E>`          | Gives                                            |
+| :------------------------- | :----------------------------------------------- |
+| `is_ok() -> bool`          | Whether it succeeded                              |
+| `is_err() -> bool`         | Whether it failed                                 |
+| `unwrap_or(fallback: T)`   | The value, or `fallback`                          |
+| `ok() -> Option<T>`        | The value as an option                            |
+| `err() -> Option<E>`       | The error as an option                            |
+
+```mew
+pub fn divide(left: i32, right: i32) -> Result<i32, string> {
+    if right == 0 {
+        return Result<i32, string>::err("divide by zero");
+    }
+
+    return Result<i32, string>::ok(left / right);
+}
+```
+
+```mew
+// Usage:
+println($"{divide(6, 2).unwrap_or(0)}");
+println($"{divide(6, 0).unwrap_or(0)}");
+println($"{divide(6, 0).err().unwrap_or("")}");
+println($"{head(new i32[0]).ok_or<string>("empty").is_err()}");
+```
+
+```
+3
+0
+divide by zero
+true
+```
+
+:::note
+There is no `unwrap` that reads the value and ends the program when there is
+none. Mew has no way to say that a function never returns, so the compiler
+would report that such a method does not return a value on every path. Use
+`unwrap_or`, or `match`.
+:::
+
+Nothing here takes a function, so there is no `map`, `and_then` or `filter`.
+A function is not a value in Mew yet, so those cannot be written.
+
 ## `std.convert`
 
 Conversions between text and numbers.
