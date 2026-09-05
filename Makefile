@@ -1,4 +1,12 @@
+.PHONY: start
+start:
+	@dotnet run
+
 .PHONY: build
 build:
-	@npm install
-	@npx docusaurus start
+	@dotnet run -- build
+
+.PHONY: check
+check:
+	@dotnet run -- diag warnings
+	@dotnet run -- build
