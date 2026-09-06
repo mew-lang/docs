@@ -23,6 +23,7 @@ in this table.
 | 6 | `==`&nbsp;&nbsp;`!=` | left |
 | 5 | `&&` | left |
 | 4 | `\|\|` | left |
+| 2 | `a ? b : c` | right |
 | 1 | `=`&nbsp;&nbsp;`+=`&nbsp;&nbsp;`-=`&nbsp;&nbsp;`*=`&nbsp;&nbsp;`/=`&nbsp;&nbsp;`%=` | right |
 
 Parentheses group, and a grouped expression is whatever is inside it.
@@ -196,6 +197,63 @@ if boxed is i32 {
 }
 ```
 
+## Conditional
+
+`a ? b : c` produces one of two values. The condition is a `bool`, and exactly
+one of the two branches is evaluated.
+
+```mew
+use std;
+
+let count = 3;
+
+println(count == 1 ? "one" : "many");
+println($"{count < 0 ? -count : count}");
+```
+
+It groups to the right, so a chain of them reads as a run of tests.
+
+```mew
+use std;
+
+let count = 3;
+let name = count == 0 ? "zero" : count == 1 ? "one" : "many";
+
+println(name);
+```
+
+The two branches decide the type between them. Either they already agree, or one
+of them converts implicitly to the other and that one is the type of the whole
+expression. `null` brings no type of its own, so the other branch decides.
+
+```mew
+use std;
+
+let wide: i64 = 1 > 0 ? 1 : 2;
+let name = 1 > 0 ? "mew" : null;
+
+println($"{wide} {name}");
+```
+
+Branches with nothing in common are an error.
+
+```mew error=MEW2095
+let mixed = 1 > 0 ? 1 : "one";
+```
+
+Everything except assignment binds tighter, so a comparison in front of the `?`
+is the condition rather than part of it. Writing one as a statement is an error:
+it produces a value and a statement discards it, so
+[`if`](xref:language.control.conditions) is what runs one of two statements.
+
+```mew error=MEW1010
+use std;
+
+let ready = true;
+
+ready ? println("saved") : println("discarded");
+```
+
 ## Assignment
 
 `=` and the compound operators are the loosest of all, and they group right to
@@ -204,6 +262,6 @@ left. Assignment is an expression that produces the value it assigned, which
 
 ## What is not here
 
-There is no conditional operator, no bitwise operator, no shift, no increment or
-decrement, and no way to give a type an operator of its own. A method is how a
-type says what an operation on it means.
+There is no bitwise operator, no shift, no increment or decrement, and no way to
+give a type an operator of its own. A method is how a type says what an operation
+on it means.

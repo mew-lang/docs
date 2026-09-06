@@ -113,6 +113,6 @@ does read as a value, and it works on a [union](xref:language.unions) rather tha
 on a `bool`.
 
 > [!NOTE]
-> A conditional expression, the `a ? b : c` of other languages, does not exist.
-> `?` is lexed and reserved for one, so writing it is an error rather than
-> something stranger. [Ternaries](xref:future.ternaries) covers what is planned.
+> An `if` runs a statement rather than producing a value. To choose between two
+> values, the [conditional operator](xref:language.operators#conditional) is what
+> produces one: `let name = count == 1 ? "one" : "many";`.
