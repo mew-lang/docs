@@ -88,7 +88,38 @@ pub fn greet() -> void {
 }
 ```
 
-> [!NOTE]
-> `void` is a return type and nothing else. It is not written on a field, a
-> parameter or a type argument, and a function type spells the same idea as
-> `fn() -> void`, where the `-> void` may be left off.
+## Nowhere a value goes
+
+`void` is a return type and nothing else. A function type spells the same idea as
+`fn() -> void`, where the `-> void` may be left off.
+
+Anywhere a type has to describe a value a program can hold, `void` is rejected.
+That is a [type argument](xref:language.generics#filling-them-in):
+
+```mew error=MEW2096
+pub type Box<T> {
+    pub field value: T;
+}
+
+let held: Box<void> = null;
+```
+
+and an [array's](xref:language.arrays) element type:
+
+```mew error=MEW2096
+let nothing = new void[3];
+```
+
+A type argument worked out at a call is the same rule. A
+[lambda](xref:language.lambdas) whose body produces nothing is the usual way to
+arrive at one by accident.
+
+```mew error=MEW2096
+use std;
+
+pub fn each<T, U>(items: T[], apply: fn(T) -> U) -> U {
+    return apply(items[0]);
+}
+
+let done = each(new i32[] { 1 }, |value| println($"{value}"));
+```

@@ -70,6 +70,19 @@ let held: Box = new Box<i32> { value: 1 };
 let value: i32<bool> = 1;
 ```
 
+An argument cannot be [`void`](xref:language.primitives.void). Nothing holds a
+value of that type, so a parameter filled with one describes members that cannot
+exist. This holds wherever the argument comes from, including one worked out at a
+call.
+
+```mew error=MEW2096
+pub type Box<T> {
+    pub field value: T;
+}
+
+let held: Box<void> = null;
+```
+
 ### More than one
 
 Parameters are separated by commas, and each is chosen independently.
