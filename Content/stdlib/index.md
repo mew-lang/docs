@@ -126,6 +126,8 @@ Writing text and stopping the program. Everything here needs `use std;` or the
 | :------------------------------- | :--------------------------------------- |
 | `print(value: string) -> void`   | Writes the text, with no line break       |
 | `println(value: string) -> void` | Writes the text, followed by a line break |
+| `eprint(value: string) -> void`  | The same, to standard error               |
+| `eprintln(value: string) -> void` | The same, to standard error, with a line break |
 | `panic(reason: string) -> void`  | Writes the reason and ends the program with exit code 1 |
 | `exit(code: i32) -> void`        | Ends the program with the given code      |
 
@@ -138,7 +140,19 @@ print("no newline here");
 println("");
 ```
 
-Both take text, so anything else is turned into text first.
+`print` and `println` write to standard output, `eprint` and `eprintln` to
+standard error. Which one a program reaches for is which stream the reader is
+expected to be reading: output belongs on the first, and anything about the run
+itself on the second.
+
+```mew
+use std;
+
+eprintln("reading the file took longer than expected");
+println("done");
+```
+
+All four take text, so anything else is turned into text first.
 [Interpolation](xref:language.primitives.text#string-interpolation) is how, and
 it is the only way a value becomes text, so what a program prints reads the same
 wherever it was written.
@@ -182,8 +196,8 @@ if count < 0 {
 Unhandled error: a count cannot be negative
 ```
 
-The reason goes to standard error, where the runtime's own failures go, so it
-does not land in output a caller is reading.
+The reason goes to standard error through `eprintln`, where the runtime's own
+failures go, so it does not land in output a caller is reading.
 
 `exit` stops the program the same way without writing anything, and takes the
 code to stop with.
@@ -424,7 +438,7 @@ Conversions between text and numbers.
 | Signature                                        | Does                          |
 | :----------------------------------------------- | :---------------------------- |
 | `itoa(value: i32) -> string`                     | The text of an `i32`          |
-| `atoi(value: string) -> Result<i32, ParseError>` | The `i32` a string spells, or why it does not |
+| `atoi(value: string) -> Result<i32, ConvertError>` | The `i32` a string spells, or why it does not |
 
 ```mew
 use std;
@@ -435,11 +449,11 @@ let number = atoi("42").unwrap_or(0);
 ```
 
 Not every string spells a number, so `atoi` answers with a
-[`Result`](#optiont-and-resultt-e) rather than a number. `ParseError` says
+[`Result`](#optiont-and-resultt-e) rather than a number. `ConvertError` says
 which way it failed.
 
 ```mew ignore
-pub union ParseError {
+pub union ConvertError {
     invalid,
     overflow,
 }
@@ -469,7 +483,7 @@ match atoi(text) {
 | `"12abc"`              | `err(invalid)`, "not a number"               |
 | `"2147483648"`         | `err(overflow)`, "outside the range of an i32" |
 
-`describe()` is the text of a `ParseError`, for when the reason is going
+`describe()` is the text of a `ConvertError`, for when the reason is going
 straight to a reader.
 
 `itoa` cannot fail, so it hands back a `string` rather than a `Result`. It
@@ -478,6 +492,38 @@ an `i32`, the widest being the eleven characters of `-2147483648`.
 
 Printing a number needs neither of these. Interpolation already turns one into
 text, and `itoa` is for when the text itself is the value you want.
+
+## `string`
+
+The library adds two members to [`string`](xref:language.primitives.text), which
+need no `use` because the type is always in scope.
+
+| Signature                                                        | Does                    |
+| :--------------------------------------------------------------- | :---------------------- |
+| `parse_i32() -> Result<i32, ConvertError>`                        | The `i32` this string spells, or why it does not |
+| `string::join(separator: string, items: Enumerable<string>) -> string` | The items joined, separated |
+
+`parse_i32` is `atoi` written as a member, for when the string is what you have
+in hand.
+
+```mew
+use std;
+
+let read = "42".parse_i32().unwrap_or(0);
+
+println($"{read}");
+```
+
+`join` is static, so it is named on the type. It takes anything a `for` can walk,
+an array included.
+
+```mew
+use std;
+
+let names = new string[] { "one", "two", "three" };
+
+println(string::join(", ", names));
+```
 
 ## Native code
 
