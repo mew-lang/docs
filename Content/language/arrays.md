@@ -207,8 +207,8 @@ rather than declared, so it cannot be the target of an
 [`impl` block](xref:language.extending): `impl i32[]` is an error. To give every
 array a member, write the block on `Enumerable<T>` instead.
 
-The element type cannot be [`void`](xref:language.primitives.void). Nothing holds
-a value of that type, so there is nothing for an array of it to hold.
+The element type cannot be [`void`](xref:language.primitives.void#nowhere-a-value-goes).
+Nothing holds a value of that type, so there is nothing for an array of it to hold.
 
 ```mew error=MEW2096
 let nothing = new void[3];

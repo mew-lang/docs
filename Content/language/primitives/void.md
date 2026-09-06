@@ -93,21 +93,27 @@ pub fn greet() -> void {
 `void` is a return type and nothing else. A function type spells the same idea as
 `fn() -> void`, where the `-> void` may be left off.
 
-Anywhere a type has to describe a value a program can hold, `void` is rejected.
-That is a [type argument](xref:language.generics#filling-them-in):
+A return type is the only place it may be written. Every other position describes
+a value a program holds, and writing `void` in one is an error.
+
+| Position | Written as |
+| :------- | :--------- |
+| A field | `pub field x: void;` |
+| A parameter | `pub fn f(value: void)` |
+| A parameter of a [function type](xref:language.functions#functions-as-values) | `fn(void) -> i32` |
+| An [array's](xref:language.arrays) element | `new void[3]` |
+| A [type argument](xref:language.generics#filling-them-in) | `Box<void>` |
+| The right side of [`is`](xref:language.type-checking) | `value is void` |
 
 ```mew error=MEW2096
-pub type Box<T> {
-    pub field value: T;
+pub type Point {
+    pub field x: void;
 }
-
-let held: Box<void> = null;
 ```
 
-and an [array's](xref:language.arrays) element type:
-
 ```mew error=MEW2096
-let nothing = new void[3];
+pub fn shout(value: void) {
+}
 ```
 
 A type argument worked out at a call is the same rule. A
