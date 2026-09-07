@@ -69,9 +69,143 @@ announce($"{between(5, 1, 10)}");
 A parameter is immutable. There is no `mut` on one, so a function cannot reassign
 what it was handed. It can only produce a new value.
 
-There are no default values, no way to name an argument at the call, and no
-variable argument list. A call passes exactly as many arguments as the declaration
-takes, in order.
+A call passes its arguments in order. It can also name the parameter an argument
+fills, leave out a parameter that carries a default, or hand over more arguments
+than the declaration lists.
+
+## Naming an argument
+
+An argument may say which parameter it fills, so a bare number at a call site
+says what it is for.
+
+```mew
+use std;
+
+pub fn area(width: i32, height: i32) -> i32 {
+    return width * height;
+}
+
+println($"{area(640, 480)}");
+println($"{area(640, height: 480)}");
+println($"{area(height: 480, width: 640)}");
+```
+
+Every argument without a name fills the parameter at its own position, so those
+come first. A bare argument written after a named one is an error, because there
+would be no position left to give it.
+
+```mew error=MEW1053
+pub fn area(width: i32, height: i32) -> i32 {
+    return width * height;
+}
+
+let size = area(height: 480, 640);
+```
+
+Naming a parameter the function does not have is an error too, as is giving one
+a value twice.
+
+```mew error=MEW2097
+pub fn area(width: i32, height: i32) -> i32 {
+    return width * height;
+}
+
+let size = area(640, depth: 480);
+```
+
+Names let arguments be written out of order, and reordering them changes nothing
+about what runs first. Arguments are evaluated in the order the parameters are
+declared, whatever order the call writes them in.
+
+## Default values
+
+A parameter may carry a value to use when a call leaves it out.
+
+```mew
+use std;
+
+pub fn connect(host: string, port: i32 = 8080, tls: bool = true) -> string {
+    return $"{host}:{port} {tls}";
+}
+
+println(connect("localhost"));
+println(connect("localhost", 9000));
+println(connect("localhost", tls: false));
+```
+
+Without a name there would be no way to skip `port` and still say something
+about `tls`.
+
+A default has to be a literal. A declaration is read before any name in the file
+is bound, so there is nothing yet for an expression to reach.
+
+```mew error=MEW2099
+pub fn connect(port: i32 = 40 * 2) -> i32 {
+    return port;
+}
+```
+
+Everything after a parameter with a default needs one too, since otherwise no
+call could reach it.
+
+```mew error=MEW2100
+pub fn connect(port: i32 = 8080, host: string) -> i32 {
+    return port;
+}
+```
+
+Where a type implements an [interface](xref:language.interfaces), the interface
+declares the default and the implementation may not restate it. Two defaults for
+one parameter would be picked by the type a call was written against rather than
+by the value it was made on, so the same object would answer two ways.
+
+## Gathering what is left
+
+The last parameter may gather whatever arguments the call has left, written with
+`...` before its type. Inside the function it is an [array](xref:language.arrays)
+of that type.
+
+```mew
+use std;
+
+pub fn sum(values: ...i32) -> i32 {
+    let mut total = 0;
+    for value in values {
+        total = total + value;
+    }
+
+    return total;
+}
+
+println($"{sum()}");
+println($"{sum(1, 2, 3)}");
+```
+
+A call that writes nothing for it gathers an empty array, so a gathering
+parameter never needs a default and cannot carry one. Nothing may follow it
+either, because there would be no argument left to reach.
+
+A single trailing argument that already has the array type is handed over as it
+stands rather than gathered into another array. There is no spread operator, so
+without that rule nothing could forward what it was given.
+
+```mew
+use std;
+
+pub fn count(values: ...i32) -> i32 {
+    return values.count;
+}
+
+let numbers = new i32[] { 1, 2, 3, 4 };
+
+println($"{count(1, 2)}");
+println($"{count(numbers)}");
+```
+
+Nothing gathers by name, so an argument cannot name a gathering parameter.
+Whether a trailing array is handed over or gathered is decided by the
+parameter's element type, so one whose element type is still a
+[type parameter](xref:language.generics) always gathers.
 
 ## Every path has to return
 
@@ -171,6 +305,32 @@ pub fn read() -> i32 {
 pub fn read() -> string {
     return "one";
 }
+```
+
+A call that leaves out an optional parameter still has to pick, and the
+candidate the call writes every argument for wins over one that would fill a
+parameter from its default. A candidate that gathers loses to every candidate
+that does not, however well its own parameters fit. That is what lets a
+gathering function hand what it gathered to an overload taking a sequence,
+instead of resolving back to itself.
+
+```mew
+use std;
+
+pub fn total(values: ...i32) -> i32 {
+    return total(values);
+}
+
+pub fn total(values: Enumerable<i32>) -> i32 {
+    let mut sum = 0;
+    for value in values {
+        sum = sum + value;
+    }
+
+    return sum;
+}
+
+println($"{total(1, 2, 3)}");
 ```
 
 Overloading covers methods and members added by an

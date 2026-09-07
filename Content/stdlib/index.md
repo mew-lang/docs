@@ -129,7 +129,7 @@ Writing text and stopping the program. Everything here needs `use std;` or the
 | `eprint(value: string) -> void`  | The same, to standard error               |
 | `eprintln(value: string) -> void` | The same, to standard error, with a line break |
 | `panic(reason: string) -> void`  | Writes the reason and ends the program with exit code 1 |
-| `exit(code: i32) -> void`        | Ends the program with the given code      |
+| `exit(code: i32 = 0) -> void`    | Ends the program with the given code, or with `0` |
 
 ```mew
 use std;
@@ -200,7 +200,8 @@ The reason goes to standard error through `eprintln`, where the runtime's own
 failures go, so it does not land in output a caller is reading.
 
 `exit` stops the program the same way without writing anything, and takes the
-code to stop with.
+code to stop with. Called with nothing it stops with `0`, the code for a run
+that went as intended.
 
 ```mew
 use std;
@@ -495,13 +496,27 @@ text, and `itoa` is for when the text itself is the value you want.
 
 ## `string`
 
-The library adds two members to [`string`](xref:language.primitives.text), which
-need no `use` because the type is always in scope.
+The library adds three members to [`string`](xref:language.primitives.text),
+which need no `use` because the type is always in scope.
 
 | Signature                                                        | Does                    |
 | :--------------------------------------------------------------- | :---------------------- |
+| `is_empty() -> bool`                                              | Whether the string holds no characters |
 | `parse_i32() -> Result<i32, ConvertError>`                        | The `i32` this string spells, or why it does not |
-| `string::join(separator: string, items: Enumerable<string>) -> string` | The items joined, separated |
+| `string::join(separator: string, parts: ...string) -> string`     | The parts joined, separated |
+| `string::join(separator: string, items: Enumerable<string>) -> string` | The same, for a sequence rather than a list of arguments |
+
+`is_empty` answers what `== ""` answers, with a name on it.
+
+```mew
+use std;
+
+let name = "";
+
+if name.is_empty() {
+    println("no name given");
+}
+```
 
 `parse_i32` is `atoi` written as a member, for when the string is what you have
 in hand.
@@ -514,8 +529,10 @@ let read = "42".parse_i32().unwrap_or(0);
 println($"{read}");
 ```
 
-`join` is static, so it is named on the type. It takes anything a `for` can walk,
-an array included.
+`join` is static, so it is named on the type. One form takes anything a `for`
+can walk, an array included; the other
+[gathers](xref:language.functions#gathering-what-is-left) the parts written at
+the call.
 
 ```mew
 use std;
@@ -523,6 +540,7 @@ use std;
 let names = new string[] { "one", "two", "three" };
 
 println(string::join(", ", names));
+println(string::join(", ", "one", "two", "three"));
 ```
 
 ## Native code

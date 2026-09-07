@@ -101,6 +101,33 @@ annotation is one such place, and so is `let n: i32 = .`.
 > Where both could want a case of that name, one of them is offered. Writing the
 > union out says which.
 
+## Inside a call
+
+Every parameter the call could still name, offered with its colon already on it,
+above whatever else is in scope.
+
+```mew
+pub fn connect(host: string, port: i32 = 8080, tls: bool = true) -> string {
+    return host;
+}
+
+pub fn log(level: i32, parts: ...string) -> i32 {
+    return level;
+}
+```
+
+| Written                             | Offered                    |
+| :---------------------------------- | :------------------------- |
+| `connect(`                          | `host:`, `port:`, `tls:`   |
+| `connect("localhost", `             | `port:`, `tls:`            |
+| `connect("localhost", tls: false, ` | `port:`                    |
+| `log(1, `                           | nothing                    |
+
+A parameter drops out once something fills it, whether an argument named it or
+reached it by position. `log` offers nothing after its first argument because
+`parts` [gathers](xref:language.functions#gathering-what-is-left), and nothing
+gathers by name.
+
 ## Everywhere else
 
 Anything that is not after a dot offers what is in scope: locals declared above
