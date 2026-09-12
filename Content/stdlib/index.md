@@ -545,11 +545,10 @@ println(string::join(", ", "one", "two", "three"));
 
 ## Native code
 
-Some of the library cannot be written in Mew. `println` and `atoi` are `external`
-declarations that name a method on the [platform](xref:language.platform) through
-a [`host`](xref:language.attributes#host) attribute, exactly as your own code
-would, with no privilege the language does not give you. What the platform has no
-single method for ships beside the compiler in a small runtime library.
+The library is ordinary Mew. It reaches the
+[platform](xref:language.platform) the way your own code does, so `println` calls
+`Console::WriteLine` and `atoi` calls `Int32::TryParse`. Nothing in it is
+`external`, and it carries no attribute you could not write yourself.
 
 > [!IMPORTANT]
 > This surface is expected to change, and to grow. What belongs in the language,

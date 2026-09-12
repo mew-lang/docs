@@ -17,11 +17,9 @@ declaration ends in `;` where a block would otherwise go.
 pub static external fn measure(first: i8) -> void;
 ```
 
-The standard library gets no special treatment either, though it reaches the
-platform rather than a native library: `println` and `atoi` are `external`
-declarations carrying a [`host`](xref:language.attributes#host) attribute, with
-no privilege the language does not give your own code. The
-[platform](xref:language.platform) covers that side.
+The [standard library](xref:stdlib) needs none of this. It reaches the
+[platform](xref:language.platform) the way your own code does, so `println` calls
+`Console::WriteLine` rather than declaring anything `external`.
 
 ## It has to be static
 
