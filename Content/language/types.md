@@ -128,6 +128,75 @@ counter.add(2);
 println($"{counter.total}");
 ```
 
+## Properties
+
+A field with a body is a property. It is read like a field and runs like a
+method, so a value can be worked out rather than stored.
+
+```mew
+use std;
+use std.convert;
+
+pub type Rect {
+    pub mut field w: i32;
+
+    pub field area: i32 {
+        get { return self.w * self.w; }
+    }
+
+    pub mut field width: i32 {
+        get { return self.w; }
+        set { self.w = value; }
+    }
+}
+
+let mut rect = new Rect { w: 2 };
+println(itoa(rect.area));
+
+rect.width = 3;
+println(itoa(rect.area));
+```
+
+```
+4
+9
+```
+
+`mut` decides whether it can be assigned. A property without it takes a `get`
+and nothing else, and one with it needs a `set` as well. Inside the `set`, the
+value being assigned is called `value`.
+
+A property is not a field, so `new Rect { }` does not take one and cannot.
+
+An [interface](xref:language.interfaces) can require one, written without a
+body. A type satisfies it with a property or with a plain field, whichever it
+has, so what a type stores stays its own business.
+
+```mew
+use std;
+use std.convert;
+
+pub interface Sized {
+    pub field width: i32 { get; }
+}
+
+pub type Rect {
+    pub mut field w: i32;
+
+    pub field width: i32 {
+        get { return self.w; }
+    }
+}
+
+impl Sized for Rect { }
+
+pub fn measure(item: Sized) -> i32 {
+    return item.width;
+}
+
+println(itoa(measure(new Rect { w: 4 })));
+```
+
 ## Methods
 
 A function declared inside a type body is a method, called through a value with
