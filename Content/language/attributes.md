@@ -22,6 +22,25 @@ Names the library an external function is found in. The
 pub static external fn bar(first: i8) -> void;
 ```
 
+## `struct`
+
+Says a type is copied rather than shared. Assigning one, passing it to a
+function or storing it in an array copies the value, so a write through one
+name is not seen through another.
+
+```mew
+[struct]
+pub type Counter {
+    pub mut field n: i32;
+}
+
+let counter = new Counter { n: 1 };
+let mut copied = counter;
+copied.n = 2;
+```
+
+`counter.n` is still `1`.
+
 ## `noreturn`
 
 Says that a function never hands control back. Nothing after a call to one
