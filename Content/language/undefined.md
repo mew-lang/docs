@@ -1,7 +1,7 @@
 ---
 title: Undefined Behaviour
 uid: language.undefined
-order: 22
+order: 23
 ---
 
 Almost everything in Mew is either defined or reported as a diagnostic. Two things

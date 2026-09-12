@@ -22,6 +22,17 @@ Names the library an external function is found in. The
 pub static external fn bar(first: i8) -> void;
 ```
 
+## `host`
+
+Names the method on the platform an external function stands for. The
+declaration beside the attribute is the signature, and the compiler holds it
+against what the platform declares, reporting MEW2111 when the two differ.
+
+```mew
+[host("global::System.Console.WriteLine")]
+pub static external fn write(text: string) -> void;
+```
+
 ## `struct`
 
 Says a type is copied rather than shared. Assigning one, passing it to a
