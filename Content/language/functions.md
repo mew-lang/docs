@@ -66,8 +66,26 @@ pub fn announce(text: string) {
 announce($"{between(5, 1, 10)}");
 ```
 
-A parameter is immutable. There is no `mut` on one, so a function cannot reassign
-what it was handed. It can only produce a new value.
+A parameter is immutable unless it says `mut`, the same as a local. What `mut`
+allows is writing to the copy the call passed, which the caller never sees.
+
+```mew
+use std;
+use std.convert;
+
+pub fn shift(mut step: i32) -> i32 {
+    step = step + 1;
+    return step;
+}
+
+let held = 1;
+
+println(itoa(shift(held)));
+println(itoa(held));
+```
+
+`held` is still `1`. A parameter without `mut` reports MEW2116 when it is
+assigned.
 
 A call passes its arguments in order. It can also name the parameter an argument
 fills, leave out a parameter that carries a default, or hand over more arguments
