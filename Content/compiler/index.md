@@ -12,21 +12,15 @@ flowchart LR;
     subgraph Frontend
     AST-->HIR
     HIR-->MIR
-    MIR-. Future .->LIR
+    MIR-->LIR
     end
     subgraph Backend
-    MIR-->CSharp["C# source"]
-    LIR-. Future .->Interpreter
-    LIR-. Future .->LLVM["LLVM IR"]
+    LIR-->MSIL["MSIL"]
     end
-    CSharp-->Executable
-    LLVM-.->Executable
+    MSIL-->Assembly[".NET assembly"]
 ```
 
-Everything drawn with a dotted line is planned rather than built. Today the
-only backend is the C# transpiler, and it is reached through `MIR`, because the
-control flow analysis that runs there is what the compiler's warnings are built
-on.
+The backend writes MSIL, and it is reached through `LIR`.
 
 ## 1. AST Parsing
 
@@ -78,35 +72,39 @@ are done here as well.
 > [!IMPORTANT]
 > MIR might contain errors, represented as error symbols.
 
-## 4. C# transpilation
-
-The only backend that exists today emits C# source. It takes
-`MIR`, so the control flow analysis behind the compiler's
-warnings has run before anything is emitted. The code itself is
-written from the `HIR` that `MIR` carries, because C# has the
-structured control flow that `MIR` lowers away.
-
-The C# is compiled in process, and the assembly is written to a
-`.mew` directory beside the file the program starts from. The
-.NET SDK is not involved, and neither is a project file. A build
-is skipped when nothing that decides the assembly has changed.
-
-The C# it emits is an implementation detail. Nothing about the
-language is defined in terms of what C# does, so a `bool` in an
-interpolated string is written `true` rather than the `True`
-that C# would produce on its own.
-
-> [!IMPORTANT]
-> This step is a stepping stone, not the intended end state.
-
-## 5. LIR generation
-
-> [!IMPORTANT]
-> This functionality is not yet implemented
+## 4. LIR generation
 
 LIR, short for _Low-level Intermediate Representation_,
-is a lowered MIR, resembling the final byte code that will 
-be emitted.
+is a lowered MIR, shaped like the instructions that will be
+emitted.
+
+Where MIR is still a tree, LIR is a flat list per method over an
+evaluation stack. It numbers the locals, makes every conversion
+and every box explicit, resolves which member a name meant, and
+turns a lambda into a type. It is still typed with the compiler's
+own symbols rather than with .NET's, so it can be read back and
+compared in a test.
 
 > [!WARNING]
 > LIR **MUST NOT** contain any errors.
+
+A function the lowering cannot finish is recorded rather than
+half-written, and the backend refuses the whole program instead
+of emitting a module with a hole in it.
+
+## 5. Writing the assembly
+
+The backend turns LIR into a .NET assembly with
+`System.Reflection.Metadata`, writing the IL itself rather than
+going through another language. It is written to a `.mew`
+directory beside the file the program starts from, together with
+the runtime configuration the host reads. The .NET SDK is not
+involved, and neither is a project file.
+
+Nothing above LIR knows how a program is written out, so the
+language is not defined in terms of what .NET does. The symbol
+model does read .NET metadata, which is what lets a program name
+a platform type.
+
+A debug database is written beside the assembly, so a debugger
+can stop on a line of Mew.
