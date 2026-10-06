@@ -31,7 +31,7 @@ pub type Box<T> {
 A type parameter is a name only inside the type that declares it. Nothing
 outside can refer to `T`.
 
-### Filling them in
+## Filling them in
 
 Naming the type anywhere else means choosing what each parameter stands for.
 
@@ -83,7 +83,7 @@ pub type Box<T> {
 let held: Box<void> = null;
 ```
 
-### More than one
+## More than one
 
 Parameters are separated by commas, and each is chosen independently.
 
@@ -124,7 +124,7 @@ pub type Node<T> {
 }
 ```
 
-### Interfaces
+## Interfaces
 
 An interface takes parameters the same way.
 
@@ -212,7 +212,7 @@ pub fn read(holder: Holder<i32>) -> i32 {
 println($"{read(new Box<i32> { value: 5, })}");
 ```
 
-### Constraints
+## Constraints
 
 A parameter with nothing said about it can only be stored, passed and handed
 back, because nothing is known about what it can do. A constraint says it
@@ -292,7 +292,7 @@ impl Comparable<Score> for Score {
 }
 ```
 
-### Functions
+## Functions
 
 A function takes type parameters the same way, and they are worked out from the
 arguments rather than written at the call.
@@ -369,7 +369,7 @@ pub fn show<T: Describable>(value: T) -> string {
 let text = show(42);
 ```
 
-### One filling in at a time
+## One filling in at a time
 
 `impl Describable for Box<i32>` is an error. There is no way to give one filling
 in of a type behaviour that the others do not have.
@@ -381,7 +381,7 @@ type per filling in, and answering what happens when a general `impl` and a
 specialized one both apply. What that example usually wants is a
 [constraint](#constraints).
 
-### Not yet
+## Not yet
 
 Generics do not carry variance, defaults, or more than one constraint per
 parameter. A [union](xref:language.unions) takes type parameters the same way a type

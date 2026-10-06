@@ -10,7 +10,7 @@ The `null` keyword represents a value indicating that there is no value.
 let text: string = null;
 ```
 
-### What can be null
+## What can be null
 
 A `string`, an array, `any`, and a type you declare can hold `null`. The integer
 and floating point types, `bool` and `char` cannot, so assigning `null` to one is
@@ -28,7 +28,7 @@ An integer, a float, a `bool` or a `char` has no such value.
 let count: i32 = null;
 ```
 
-### Null needs a type
+## Null needs a type
 
 `null` says nothing about the type a variable should have, so a `let` with only
 `null` to go on is an error. Write the type down.

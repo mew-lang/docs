@@ -10,14 +10,14 @@ order: 3
 `#load` is already available, and is covered under
 [Directives](xref:language.directives) in the language section.
 
-### Reference Mew projects
+## Reference Mew projects
 
 ```mew
 #reference "../../foo.mewx"
 #reference "../../bar.mewx"
 ```
 
-### Executable name
+## Executable name
 
 ```mew
 #name "MyName"

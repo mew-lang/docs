@@ -4,7 +4,7 @@ uid: language.primitives.text
 order: 4
 ---
 
-### Strings
+## Strings
 
 Mew's string type is called `string` and is written as text surrounded by quotes.
 A string is a sequence of characters. How those are stored is not part of the
@@ -19,7 +19,7 @@ language, and a compiler is free to hold them however it likes.
 let text = "Hello World";
 ```
 
-#### Joining strings
+### Joining strings
 
 `+` joins two strings into a new one.
 
@@ -30,7 +30,7 @@ let greeting = "Hello, " + "world" + "!";
 Only strings can be joined this way. To put a number or a `bool` into text, use
 [interpolation](#string-interpolation).
 
-#### Escape sequences
+### Escape sequences
 
 A backslash begins an escape sequence.
 
@@ -71,7 +71,7 @@ encode other characters rather than to be one.
 
 Any other character after a backslash is an error.
 
-#### String interpolation
+### String interpolation
 
 A string with a `$` in front of it can contain holes, written in curly braces.
 Each hole is an expression, and its value becomes part of the text.
@@ -107,7 +107,7 @@ To put a curly brace in the text, double it.
 let text = $"{{ and }}"; // => { and }
 ```
 
-#### Walking a string
+### Walking a string
 
 A string cannot be indexed. `chars()` hands back its characters as an array,
 which can be indexed, counted and walked.
@@ -133,7 +133,7 @@ let world = "Hello 🌍";
 let last = world.chars()[6]; // '🌍'
 ```
 
-#### Building a string
+### Building a string
 
 Adding a character to a string gives a string, so text can be built up a
 character at a time. An array of characters converts back with a cast.
@@ -161,7 +161,7 @@ A character does not become a string on its own, only where `+` says the
 answer is text or where a cast asks for it. So `let text: string = 'a';` is an
 error, and comparing a string with a character is undefined rather than false.
 
-### Characters
+## Characters
 
 The `char` type holds a single character. Any character, including one outside
 the first 65,536.

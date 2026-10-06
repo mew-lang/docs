@@ -51,7 +51,7 @@ Error [MEW2084]: Unexpected modifier
 The interface member 'make' cannot be static
 ```
 
-### Members the interface supplies
+## Members the interface supplies
 
 An `impl` block on the interface itself gives every implementing type a member
 it does not have to write. A member with a body is supplied; one without is
@@ -146,7 +146,7 @@ ROUND
 > `Seq<T>` rather than `Seq<i32>`, the same rule an
 > `impl ... for` block follows.
 
-### Using a value through its interface
+## Using a value through its interface
 
 A type that implements an interface can be used wherever that interface is
 expected. This is what interfaces are for: writing one piece of code that works
@@ -271,7 +271,7 @@ if first is Point {
 > inheritance to change that later. Assigning a type that does not implement one
 > is an error, and a cast cannot rescue it.
 
-### Implementing more than one
+## Implementing more than one
 
 A type can implement any number of interfaces, one `impl` block each. Naming the
 same interface twice for the same type is an error.

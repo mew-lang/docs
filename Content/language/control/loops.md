@@ -4,7 +4,7 @@ uid: language.control.loops
 order: 3
 ---
 
-### `loop`
+## `loop`
 
 ```mew
 let mut foo = 0;
@@ -18,7 +18,7 @@ loop {
 }
 ```
 
-### `while`
+## `while`
 
 ```mew
 let mut foo = 0;
@@ -27,7 +27,7 @@ while foo < 100 {
 }
 ```
 
-### `for`
+## `for`
 
 `for` walks an array, binding each element in turn.
 
@@ -78,7 +78,7 @@ for prime in primes {
 }
 ```
 
-### Walking your own types
+## Walking your own types
 
 An array is not the only thing `for` walks. A type is walkable when it
 implements `Enumerable<T>`, which the language declares:
