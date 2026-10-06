@@ -1,0 +1,714 @@
+<Namespaces>
+  <Namespace Name="std">
+    <Type Name="ArrayEnumerable">
+      <Summary>Wraps an array as an `Enumerable&lt;T&gt;`.</Summary>
+      <TypeParameter Name="T" />
+      <Implements Type="Enumerable&lt;T&gt;" />
+      <Field Name="items" Type="T[]">
+        <Summary>The wrapped array.</Summary>
+      </Field>
+      <Method Name="iter" Returns="Enumerator&lt;T&gt;" Implements="Enumerable&lt;T&gt;" />
+    </Type>
+    <Type Name="ArrayEnumerator">
+      <Summary>Iterates over an array.</Summary>
+      <TypeParameter Name="T" />
+      <Implements Type="Enumerator&lt;T&gt;" />
+      <Field Name="items" Type="T[]">
+        <Summary>The array to iterate over.</Summary>
+      </Field>
+      <Field Name="at" Type="i32" Mutable="true">
+        <Summary>The index of the current element, or `-1` before the first.</Summary>
+      </Field>
+      <Method Name="next" Returns="bool" Implements="Enumerator&lt;T&gt;" />
+      <Method Name="current" Returns="T" Implements="Enumerator&lt;T&gt;" />
+    </Type>
+    <Interface Name="Display">
+      <Summary>Formats a value as text when it is interpolated.</Summary>
+      <Method Name="display" Returns="string">
+        <Summary>Returns the value as text.</Summary>
+      </Method>
+    </Interface>
+    <Interface Name="Enumerable">
+      <Summary>Exposes an enumerator over a collection of `T`.</Summary>
+      <TypeParameter Name="T" />
+      <Method Name="iter" Returns="Enumerator&lt;T&gt;">
+        <Summary>Returns an enumerator positioned before the first element.</Summary>
+      </Method>
+      <Method Name="map" Returns="Enumerable&lt;U&gt;" Default="true">
+        <Summary>Returns a sequence that applies `apply` to each element.</Summary>
+        <TypeParameter Name="U" />
+        <Parameter Name="apply" Type="fn(T) -&gt; U" />
+      </Method>
+      <Method Name="filter" Returns="Enumerable&lt;T&gt;" Default="true">
+        <Summary>Returns a sequence of the elements that `keep` returns true for.</Summary>
+        <Parameter Name="keep" Type="fn(T) -&gt; bool" />
+      </Method>
+      <Method Name="fold" Returns="A" Default="true">
+        <Summary>Combines the elements with `combine`, starting from `seed`.</Summary>
+        <TypeParameter Name="A" />
+        <Parameter Name="seed" Type="A" />
+        <Parameter Name="combine" Type="fn(A, T) -&gt; A" />
+      </Method>
+      <Method Name="find" Returns="Option&lt;T&gt;" Default="true">
+        <Summary>Returns the first element that `keep` returns true for.</Summary>
+        <Parameter Name="keep" Type="fn(T) -&gt; bool" />
+      </Method>
+      <Method Name="any" Returns="bool" Default="true">
+        <Summary>Whether `keep` returns true for any element.</Summary>
+        <Parameter Name="keep" Type="fn(T) -&gt; bool" />
+      </Method>
+      <Method Name="count" Returns="i32" Default="true">
+        <Summary>Returns the number of elements.</Summary>
+      </Method>
+      <Method Name="to_array" Returns="T[]" Default="true">
+        <Summary>Copies the elements into an array.</Summary>
+      </Method>
+    </Interface>
+    <Interface Name="Enumerator">
+      <Summary>Iterates over an `Enumerable&lt;T&gt;`.</Summary>
+      <TypeParameter Name="T" />
+      <Method Name="next" Returns="bool">
+        <Summary>Moves to the next element. Returns false when there are none left.</Summary>
+      </Method>
+      <Method Name="current" Returns="T">
+        <Summary>Returns the current element.</Summary>
+      </Method>
+    </Interface>
+    <Type Name="FilterEnumerable">
+      <Summary>What `filter` returns.</Summary>
+      <TypeParameter Name="T" />
+      <Implements Type="Enumerable&lt;T&gt;" />
+      <Field Name="source" Type="Enumerable&lt;T&gt;">
+        <Summary>The sequence to filter.</Summary>
+      </Field>
+      <Field Name="keep" Type="fn(T) -&gt; bool">
+        <Summary>Returns true for the elements to keep.</Summary>
+      </Field>
+      <Method Name="iter" Returns="Enumerator&lt;T&gt;" Implements="Enumerable&lt;T&gt;" />
+    </Type>
+    <Type Name="FilterEnumerator">
+      <Summary>Iterates over a `FilterEnumerable&lt;T&gt;`.</Summary>
+      <TypeParameter Name="T" />
+      <Implements Type="Enumerator&lt;T&gt;" />
+      <Field Name="source" Type="Enumerator&lt;T&gt;">
+        <Summary>The enumerator to filter.</Summary>
+      </Field>
+      <Field Name="keep" Type="fn(T) -&gt; bool">
+        <Summary>Returns true for the elements to keep.</Summary>
+      </Field>
+      <Method Name="next" Returns="bool" Implements="Enumerator&lt;T&gt;" />
+      <Method Name="current" Returns="T" Implements="Enumerator&lt;T&gt;" />
+    </Type>
+    <Interface Name="Into">
+      <Summary>Converts a value into a `T`.</Summary>
+      <TypeParameter Name="T" />
+      <Method Name="into" Returns="T">
+        <Summary>Returns the value converted into a `T`.</Summary>
+      </Method>
+    </Interface>
+    <Type Name="MapEnumerable">
+      <Summary>What `map` returns.</Summary>
+      <TypeParameter Name="T" />
+      <TypeParameter Name="U" />
+      <Implements Type="Enumerable&lt;U&gt;" />
+      <Field Name="source" Type="Enumerable&lt;T&gt;">
+        <Summary>The sequence to map.</Summary>
+      </Field>
+      <Field Name="apply" Type="fn(T) -&gt; U">
+        <Summary>The function to apply to each element.</Summary>
+      </Field>
+      <Method Name="iter" Returns="Enumerator&lt;U&gt;" Implements="Enumerable&lt;U&gt;" />
+    </Type>
+    <Type Name="MapEnumerator">
+      <Summary>Iterates over a `MapEnumerable&lt;T, U&gt;`.</Summary>
+      <TypeParameter Name="T" />
+      <TypeParameter Name="U" />
+      <Implements Type="Enumerator&lt;U&gt;" />
+      <Field Name="source" Type="Enumerator&lt;T&gt;">
+        <Summary>The enumerator to map.</Summary>
+      </Field>
+      <Field Name="apply" Type="fn(T) -&gt; U">
+        <Summary>The function to apply to each element.</Summary>
+      </Field>
+      <Method Name="next" Returns="bool" Implements="Enumerator&lt;U&gt;" />
+      <Method Name="current" Returns="U" Implements="Enumerator&lt;U&gt;" />
+    </Type>
+    <Union Name="Option">
+      <Summary>A value that may be missing.</Summary>
+      <TypeParameter Name="T" />
+      <Case Name="none">
+        <Summary>No value.</Summary>
+      </Case>
+      <Case Name="some">
+        <Summary>A value.</Summary>
+        <Payload Type="T" />
+      </Case>
+      <Method Name="is_some" Returns="bool">
+        <Summary>Whether there is a value.</Summary>
+      </Method>
+      <Method Name="is_none" Returns="bool">
+        <Summary>Whether there is no value.</Summary>
+      </Method>
+      <Method Name="unwrap" Returns="T">
+        <Summary>Returns the value, or panics if there is none.</Summary>
+      </Method>
+      <Method Name="unwrap_or" Returns="T">
+        <Summary>Returns the value, or `fallback` if there is none.</Summary>
+        <Parameter Name="fallback" Type="T" />
+      </Method>
+      <Method Name="or" Returns="Option&lt;T&gt;">
+        <Summary>Returns this option if it has a value, otherwise `other`.</Summary>
+        <Parameter Name="other" Type="Option&lt;T&gt;" />
+      </Method>
+      <Method Name="map" Returns="Option&lt;U&gt;">
+        <Summary>Applies `f` to the value, if there is one.</Summary>
+        <TypeParameter Name="U" />
+        <Parameter Name="f" Type="fn(T) -&gt; U" />
+      </Method>
+      <Method Name="and_then" Returns="Option&lt;U&gt;">
+        <Summary>Calls `f` with the value, if there is one, and returns its result.</Summary>
+        <TypeParameter Name="U" />
+        <Parameter Name="f" Type="fn(T) -&gt; Option&lt;U&gt;" />
+      </Method>
+      <Method Name="filter" Returns="Option&lt;T&gt;">
+        <Summary>Returns this option if `f` returns true for its value, otherwise `none`.</Summary>
+        <Parameter Name="f" Type="fn(T) -&gt; bool" />
+      </Method>
+      <Method Name="ok_or" Returns="Result&lt;T, E&gt;">
+        <Summary>Converts the option into a `Result`, with `error` when there is no
+value.</Summary>
+        <TypeParameter Name="E" />
+        <Parameter Name="error" Type="E" />
+      </Method>
+    </Union>
+    <Union Name="Result">
+      <Summary>The result of an operation that can fail.</Summary>
+      <TypeParameter Name="T" />
+      <TypeParameter Name="E" />
+      <Case Name="ok">
+        <Summary>The operation succeeded, with its value.</Summary>
+        <Payload Type="T" />
+      </Case>
+      <Case Name="err">
+        <Summary>The operation failed, with its error.</Summary>
+        <Payload Type="E" />
+      </Case>
+      <Method Name="is_ok" Returns="bool">
+        <Summary>Whether the result is `ok`.</Summary>
+      </Method>
+      <Method Name="is_err" Returns="bool">
+        <Summary>Whether the result is `err`.</Summary>
+      </Method>
+      <Method Name="unwrap" Returns="T">
+        <Summary>Returns the value, or panics if the result is `err`.</Summary>
+      </Method>
+      <Method Name="unwrap_or" Returns="T">
+        <Summary>Returns the value, or `fallback` if the result is `err`.</Summary>
+        <Parameter Name="fallback" Type="T" />
+      </Method>
+      <Method Name="map" Returns="Result&lt;U, E&gt;">
+        <Summary>Applies `f` to the value, if the result is `ok`.</Summary>
+        <TypeParameter Name="U" />
+        <Parameter Name="f" Type="fn(T) -&gt; U" />
+      </Method>
+      <Method Name="map_err" Returns="Result&lt;T, F&gt;">
+        <Summary>Applies `f` to the error, if the result is `err`.</Summary>
+        <TypeParameter Name="F" />
+        <Parameter Name="f" Type="fn(E) -&gt; F" />
+      </Method>
+      <Method Name="and_then" Returns="Result&lt;U, E&gt;">
+        <Summary>Calls `f` with the value, if the result is `ok`, and returns its result.</Summary>
+        <TypeParameter Name="U" />
+        <Parameter Name="f" Type="fn(T) -&gt; Result&lt;U, E&gt;" />
+      </Method>
+      <Method Name="ok" Returns="Option&lt;T&gt;">
+        <Summary>Returns the value as an `Option`.</Summary>
+      </Method>
+      <Method Name="err" Returns="Option&lt;E&gt;">
+        <Summary>Returns the error as an `Option`.</Summary>
+      </Method>
+    </Union>
+    <Extension Type="string">
+      <Method Name="is_empty" Returns="bool">
+        <Summary>Whether the string is empty.</Summary>
+      </Method>
+      <Method Name="parse_i32" Returns="Result&lt;i32, std.convert.ConvertError&gt;">
+        <Summary>Parses the string into an `i32`.</Summary>
+      </Method>
+      <Method Name="length" Returns="i32">
+        <Summary>Gets the length of the string, in Unicode code points.</Summary>
+      </Method>
+      <Method Name="starts_with" Returns="bool">
+        <Summary>Whether the string begins with `prefix`.</Summary>
+        <Parameter Name="prefix" Type="string" />
+      </Method>
+      <Method Name="skip" Returns="string">
+        <Summary>Returns what is left after the first `count` characters.</Summary>
+        <Parameter Name="count" Type="i32" />
+      </Method>
+      <Method Name="split" Returns="string[]">
+        <Summary>Splits the string at each `separator`, keeping empty parts.</Summary>
+        <Parameter Name="separator" Type="char" />
+      </Method>
+      <Method Name="lines" Returns="string[]">
+        <Summary>Splits the string into lines.</Summary>
+      </Method>
+      <Method Name="trim_end" Returns="string">
+        <Summary>Removes trailing spaces, tabs and line breaks.</Summary>
+      </Method>
+      <Method Name="pad_left" Returns="string">
+        <Summary>Pads the string with spaces on the left to `width` characters.</Summary>
+        <Parameter Name="width" Type="i32" />
+      </Method>
+      <Method Name="pad_right" Returns="string">
+        <Summary>Pads the string with spaces on the right to `width` characters.</Summary>
+        <Parameter Name="width" Type="i32" />
+      </Method>
+      <Method Name="join" Returns="string" Static="true">
+        <Summary>Joins the parts with `separator` between them.</Summary>
+        <Parameter Name="separator" Type="string" />
+        <Parameter Name="parts" Type="string" Variadic="true" />
+      </Method>
+      <Method Name="join" Returns="string" Static="true">
+        <Summary>Joins the items with `separator` between them.</Summary>
+        <Parameter Name="separator" Type="string" />
+        <Parameter Name="items" Type="Enumerable&lt;string&gt;" />
+      </Method>
+    </Extension>
+    <Function Name="args" Returns="string[]">
+      <Summary>Returns the arguments the program was run with, without the program name.</Summary>
+    </Function>
+    <Function Name="eprint" Returns="void">
+      <Summary>Writes the text to standard error.</Summary>
+      <Parameter Name="value" Type="string" />
+    </Function>
+    <Function Name="eprintln" Returns="void">
+      <Summary>Writes the text to standard error, then a line break.</Summary>
+      <Parameter Name="value" Type="string" />
+    </Function>
+    <Function Name="exit" Returns="void">
+      <Summary>Ends the program with the specified code.</Summary>
+      <Attribute Name="noreturn" />
+      <Parameter Name="code" Type="i32" Default="0" />
+    </Function>
+    <Function Name="panic" Returns="void">
+      <Summary>Writes the reason to standard error and ends the program with code 1.
+With `MEW_BACKTRACE=1` set, it also writes the calls that led to it.</Summary>
+      <Attribute Name="noreturn" />
+      <Parameter Name="reason" Type="string" />
+    </Function>
+    <Function Name="print" Returns="void">
+      <Summary>Writes the text to standard output.</Summary>
+      <Parameter Name="value" Type="string" />
+    </Function>
+    <Function Name="println" Returns="void">
+      <Summary>Writes the text to standard output, then a line break.</Summary>
+      <Parameter Name="value" Type="string" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.build">
+    <Type Name="BuildTask">
+      <Summary>A task in a build.</Summary>
+      <Field Name="name" Type="string">
+        <Summary>The name of the task.</Summary>
+      </Field>
+      <Field Name="inputs" Type="std.build.engine.BuildInput[]" Mutable="true">
+        <Summary>The inputs the task reads.</Summary>
+      </Field>
+      <Field Name="outputs" Type="std.build.engine.BuildOutput[]" Mutable="true">
+        <Summary>The outputs the task writes.</Summary>
+      </Field>
+    </Type>
+    <Function Name="discovered" Returns="void">
+      <Summary>Records files the running task read, so a change to them reruns it.</Summary>
+      <Parameter Name="paths" Type="string" Variadic="true" />
+    </Function>
+    <Function Name="env" Returns="std.build.engine.BuildVariable">
+      <Summary>Reads an environment variable.
+As an `in` binding, a change to it reruns the task.</Summary>
+      <Parameter Name="name" Type="string" />
+    </Function>
+    <Function Name="error" Returns="void">
+      <Summary>Writes the text as an error. Does not fail the task.</Summary>
+      <Parameter Name="text" Type="string" />
+    </Function>
+    <Function Name="info" Returns="void">
+      <Summary>Writes the text to the build output.</Summary>
+      <Parameter Name="text" Type="string" />
+    </Function>
+    <Function Name="verbose" Returns="void">
+      <Summary>Writes the text when the build runs with `--verbose`.</Summary>
+      <Parameter Name="text" Type="string" />
+    </Function>
+    <Function Name="warn" Returns="void">
+      <Summary>Writes the text as a warning.</Summary>
+      <Parameter Name="text" Type="string" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.build.dotnet">
+    <Function Name="dotnet" Returns="Result&lt;(), string&gt;">
+      <Summary>Runs `dotnet` with the arguments.</Summary>
+      <Parameter Name="arguments" Type="string" Variadic="true" />
+    </Function>
+    <Function Name="product_version" Returns="Result&lt;string, string&gt;">
+      <Summary>Reads the informational version of the assembly, without anything after a
+`+`.</Summary>
+      <Parameter Name="assembly" Type="std.io.File" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.build.engine">
+    <Type Name="BuildFlags">
+      <Summary>The engine flags from the command line.</Summary>
+      <Field Name="verbose" Type="bool">
+        <Summary>Shows what `verbose` writes. Set by `--verbose`.</Summary>
+      </Field>
+      <Field Name="force" Type="bool">
+        <Summary>Runs tasks even when they are up to date. Set by `--force`.</Summary>
+      </Field>
+      <Field Name="trace" Type="bool">
+        <Summary>Writes the run to `.mew/trace.json`. Set by `--trace`.</Summary>
+      </Field>
+    </Type>
+    <Type Name="BuildGraph">
+      <Summary>The tasks of a build and their dependencies.</Summary>
+      <TypeParameter Name="C" />
+      <Method Name="new" Returns="std.build.engine.BuildGraph&lt;C&gt;" Static="true">
+        <Summary>Creates an empty graph for the context.</Summary>
+        <Parameter Name="context" Type="C" />
+      </Method>
+      <Method Name="action" Returns="std.build.BuildTask">
+        <Summary>Adds a task that neither returns a value nor writes files.</Summary>
+        <Parameter Name="name" Type="string" />
+        <Parameter Name="run" Type="fn(C) -&gt; Result&lt;(), string&gt;" />
+        <Parameter Name="dependencies" Type="std.build.BuildTask" Variadic="true" />
+      </Method>
+      <Method Name="value" Returns="std.build.BuildTask">
+        <Summary>Adds a task that returns a value as text.</Summary>
+        <Parameter Name="name" Type="string" />
+        <Parameter Name="run" Type="fn(C) -&gt; Result&lt;string, string&gt;" />
+        <Parameter Name="dependencies" Type="std.build.BuildTask" Variadic="true" />
+      </Method>
+      <Method Name="files" Returns="std.build.BuildTask">
+        <Summary>Adds a task that reads or writes files.</Summary>
+        <Parameter Name="name" Type="string" />
+        <Parameter Name="inputs" Type="std.build.engine.BuildInput[]" />
+        <Parameter Name="outputs" Type="std.build.engine.BuildOutput[]" />
+        <Parameter Name="run" Type="fn(C) -&gt; Result&lt;(), string&gt;" />
+        <Parameter Name="dependencies" Type="std.build.BuildTask" Variadic="true" />
+      </Method>
+      <Method Name="group" Returns="std.build.BuildTask">
+        <Summary>Adds a task that only has dependencies.</Summary>
+        <Parameter Name="name" Type="string" />
+        <Parameter Name="dependencies" Type="std.build.BuildTask" Variadic="true" />
+      </Method>
+      <Method Name="retry" Returns="void">
+        <Summary>Retries the task up to `times` times when it fails.</Summary>
+        <Parameter Name="info" Type="std.build.BuildTask" />
+        <Parameter Name="times" Type="i32" />
+      </Method>
+      <Method Name="when" Returns="void">
+        <Summary>Runs the task only when `test` returns true.</Summary>
+        <Parameter Name="info" Type="std.build.BuildTask" />
+        <Parameter Name="test" Type="fn() -&gt; bool" />
+      </Method>
+      <Method Name="when_context" Returns="void">
+        <Summary>Runs the task only when `test` returns true for the context.</Summary>
+        <Parameter Name="info" Type="std.build.BuildTask" />
+        <Parameter Name="test" Type="fn(C) -&gt; bool" />
+      </Method>
+      <Method Name="teardown" Returns="void">
+        <Summary>Sets a function to run after the last task, passing whether the build
+succeeded.</Summary>
+        <Parameter Name="run" Type="fn(C, bool) -&gt; Result&lt;(), string&gt;" />
+      </Method>
+      <Method Name="before" Returns="void">
+        <Summary>Sets a function to run before each task.</Summary>
+        <Parameter Name="run" Type="fn(C, std.build.BuildTask) -&gt; Result&lt;(), string&gt;" />
+      </Method>
+      <Method Name="after" Returns="void">
+        <Summary>Sets a function to run after each task, passing whether it succeeded.</Summary>
+        <Parameter Name="run" Type="fn(C, std.build.BuildTask, bool) -&gt; Result&lt;(), string&gt;" />
+      </Method>
+      <Method Name="execute" Returns="i32">
+        <Summary>Runs the targets. Returns the exit code.</Summary>
+        <Parameter Name="targets" Type="string[]" />
+        <Parameter Name="flags" Type="std.build.engine.BuildFlags" />
+      </Method>
+    </Type>
+    <Union Name="BuildInput">
+      <Summary>An input of a task.</Summary>
+      <Case Name="file">
+        <Summary>A file.</Summary>
+        <Payload Type="std.io.File" />
+      </Case>
+      <Case Name="directory">
+        <Summary>A directory.</Summary>
+        <Payload Type="std.io.Directory" />
+      </Case>
+      <Case Name="files">
+        <Summary>Files matched by glob patterns.</Summary>
+        <Payload Type="std.io.Files" />
+      </Case>
+      <Case Name="variable">
+        <Summary>An environment variable.</Summary>
+        <Payload Type="std.build.engine.BuildVariable" />
+      </Case>
+      <Case Name="context">
+        <Summary>The context, as text.</Summary>
+        <Payload Type="string" />
+      </Case>
+      <Case Name="code">
+        <Summary>The hash of the task's code.</Summary>
+        <Payload Type="string" />
+      </Case>
+    </Union>
+    <Type Name="BuildInstance">
+      <Summary>One instance of a rule.</Summary>
+      <TypeParameter Name="F" />
+      <Field Name="info" Type="std.build.BuildTask">
+        <Summary>The task of the instance.</Summary>
+      </Field>
+      <Field Name="files" Type="fn() -&gt; F">
+        <Summary>The files the instance writes.</Summary>
+      </Field>
+    </Type>
+    <Union Name="BuildOutput">
+      <Summary>An output of a task.</Summary>
+      <Case Name="file">
+        <Summary>A file.</Summary>
+        <Payload Type="std.io.File" />
+      </Case>
+      <Case Name="directory">
+        <Summary>A directory.</Summary>
+        <Payload Type="std.io.Directory" />
+      </Case>
+      <Case Name="files">
+        <Summary>Files matched by glob patterns.</Summary>
+        <Payload Type="std.io.Files" />
+      </Case>
+      <Case Name="later">
+        <Summary>A file whose path is only known when the task runs.</Summary>
+        <Payload Type="fn() -&gt; std.io.File" />
+      </Case>
+    </Union>
+    <Type Name="BuildValue">
+      <Summary>Holds the value a task returns.</Summary>
+      <TypeParameter Name="T" />
+      <Method Name="keep" Returns="Result&lt;string, string&gt;">
+        <Summary>Stores the value from `result` and returns it as text.</Summary>
+        <Parameter Name="result" Type="Result&lt;T, string&gt;" />
+        <Parameter Name="text" Type="fn(T) -&gt; string" />
+      </Method>
+      <Method Name="get" Returns="T">
+        <Summary>Returns the stored value.</Summary>
+      </Method>
+    </Type>
+    <Type Name="BuildVariable">
+      <Summary>An environment variable read by `env`.</Summary>
+      <Field Name="name" Type="string">
+        <Summary>The name of the variable.</Summary>
+      </Field>
+      <Field Name="value" Type="Option&lt;string&gt;">
+        <Summary>The value of the variable, or `none` if it is not set.</Summary>
+      </Field>
+    </Type>
+    <Function Name="concat_infos" Returns="std.build.BuildTask[]">
+      <Summary>Concatenates two lists of tasks.</Summary>
+      <Parameter Name="first" Type="std.build.BuildTask[]" />
+      <Parameter Name="second" Type="std.build.BuildTask[]" />
+    </Function>
+    <Function Name="each" Returns="R[]">
+      <Summary>Calls `register` for each value and concatenates the results.</Summary>
+      <TypeParameter Name="T" />
+      <TypeParameter Name="R" />
+      <Parameter Name="values" Type="T[]" />
+      <Parameter Name="register" Type="fn(T) -&gt; R[]" />
+    </Function>
+    <Function Name="each_output" Returns="R[]">
+      <Summary>Calls `register` for one output of each instance and concatenates the
+results.</Summary>
+      <TypeParameter Name="G" />
+      <TypeParameter Name="T" />
+      <TypeParameter Name="R" />
+      <Parameter Name="instances" Type="std.build.engine.BuildInstance&lt;G&gt;[]" />
+      <Parameter Name="pick" Type="fn(G) -&gt; T" />
+      <Parameter Name="register" Type="fn(T, std.build.BuildTask) -&gt; R[]" />
+    </Function>
+    <Function Name="files_of" Returns="F[]">
+      <Summary>Returns the files of each instance.</Summary>
+      <TypeParameter Name="F" />
+      <Parameter Name="instances" Type="std.build.engine.BuildInstance&lt;F&gt;[]" />
+    </Function>
+    <Function Name="infos_of" Returns="std.build.BuildTask[]">
+      <Summary>Returns the task of each instance.</Summary>
+      <TypeParameter Name="F" />
+      <Parameter Name="instances" Type="std.build.engine.BuildInstance&lt;F&gt;[]" />
+    </Function>
+    <Function Name="main" Returns="i32">
+      <Summary>Runs `setup`, builds the graph and runs the targets. Returns the exit code.</Summary>
+      <TypeParameter Name="C" />
+      <Parameter Name="arguments" Type="string[]" />
+      <Parameter Name="setup" Type="fn(string[]) -&gt; Result&lt;C, string&gt;" />
+      <Parameter Name="graph" Type="fn(C) -&gt; std.build.engine.BuildGraph&lt;C&gt;" />
+    </Function>
+    <Function Name="rematch_files" Returns="std.io.Files">
+      <Summary>Matches the patterns of `files` again.</Summary>
+      <Parameter Name="files" Type="std.io.Files" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.cli">
+    <Type Name="Cli">
+      <Summary>Reads options from command line arguments.
+An option is named by its spellings, separated by a vertical bar.</Summary>
+      <Method Name="new" Returns="std.cli.Cli" Static="true">
+        <Summary>Creates a `Cli` for the arguments.</Summary>
+        <Parameter Name="arguments" Type="string[]" />
+      </Method>
+      <Method Name="single" Returns="Option&lt;string&gt;">
+        <Summary>Returns the last value given for the option.</Summary>
+        <Parameter Name="names" Type="string" />
+      </Method>
+      <Method Name="many" Returns="string[]">
+        <Summary>Returns every value given for the option, in order.</Summary>
+        <Parameter Name="names" Type="string" />
+      </Method>
+      <Method Name="flag" Returns="bool">
+        <Summary>Whether the option was given.</Summary>
+        <Parameter Name="names" Type="string" />
+      </Method>
+    </Type>
+  </Namespace>
+  <Namespace Name="std.collections">
+    <Type Name="List">
+      <Summary>A list that grows as items are added.</Summary>
+      <TypeParameter Name="T" />
+      <Implements Type="Enumerable&lt;T&gt;" />
+      <Implements Type="Display" />
+      <Method Name="new" Returns="std.collections.List&lt;T&gt;" Static="true">
+        <Summary>Creates an empty list.</Summary>
+      </Method>
+      <Method Name="add" Returns="void">
+        <Summary>Adds the item to the end of the list.</Summary>
+        <Parameter Name="item" Type="T" />
+      </Method>
+      <Method Name="count" Returns="i32">
+        <Summary>Returns the number of items.</Summary>
+      </Method>
+      <Method Name="get" Returns="T">
+        <Summary>Returns the item at the index. Panics if the index is out of range.</Summary>
+        <Parameter Name="index" Type="i32" />
+      </Method>
+      <Method Name="set" Returns="void">
+        <Summary>Replaces the item at the index. Panics if the index is out of range.</Summary>
+        <Parameter Name="index" Type="i32" />
+        <Parameter Name="item" Type="T" />
+      </Method>
+      <Method Name="clear" Returns="void">
+        <Summary>Removes all items.</Summary>
+      </Method>
+      <Method Name="to_array" Returns="T[]">
+        <Summary>Copies the items into an array.</Summary>
+      </Method>
+      <Method Name="iter" Returns="Enumerator&lt;T&gt;" Implements="Enumerable&lt;T&gt;" />
+      <Method Name="display" Returns="string" Implements="Display" />
+    </Type>
+  </Namespace>
+  <Namespace Name="std.convert">
+    <Union Name="ConvertError">
+      <Summary>Why a string could not be converted to a number.</Summary>
+      <Case Name="invalid">
+        <Summary>The string is not a number.</Summary>
+      </Case>
+      <Case Name="overflow">
+        <Summary>The number is outside the range of an `i32`.</Summary>
+      </Case>
+      <Method Name="describe" Returns="string">
+        <Summary>Returns a description of the error.</Summary>
+      </Method>
+    </Union>
+    <Function Name="atoi" Returns="Result&lt;i32, std.convert.ConvertError&gt;">
+      <Summary>Converts the string to an `i32`.</Summary>
+      <Parameter Name="value" Type="string" />
+    </Function>
+    <Function Name="itoa" Returns="string">
+      <Summary>Converts the number to a string.</Summary>
+      <Parameter Name="value" Type="i32" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.io">
+    <Type Name="Directory">
+      <Summary>A path to a directory.</Summary>
+      <Field Name="path" Type="string">
+        <Summary>The path to the directory.</Summary>
+      </Field>
+    </Type>
+    <Type Name="File">
+      <Summary>A path to a file.</Summary>
+      <Field Name="path" Type="string">
+        <Summary>The path to the file.</Summary>
+      </Field>
+      <Field Name="name" Type="string">
+        <Summary>The file name, with its extension.</Summary>
+      </Field>
+      <Field Name="stem" Type="string">
+        <Summary>The file name, without its extension.</Summary>
+      </Field>
+    </Type>
+    <Type Name="Files">
+      <Summary>Files matched by glob patterns.</Summary>
+      <Implements Type="Enumerable&lt;std.io.File&gt;" />
+      <Field Name="files" Type="std.io.File[]">
+        <Summary>The matched files, sorted by path.</Summary>
+      </Field>
+      <Field Name="patterns" Type="string[]">
+        <Summary>The patterns the files were matched with.</Summary>
+      </Field>
+      <Method Name="iter" Returns="Enumerator&lt;std.io.File&gt;" Implements="Enumerable&lt;std.io.File&gt;" />
+    </Type>
+    <Function Name="compress" Returns="Result&lt;(), string&gt;">
+      <Summary>Compresses the directory into a zip archive, replacing any existing archive.</Summary>
+      <Parameter Name="source" Type="std.io.Directory" />
+      <Parameter Name="archive" Type="std.io.File" />
+    </Function>
+    <Function Name="directory" Returns="std.io.Directory">
+      <Summary>Creates a `Directory` for the path, without touching the disk.</Summary>
+      <Parameter Name="path" Type="string" />
+    </Function>
+    <Function Name="exists" Returns="bool">
+      <Summary>Whether a file or directory exists at the path.</Summary>
+      <Parameter Name="path" Type="string" />
+    </Function>
+    <Function Name="file" Returns="std.io.File">
+      <Summary>Creates a `File` for the path, without touching the disk.</Summary>
+      <Parameter Name="path" Type="string" />
+    </Function>
+    <Function Name="glob" Returns="std.io.Files">
+      <Summary>Finds the files that match the patterns, sorted by path.
+A pattern starting with `!` excludes what the patterns before it matched.</Summary>
+      <Parameter Name="patterns" Type="string" Variadic="true" />
+    </Function>
+    <Function Name="read_text" Returns="Result&lt;string, string&gt;">
+      <Summary>Reads the file as UTF-8 text.</Summary>
+      <Parameter Name="source" Type="std.io.File" />
+    </Function>
+    <Function Name="write_text" Returns="Result&lt;(), string&gt;">
+      <Summary>Writes the text to the file as UTF-8, replacing what was there.
+The directory must already exist.</Summary>
+      <Parameter Name="target" Type="std.io.File" />
+      <Parameter Name="text" Type="string" />
+    </Function>
+  </Namespace>
+  <Namespace Name="std.process">
+    <Function Name="git" Returns="Result&lt;string, string&gt;">
+      <Summary>Runs git and returns its output.</Summary>
+      <Parameter Name="arguments" Type="string" Variadic="true" />
+    </Function>
+    <Function Name="shell" Returns="Result&lt;(), string&gt;">
+      <Summary>Runs the program with the arguments and prints its output.
+Fails if the program exits with anything but `0`.
+A program without a directory is looked for on `PATH`.</Summary>
+      <Parameter Name="program" Type="string" />
+      <Parameter Name="arguments" Type="string" Variadic="true" />
+    </Function>
+  </Namespace>
+</Namespaces>
