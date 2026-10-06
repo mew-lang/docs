@@ -5,7 +5,7 @@ order: 3
 ---
 
 > [!IMPORTANT]
-> This functionality is not yet implemented
+> This functionality is not yet implemented.
 
 `#load` is already available, and is covered under
 [Directives](xref:language.directives) in the language section.

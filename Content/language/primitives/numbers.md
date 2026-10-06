@@ -196,7 +196,7 @@ target.
 
 A widening conversion is implicit. One that can lose information needs a cast.
 
-The blanks are the surprise: narrowing to a smaller type of the same signedness
+The blanks are the surprise. Narrowing to a smaller type of the same signedness
 does not exist at all, and a cast does not help. `i64` to `i16`, `u16` to `u8`
 and `f64` to `f32` are all rejected.
 

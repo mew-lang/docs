@@ -49,6 +49,6 @@ input. If anything differs it returns the original unchanged, so a formatting
 rule cannot drop or reorder code.
 
 > [!IMPORTANT]
-> A file that does not parse still formats. The formatter works off the token
-> stream rather than the syntax tree, which is the normal case while you are
-> still typing.
+> A file that does not parse still formats, which is the normal case while you
+> are still typing. The formatter works off the token stream rather than the
+> syntax tree.

@@ -4,7 +4,7 @@ uid: compiler
 order: 1
 ---
 
-This page contains a high level breakdown of the different 
+This page contains a high-level breakdown of the different 
 steps needed to compile Mew code.
 
 ```mermaid
@@ -22,18 +22,18 @@ flowchart LR;
 
 The backend writes MSIL, and it is reached through `LIR`.
 
-## 1. AST Parsing
+## 1. AST parsing
 
 The parsing step iterates through all source files, and
 builds a syntax tree for each of them.  
 The syntax tree represents the code as it was written, 
 maintaining the trivia such as white space, comments etc.
 
-Each node in the AST has a reference to both it's parent
+Each node in the AST has a reference to both its parent
 and children. 
 
 Apart from being the basis for `HIR` generation, the AST
-is also used to interact with the source code programatically,
+is also used to interact with the source code programmatically,
 i.e. from the LSP server.
 
 ## 2. HIR generation
@@ -43,7 +43,7 @@ represents a bound tree, where all types are known.
 
 The HIR references resolved _symbols_ for the different parts
 of Mew (namespaces, types, functions, parameters, variables etc).
-For example, two code block that calls a function, will have
+For example, two code blocks that call a function will have
 the same symbol reference to that function.
 
 1. Build symbol table
@@ -64,8 +64,8 @@ the same symbol reference to that function.
 MIR, short for _Medium-level Intermediate Representation_,
 is a lowered HIR, without constructs such as `while`/`loop`/`if`.
 
-* All higher level constructs such as loops and conditions 
-been lowered into labels and branches.
+* All higher-level constructs such as loops and conditions 
+have been lowered into labels and branches.
 * Control flow analysis and some optimizations 
 are done here as well.
 

@@ -4,7 +4,7 @@ uid: language.primitives.null
 order: 2
 ---
 
-The `null` keyword represents a value indicating that there is no value.
+`null` is the value that means there is no value.
 
 ```mew
 let text: string = null;

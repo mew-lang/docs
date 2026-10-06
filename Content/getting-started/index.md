@@ -77,9 +77,9 @@ mew build main.mew
 /home/you/hello/.mew/main.dll
 ```
 
-The build goes in a `.mew` directory beside the file the program starts from. The
-leading dot matters: a directory whose name starts with one is skipped when
-sources are discovered, so a build never becomes part of the next compilation.
+The build goes in a `.mew` directory beside the file the program starts from. A
+directory whose name starts with a dot is skipped when sources are discovered,
+so a build never becomes part of the next compilation.
 
 A build is skipped entirely when nothing that decides the program has changed, so
 running the same unchanged program twice only compiles it once.

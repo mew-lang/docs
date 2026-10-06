@@ -4,7 +4,7 @@ uid: intro
 order: 1
 ---
 
-Mew is a imperative, non object-oriented programming language, mainly created for fun and non-profit.  
+Mew is an imperative, non object-oriented programming language, mainly created for fun and non-profit.  
 Useless? Yes, most probably. At least in the current state.
 
-This site serves as the documentation over what we want to language to be in its first iteration.
+This site documents what we want the language to be in its first iteration.

@@ -5,7 +5,7 @@ order: 3
 ---
 
 An editor asks what could go where the cursor is, and the answer arrives while
-the line is still half written. That is the only state that matters: a
+the line is still half written. That is the only state that matters, because a
 suggestion after the code is already complete is a suggestion nobody needed.
 
 Completion is offered on `.` and on `::`, and is triggered by typing either.

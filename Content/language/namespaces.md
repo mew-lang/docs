@@ -109,8 +109,8 @@ it.
 | A free function | The file that declares it | Every file in the compilation |
 | A field or a method | The type that declares it | Every file in the compilation |
 
-The first two rows are the ones that surprise people: a declaration without `pub`
-belongs to its file, which is narrower than its namespace. Two files sharing a
+The first two rows are the ones that surprise people. A declaration without `pub`
+belongs to its file, which is narrower than its namespace, so two files sharing a
 namespace still cannot see each other's private declarations.
 
 ```mew error=MEW2047

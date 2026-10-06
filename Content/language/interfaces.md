@@ -149,8 +149,7 @@ ROUND
 ## Using a value through its interface
 
 A type that implements an interface can be used wherever that interface is
-expected. This is what interfaces are for: writing one piece of code that works
-for every type implementing it.
+expected, which lets one piece of code work for every type implementing it.
 
 ```mew
 // [!code exclude-start]

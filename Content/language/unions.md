@@ -149,7 +149,7 @@ Nothing here expects a union, so there is no union for 'none' to be a case of
 
 When a function is overloaded, the case name is what picks between two
 candidates taking different unions. Two candidates whose unions both have the
-case is ambiguous, and writing the union out is how to say which one.
+case make the call ambiguous, and writing the union out is how to say which one.
 
 ```mew
 use std;

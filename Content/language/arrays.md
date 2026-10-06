@@ -89,7 +89,7 @@ println($"{counts[0]}");
 ```
 
 Nothing checks an index before it is used. One outside the array ends the
-program, and `count` is what a program checks against itself.
+program, so checking against `count` is up to the program.
 
 ```mew
 use std;

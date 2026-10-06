@@ -142,8 +142,8 @@ println($"{string}");
 println($"{new Reading { int: 7 }.int}");
 ```
 
-A type declaration is the exception: the name is already a type, so declaring
-another one with it collides.
+A type declaration is the exception, because the name is already a type and
+declaring another one with it collides.
 
 ```mew error=MEW2001
 pub type string {
@@ -155,6 +155,6 @@ pub type string {
 spells: `pub type int` reports a duplicate `i32`.
 
 The [keywords](https://github.com/mew-lang/mew/blob/main/spec/02-lexical-structure.md)
-proper cannot be used as names at all. `new` is the one that bends: it is a
-keyword at the start of an expression, where it creates a value, which is what
-lets a type give itself a [static method called `new`](xref:language.types#constructors).
+proper cannot be used as names at all. `new` is the one that bends, because it
+is only a keyword at the start of an expression, where it creates a value. That
+is what lets a type give itself a [static method called `new`](xref:language.types#constructors).
