@@ -1,0 +1,70 @@
+@page "/stdlib/{Slug}"
+@layout Pennington.DocSite.Components.Layout.MainLayout
+@using Microsoft.AspNetCore.Components.Web
+@using MewDocs.Stdlib
+@using MewDocs.Stdlib.Model
+@using Pennington.DocSite
+@using Pennington.DocSite.Services
+@using Pennington.DocSite.Slots.Components
+@using Pennington.Infrastructure
+@using Pennington.Navigation
+@inject StdlibModel Model
+@inject StdlibHtmlRenderer Renderer
+@inject DocSiteContentResolver ContentResolver
+@inject DocSiteOptions DocSiteOptions
+@inject XrefResolver Xrefs
+
+@if (_namespace is null)
+{
+    <PageTitle>Not found — @DocSiteOptions.SiteTitle</PageTitle>
+    <p>There is no <code>@Slug</code> namespace in the standard library.</p>
+}
+else
+{
+    <PageTitle>@_namespace.Name — @DocSiteOptions.SiteTitle</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@_description" />
+        <meta property="og:type" content="website" />
+    </HeadContent>
+
+    <DocSiteArticle
+        Title="@_namespace.Name"
+        Description="@_description"
+        HtmlContent="@_html"
+        AreaTitle="@_area?.Title"
+        AreaIconHtml="@_area?.Icon"
+        PreviousPageName="@_navigation?.PreviousPage?.Title"
+        PreviousPageHref="@_navigation?.PreviousPage?.Route.CanonicalPath.Value"
+        NextPageName="@_navigation?.NextPage?.Title"
+        NextPageHref="@_navigation?.NextPage?.Route.CanonicalPath.Value" />
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private StdlibNamespace? _namespace;
+    private string _description = "";
+    private string _html = "";
+    private ContentArea? _area;
+    private NavigationInfo? _navigation;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _namespace = Model.FindNamespaceBySlug(Slug);
+        if (_namespace is null)
+        {
+            return;
+        }
+
+        var url = $"{StdlibHtmlRenderer.RoutePrefix}{_namespace.Slug}/";
+        _area = ContentResolver.ResolveCurrentArea(url);
+        _navigation = await ContentResolver.GetNavigationInfoForAreaAsync(url, _area);
+
+        // `noreturn` and friends link to the language docs' attributes page; resolve it by uid so
+        // the link survives that page moving.
+        var attributes = await Xrefs.ResolveAsync("language.attributes");
+
+        _description = StdlibHtmlRenderer.Describe(_namespace);
+        _html = Renderer.RenderNamespace(_namespace, attributes?.Route.CanonicalPath.Value);
+    }
+}

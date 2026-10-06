@@ -6,3 +6,6 @@ output/
 # Misc
 .DS_Store
 *.user
+
+# IDE
+.idea/

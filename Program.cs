@@ -2,7 +2,10 @@ using Mdazor;
 using MewDocs.Components;
 using MewDocs.Highlighting;
 using MewDocs.Client;
+using MewDocs.Stdlib;
+using MewDocs.Stdlib.Model;
 using MewDocs.Styling;
+using Pennington.Content;
 using Beck;
 using Beck.Skia;
 using Beck.Text;
@@ -172,6 +175,14 @@ builder.Services.AddPenningtonBeck(beck =>
         Measurer = new SkiaTextMeasurer(beckFont),
     };
 });
+
+// The standard library reference is generated from resources/stdlib.xml rather than written by
+// hand: one page per namespace, published into the "Standard Library" area by a content service.
+builder.Services.AddSingleton(_ =>
+    StdlibXmlLoader.Load(Path.Combine(builder.Environment.ContentRootPath, "resources", "stdlib.xml")));
+builder.Services.AddSingleton<StdlibHtmlRenderer>();
+builder.Services.AddSingleton<StdlibContentService>();
+builder.Services.AddSingleton<IContentService>(sp => sp.GetRequiredService<StdlibContentService>());
 
 var app = builder.Build();
 
