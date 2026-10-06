@@ -69,7 +69,7 @@ pub fn pick(flag: bool) -> i32 {
 }
 ```
 
-[`panic`](xref:stdlib#stopping-early) carries the attribute, which is why `pick`
+[`panic`](xref:stdlib.std#functions) carries the attribute, which is why `pick`
 compiles. Without it the compiler reports that not all code paths return a
 value, since nothing says the last statement is the end.
 

@@ -37,7 +37,7 @@ instance members.
 
 What an [interface supplies](xref:language.interfaces#members-the-interface-supplies)
 is offered as well, on every type that implements it and on arrays, which are
-[sequences](xref:stdlib#sequences). Completion asks the compiler what
+[sequences](xref:stdlib.std#enumerablet). Completion asks the compiler what
 members a type has rather than reading the declaration, so a member nobody
 wrote on the type still comes up.
 
@@ -132,9 +132,8 @@ gathers by name.
 
 Anything that is not after a dot offers what is in scope: locals declared above
 the cursor, the enclosing function's parameters, the enclosing type's members,
-the file's own declarations, everything the
-[standard library](xref:stdlib) puts in the global namespace, then
-keywords and the primitive type names.
+the file's own declarations, everything in
+[`std`](xref:stdlib.std), then keywords and the primitive type names.
 
 A local is not offered on the line that declares it, and a local declared below
 the cursor is not offered at all.

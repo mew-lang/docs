@@ -261,7 +261,7 @@ falls out of its block, so a function whose body is one owes nothing after it.
 A path that ends in a call to a function marked
 [`[noreturn]`](xref:language.attributes#noreturn) also owes no `return`, because
 nothing after such a call runs. That is what lets
-[`panic`](xref:stdlib#stopping-early) stand in for one.
+[`panic`](xref:stdlib.std#functions) stand in for one.
 
 ```mew
 use std;

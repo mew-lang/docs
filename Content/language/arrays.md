@@ -165,7 +165,7 @@ println($"{sum}");
 ## An array is a sequence
 
 `count` is the only member an array has of its own. Everything else it can do
-comes from being a [sequence](xref:stdlib#sequences): an array converts to
+comes from being a [sequence](xref:stdlib.std#enumerablet): an array converts to
 `Enumerable<T>` on its own, so it carries `map`, `filter`, `fold`, `find`, `any`,
 `count()` and `to_array()`.
 

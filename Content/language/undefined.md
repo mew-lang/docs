@@ -94,7 +94,7 @@ pub fn pick() -> i32 {
 
 Today that stops with `Unhandled error: 'liar' is declared noreturn but returned`.
 Only put the attribute on something that really does end the program, such as a
-call to [`panic`](xref:stdlib#stopping-early) or `exit`.
+call to [`panic`](xref:stdlib.std#functions) or `exit`.
 
 > [!NOTE]
 > The [specification](https://github.com/mew-lang/mew/blob/main/spec/01-introduction.md)
