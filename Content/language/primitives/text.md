@@ -159,7 +159,7 @@ println('a' as string);         // a
 
 A character does not become a string on its own, only where `+` says the
 answer is text or where a cast asks for it. So `let text: string = 'a';` is an
-error, and comparing a string with a character is undefined rather than false.
+error, and so is comparing a string with a character.
 
 ## Characters
 
