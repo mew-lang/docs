@@ -36,6 +36,30 @@ builder.Services.AddDocSite(() => new DocSiteOptions
             border-left-color: var(--color-base-800);
         }
 
+        /* The prose defaults only switch inline code to a monospace font, so a
+           name like `count` reads like the words around it. Give it a tinted
+           pill instead. The fill is one step from the page background toward
+           the text, and the border one step further, in both themes. Code
+           blocks are `pre > code` and keep their own styling. */
+        .prose :not(pre) > code:not(.not-prose *) {
+            padding: 1px 0.25rem;
+            border: 1px solid var(--color-base-300);
+            border-radius: 0.25rem;
+            background-color: var(--color-base-200);
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+        }
+
+        .dark .prose :not(pre) > code:not(.not-prose *) {
+            border-color: var(--color-base-700);
+            background-color: var(--color-base-800);
+        }
+
+        .prose :not(pre) > code::before,
+        .prose :not(pre) > code::after {
+            content: none;
+        }
+
         /* Mermaid renders client-side by swapping the <code> for an <svg>, which
            leaves the code-block chrome and its "mermaid" language label wrapped
            around a diagram. Drop the chrome and centre the figure. */
