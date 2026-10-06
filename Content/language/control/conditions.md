@@ -109,10 +109,4 @@ println(label(3));
 ```
 
 [`match`](xref:language.unions#matching-as-a-value) is the one conditional that
-does read as a value, and it works on a [union](xref:language.unions) rather than
-on a `bool`.
-
-> [!NOTE]
-> An `if` runs a statement rather than producing a value. To choose between two
-> values, the [conditional operator](xref:language.operators#conditional) is what
-> produces one: `let name = count == 1 ? "one" : "many";`.
+does read as a value.

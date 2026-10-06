@@ -41,7 +41,9 @@ the type with `::`.
 use std;
 use System;
 
-println(String::IsNullOrEmpty("") ? "empty" : "not");
+if String::IsNullOrEmpty("") {
+    println("empty");
+}
 ```
 
 A property with a public getter reads like a field, and one with a setter can be
