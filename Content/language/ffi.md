@@ -1,7 +1,7 @@
 ---
 title: FFI
 uid: language.ffi
-order: 21
+order: 23
 ---
 
 Some things cannot be written in Mew. Reading a file, writing to a terminal and

@@ -310,4 +310,4 @@ println($"{present.x}");
 ```
 
 There is no way to ask whether a value is `null`, so a type that may be absent is
-usually better expressed as an [`Option<T>`](xref:stdlib.std#optiont).
+usually better expressed as an [`Option<T>`](xref:language.options-and-results).

@@ -1,7 +1,7 @@
 ---
 title: Attributes
 uid: language.attributes
-order: 20
+order: 22
 ---
 
 An attribute is metadata attached to a declaration, written in `[]` before it.

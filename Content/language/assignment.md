@@ -64,7 +64,7 @@ println(filled);
 > There is no way to ask whether a value is `null`. `text == null` is not a
 > defined comparison, and `is` only answers about the type. That is one of the
 > reasons the standard library answers an absent value with
-> [`Option<T>`](xref:stdlib.std#optiont) rather than with `null`.
+> [`Option<T>`](xref:language.options-and-results) rather than with `null`.
 
 A function that answers nothing is another. There is no value to name, so the
 `let` itself is the error.

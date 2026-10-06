@@ -1,7 +1,7 @@
 ---
 title: Names and Scopes
 uid: language.names
-order: 17
+order: 19
 ---
 
 A name written on its own has to be resolved to exactly one thing. This page is

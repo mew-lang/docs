@@ -1,7 +1,7 @@
 ---
 title: Directives
 uid: language.directives
-order: 19
+order: 21
 ---
 
 A directive begins with `#` and tells the compiler something about the

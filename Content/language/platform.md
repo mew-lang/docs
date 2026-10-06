@@ -1,7 +1,7 @@
 ---
 title: Platform
 uid: language.platform
-order: 22
+order: 24
 ---
 
 A Mew program is built into a .NET assembly, and it can name what that platform

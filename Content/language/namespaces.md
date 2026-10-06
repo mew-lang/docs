@@ -1,7 +1,7 @@
 ---
 title: Namespaces
 uid: language.namespaces
-order: 18
+order: 20
 ---
 
 A namespace is a name attached to a file. Everything the file declares belongs to
