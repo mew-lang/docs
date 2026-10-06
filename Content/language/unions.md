@@ -374,6 +374,37 @@ Every arm has to produce the same type, and the first arm that produces one
 decides what the match is. A block arm is an error here, because Mew has no
 block that produces a value.
 
+## Testing one case
+
+`if let` tests a value against one case, where a `match` would have to name
+every case. It stands where the condition of an
+[`if`](xref:language.control.conditions) would, and takes the same `else`.
+
+```mew
+// [!code exclude-start]
+use std;
+
+pub union IpAddress {
+    none,
+    v4(u8, u8, u8, u8),
+    v6(string),
+}
+// [!code exclude-end]
+pub fn show(ip: IpAddress) -> void {
+    if let .v4(a, b, c, d) = ip {
+        println($"{a}.{b}.{c}.{d}");
+    } else if let .v6(text) = ip {
+        println(text);
+    } else {
+        println("no address");
+    }
+}
+```
+
+Each name in the pattern is a new immutable local that exists only inside the
+block that follows, so the `else` branch cannot read it. A case that carries
+nothing is still a test. `if let .none = ip` runs the block when `ip` is `none`.
+
 ## Adding members
 
 An `impl` block gives a union methods, exactly as it does for a type. `self` is
@@ -528,14 +559,10 @@ let ip: IpAddress = null;
 
 ## Not yet
 
-A pattern is the only way to read what a case carries. There is no form that
-tests one case and binds its values without a match.
-
-`match` works on a union and on nothing else, so matching a number against
-literals is not something it does.
-
-An arm names one case. There is no way to write one arm for several, and no way
-to give a case's values names in the declaration and match on those names.
+A pattern is the only way to read what a case carries, in a `match` or an
+[`if let`](#testing-one-case). There is no range pattern, no way to name a value
+and still look inside it, and no way to give a case's values names in the
+declaration and match on those names.
 
 `is` and `as` do not reach a case. A case is not a type, so the only thing to
 ask about a value is which case it is, and `match` is what asks.

@@ -70,6 +70,9 @@ println($"{at(new i32[] { 1, 2, 3 }, 1)}");
 println($"{at(new i32[] { 1, 2, 3 }, 9)}");
 ```
 
+[`if let`](xref:language.unions#testing-one-case) tests a case of a
+[union](xref:language.unions) in place of a condition.
+
 ## An `if` produces no value
 
 `if` is a statement. It does not produce a value, so it cannot be assigned from,
