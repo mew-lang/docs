@@ -161,7 +161,7 @@ println(load(7).err().unwrap().message);
 disk error 7
 ```
 
-`?` binds as tightly as a method call. In `.ok(read(code)? + 2)`, it applies to
+`?` binds as tightly as indexing. In `.ok(read(code)? + 2)`, it applies to
 `read(code)`, and the `+ 2` only runs when there is a value.
 
 You can also convert the error yourself with `map_err` before the `?`:

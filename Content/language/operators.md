@@ -11,7 +11,7 @@ in this table.
 
 | Level | Operators | Groups |
 | ----: | :-------- | :----- |
-| 15 | `a[i]` | left |
+| 15 | `a[i]`&nbsp;&nbsp;`a?` | left |
 | 14 | `f(x)` | left |
 | 13 | `a.b`&nbsp;&nbsp;`a::b` | left |
 | 12 | `!a`&nbsp;&nbsp;`-a`&nbsp;&nbsp;`+a` | right |
@@ -26,6 +26,9 @@ in this table.
 | 1 | `=`&nbsp;&nbsp;`+=`&nbsp;&nbsp;`-=`&nbsp;&nbsp;`*=`&nbsp;&nbsp;`/=`&nbsp;&nbsp;`%=` | right |
 
 Parentheses group, and a grouped expression is whatever is inside it.
+
+`a?` is [error propagation](xref:language.error-propagation), which passes a
+failed `Result` or an empty `Option` on to the caller.
 
 > [!IMPORTANT]
 > `as` and `is` bind looser than arithmetic, which is not how they read. Both
