@@ -126,7 +126,8 @@ pub type Node<T> {
 
 ## Interfaces
 
-An interface takes parameters the same way.
+An interface takes parameters the same way, and so does a
+[union](xref:language.unions#type-parameters).
 
 ```mew
 pub interface Holder<T> {
@@ -384,5 +385,5 @@ specialized one both apply. What that example usually wants is a
 ## Not yet
 
 Generics do not carry variance, defaults, or more than one constraint per
-parameter. A [union](xref:language.unions) takes type parameters the same way a type
-does.
+parameter, and there is no way to require that a type parameter has a particular
+static member.
