@@ -10,8 +10,7 @@ on the command line. There is nothing to configure.
 ## What it decides
 
 The formatter decides indentation and the spacing between tokens. It does not
-decide what goes on which line, so a line break you wrote is a line break it
-keeps.
+decide what goes on which line, so it keeps the line breaks you wrote.
 
 ```mew
 // Before

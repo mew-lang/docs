@@ -5,7 +5,7 @@ order: 21
 ---
 
 A directive begins with `#` and tells the compiler something about the
-compilation itself rather than about the program. There is one.
+compilation itself. There is one.
 
 ## `#load`
 

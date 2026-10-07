@@ -17,8 +17,8 @@ println($"{squared(8)}");
 ```
 
 A function is declared at the top level of a file. There are no functions inside
-other functions. A [lambda](xref:language.lambdas) is what a function written
-inside another one looks like.
+other functions. To write one inside another, use a
+[lambda](xref:language.lambdas).
 
 Declarations are found before any body is bound, so a function may call one
 written below it.
@@ -175,7 +175,8 @@ pub fn connect(port: i32 = 8080, host: string) -> i32 {
 Where a type implements an [interface](xref:language.interfaces), the interface
 declares the default and the implementation may not restate it. Two defaults for
 one parameter would be picked by the type a call was written against rather than
-by the value it was made on, so the same object would answer two ways.
+by the value it was made on, so the same call on the same object could use
+either default.
 
 ## Gathering what is left
 
@@ -220,7 +221,8 @@ println($"{count(1, 2)}");
 println($"{count(numbers)}");
 ```
 
-Nothing gathers by name, so an argument cannot name a gathering parameter.
+Gathering works only by position, so an argument cannot name a gathering
+parameter.
 Whether a trailing array is handed over or gathered is decided by the
 parameter's element type, so one whose element type is still a
 [type parameter](xref:language.generics) always gathers.
@@ -239,7 +241,7 @@ pub fn sign(value: i32) -> i32 {
 }
 ```
 
-Give the last path an answer.
+Give the last path a `return`.
 
 ```mew
 use std;
@@ -260,8 +262,8 @@ falls out of its block, so a function whose body is one owes nothing after it.
 
 A path that ends in a call to a function marked
 [`[noreturn]`](xref:language.attributes#noreturn) also owes no `return`, because
-nothing after such a call runs. That is what lets
-[`panic`](xref:stdlib.std#functions) stand in for one.
+nothing after such a call runs. That is why
+[`panic`](xref:stdlib.std#functions) can stand in for one.
 
 ```mew
 use std;
@@ -328,9 +330,9 @@ pub fn read() -> string {
 A call that leaves out an optional parameter still has to pick, and the
 candidate the call writes every argument for wins over one that would fill a
 parameter from its default. A candidate that gathers loses to every candidate
-that does not, however well its own parameters fit. That is what lets a
-gathering function hand what it gathered to an overload taking a sequence,
-instead of resolving back to itself.
+that does not, however well its own parameters fit. This lets a gathering
+function hand what it gathered to an overload taking a sequence, instead of
+resolving back to itself.
 
 ```mew
 use std;
@@ -354,12 +356,12 @@ println($"{total(1, 2, 3)}");
 Overloading covers methods and members added by an
 [`impl` block](xref:language.extending) the same way. Where an argument is a
 [union case written without its union](xref:language.unions#leaving-the-union-out),
-the case name is what picks between candidates.
+the case name picks between candidates.
 
 ## Functions as values
 
-A function's name, written without a call, is a value of its function type, which
-is what lets one function be handed to another.
+A function's name, written without a call, is a value of its function type, so
+one function can be handed to another.
 
 ```mew
 use std;
@@ -376,7 +378,7 @@ println($"{apply(twice, 21)}");
 ```
 
 A name that means more than one function has no single type, so it cannot be held
-on its own, because nothing at that point says which one was meant.
+on its own. The compiler cannot tell which one was meant.
 
 [Lambdas](xref:language.lambdas) cover function types, writing a function inline,
 and what a lambda captures.

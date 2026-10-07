@@ -49,9 +49,9 @@ let separate = a + (b as i64); // the other reading, written out
 println($"{together} {separate}");
 ```
 
-The two answer the same here, but they do not in general: the cast applies to a
-different value, so a sum that overflows an `i32` overflows before it widens.
-Write the parentheses when the difference matters.
+The two give the same result here, but they do not in general: the cast applies
+to a different value, so a sum that overflows an `i32` overflows before it
+widens. Write the parentheses when the difference matters.
 
 Member access binds tighter than unary, so `-point.x` negates the field rather
 than the value. A call binds tighter than the access it is part of, which is why
@@ -85,7 +85,7 @@ let text = "count: " + 3;
 
 ## Comparison
 
-`<`, `<=`, `>` and `>=` compare two numbers and answer a `bool`. A `char` takes
+`<`, `<=`, `>` and `>=` compare two numbers and produce a `bool`. A `char` takes
 part as its code point.
 
 ```mew
@@ -143,12 +143,11 @@ impl Point {
 println($"{new Point { x: 1, y: 2 }.equals(new Point { x: 1, y: 2 })}");
 ```
 
-To ask which case a union holds, [`match`](xref:language.unions#reading-a-value)
-is what asks.
+To ask which case a union holds, use [`match`](xref:language.unions#reading-a-value).
 
 ## Logical
 
-`&&`, `||` and `!` work on `bool` and answer one. `&&` and `||`
+`&&`, `||` and `!` work on `bool` and produce one. `&&` and `||`
 [short circuit](xref:language.primitives.bool#short-circuiting); everything else
 evaluates both sides, left before right, before the operator is applied.
 
@@ -185,7 +184,7 @@ println($"{!(value > 10)}");
 
 ## Type operators
 
-[`is`](xref:language.type-checking) asks what a value is and answers a `bool`.
+[`is`](xref:language.type-checking) asks what a value is and produces a `bool`.
 [`as`](xref:language.type-casting) performs a conversion that is not implicit.
 Both take a type on the right, and both bind looser than arithmetic.
 

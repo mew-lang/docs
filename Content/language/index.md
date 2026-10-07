@@ -4,4 +4,4 @@ uid: language
 order: 1
 ---
 
-Here we will explore the fundamentals of the Mew language, namely its syntax, primitive types, flow control features, and static type system. If you have some prior programming experience this will hopefully be enough to get you started with Mew.
+This section covers the Mew language: its syntax, primitive types, control flow, and static type system. If you have some prior programming experience, this should be enough to get you started with Mew.

@@ -19,8 +19,7 @@ builder.Append("2");
 println(builder.ToString());
 ```
 
-A `use` shortens the name rather than being what admits it. `new
-System.Text.StringBuilder { }` works too.
+A `use` only shortens the name. `new System.Text.StringBuilder { }` works too.
 
 ## What can be named
 
@@ -51,9 +50,8 @@ assigned. It keeps the name the platform gave it.
 
 ## Writing into an argument
 
-The platform may declare a parameter the call writes into rather than reads. An
-argument filling one is written `out`, and has to name a variable the call can
-write to.
+The platform may declare a parameter the call writes into. An argument filling
+one is written `out`, and has to name a variable the call can write to.
 
 ```mew
 use std;

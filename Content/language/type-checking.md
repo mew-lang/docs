@@ -58,7 +58,7 @@ false
 ```
 
 Asking about something the compiler already knows is a warning, since the
-answer cannot be anything else.
+result cannot be anything else.
 
 ```mew warning=MEW2041
 let text = "hello";
@@ -103,4 +103,4 @@ if boxed is Circle {
 
 > [!NOTE]
 > A union case is not a type, so `is` cannot ask which case a value is.
-> [`match`](xref:language.unions#reading-a-value) is what asks that.
+> [`match`](xref:language.unions#reading-a-value) can.

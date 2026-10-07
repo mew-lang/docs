@@ -4,8 +4,8 @@ uid: compiler
 order: 1
 ---
 
-This page contains a high-level breakdown of the different 
-steps needed to compile Mew code.
+Mew code goes through five steps on its way to a .NET
+assembly.
 
 ```mermaid
 flowchart LR;
@@ -39,7 +39,7 @@ i.e. from the LSP server.
 ## 2. HIR generation
 
 HIR, short for _High-level Intermediate Representation_, 
-represents a bound tree, where all types are known.  
+is a bound tree, where all types are known.  
 
 The HIR references resolved _symbols_ for the different parts
 of Mew (namespaces, types, functions, parameters, variables etc).
@@ -88,9 +88,9 @@ compared in a test.
 > [!WARNING]
 > LIR **MUST NOT** contain any errors.
 
-A function the lowering cannot finish is recorded rather than
-half-written, and the backend refuses the whole program instead
-of emitting a module with a hole in it.
+A function the lowering cannot finish is recorded, and the
+backend refuses the whole program instead of emitting a module
+with a hole in it.
 
 ## 5. Writing the assembly
 
@@ -103,8 +103,8 @@ involved, and neither is a project file.
 
 Nothing above LIR knows how a program is written out, so the
 language is not defined in terms of what .NET does. The symbol
-model does read .NET metadata, which is what lets a program name
-a platform type.
+model does read .NET metadata, so a program can name a platform
+type.
 
 A debug database is written beside the assembly, so a debugger
 can stop on a line of Mew.

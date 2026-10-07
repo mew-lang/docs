@@ -5,12 +5,12 @@ order: 25
 ---
 
 Almost everything in Mew is either defined or reported as a diagnostic. Two things
-are neither: the language declines to say what they mean, so a program that relies
-on one is not a program whose behaviour anything guarantees.
+are neither: the language declines to say what they mean, so nothing is
+guaranteed about a program that relies on one.
 
 Both are reachable only by writing something that already looks wrong, and today's
 compiler stops the program with a message rather than carrying on. That is a
-courtesy of this implementation rather than a promise of the language, so do not
+courtesy of this implementation. The language does not promise it, so do not
 build on it.
 
 ## Reading an array element that was never written
@@ -73,8 +73,8 @@ match slots[1] {
 ## A `noreturn` function that returns
 
 [`[noreturn]`](xref:language.attributes#noreturn) tells the compiler that nothing
-after a call to the function runs, which is what lets a path ending in one owe no
-`return` of its own.
+after a call to the function runs, so a path ending in one owes no `return` of
+its own.
 
 The compiler takes that at its word and does not check the body, because what ends
 a program usually sits behind the [FFI](xref:language.ffi) where there is nothing

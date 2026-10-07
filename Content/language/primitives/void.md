@@ -36,8 +36,8 @@ pub fn nothing() -> void { }
 let value = nothing();
 ```
 
-Writing the annotation out makes no difference, because the problem is the missing
-value rather than how it is spelled.
+Writing the annotation out makes no difference, because the value is still
+missing.
 
 ```mew error=MEW2013
 pub fn nothing() -> void { }

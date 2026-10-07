@@ -62,11 +62,12 @@ println(filled);
 
 > [!NOTE]
 > There is no way to ask whether a value is `null`. `text == null` is not a
-> defined comparison, and `is` only answers about the type. That is one of the
-> reasons the standard library answers an absent value with
-> [`Option<T>`](xref:language.options-and-results) rather than with `null`.
+> defined comparison, and `is` only checks the type. That is one of the reasons
+> the standard library returns an
+> [`Option<T>`](xref:language.options-and-results) rather than `null` when there
+> may be no value.
 
-A function that answers nothing is another. There is no value to name, so the
+A function that returns nothing is another. There is no value to name, so the
 `let` itself is the error.
 
 ```mew error=MEW2013
@@ -135,8 +136,8 @@ let read = (a = 3);
 println($"{a} {read}");
 ```
 
-The grouping is the part to remember. Reading from an assignment is rarely what
-you want in code someone else has to follow.
+Reading from an assignment is rarely what you want in code someone else has to
+follow.
 
 ## Compound assignment
 

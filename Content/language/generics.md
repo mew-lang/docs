@@ -135,8 +135,8 @@ pub interface Holder<T> {
 }
 ```
 
-An `impl` block can fill them in with a type, which is what a non-generic type
-implementing a generic interface looks like.
+An `impl` block can fill them in with a type. That is how a non-generic type
+implements a generic interface.
 
 ```mew
 // [!code exclude-start]
@@ -215,8 +215,8 @@ println($"{read(new Box<i32> { value: 5, })}");
 
 ## Constraints
 
-A parameter with nothing said about it can only be stored, passed and handed
-back, because nothing is known about what it can do. A constraint says it
+A parameter with no constraint can only be stored, passed and handed back,
+because nothing is known about what it can do. A constraint says it
 implements an interface, and everything that interface declares becomes
 available on a value of that type.
 
@@ -272,7 +272,7 @@ pub type Smallest<T: Comparable<T>> {
 ```
 
 `Comparable<T>` is filled in along with the parameter, so `Smallest<Score>`
-requires `Score` to implement `Comparable<Score>` rather than `Comparable<T>`.
+requires `Score` to implement `Comparable<Score>`.
 
 ```mew
 // [!code exclude-start]
@@ -296,7 +296,7 @@ impl Comparable<Score> for Score {
 ## Functions
 
 A function takes type parameters the same way, and they are worked out from the
-arguments rather than written at the call.
+arguments.
 
 ```mew
 pub fn first<T>(items: T[]) -> T {
@@ -308,7 +308,6 @@ let word = first(new string[] { "a", "b", }); // a string
 ```
 
 A parameter that appears nowhere in the argument types cannot be worked out.
-Name it at the call instead.
 
 ```mew error=MEW2066
 pub fn empty<T>() -> T[] {
@@ -318,7 +317,7 @@ pub fn empty<T>() -> T[] {
 let values = empty();
 ```
 
-Naming it at the call is what says which type was meant.
+Name it at the call instead.
 
 ```mew
 use std;
@@ -375,12 +374,12 @@ let text = show(42);
 `impl Describable for Box<i32>` is an error. There is no way to give one filling
 in of a type behaviour that the others do not have.
 
-This is not only a missing feature. A generic type is emitted once, with the
-parameters left open, and its interfaces are fixed where it is declared. Giving
-`Box<i32>` an interface that `Box<string>` lacks would mean emitting a separate
-type per filling in, and answering what happens when a general `impl` and a
-specialized one both apply. What that example usually wants is a
-[constraint](#constraints).
+Supporting it would change how generics are compiled. A generic type is emitted
+once, with the parameters left open, and its interfaces are fixed where it is
+declared. Giving `Box<i32>` an interface that `Box<string>` lacks would mean
+emitting a separate type per filling in, and answering what happens when a
+general `impl` and a specialized one both apply. What that example usually wants
+is a [constraint](#constraints).
 
 ## Not yet
 

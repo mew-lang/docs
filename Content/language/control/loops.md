@@ -94,7 +94,7 @@ pub interface Enumerable<T> {
 }
 ```
 
-`iter` hands back a cursor. `next` moves it on and answers whether there is
+`iter` hands back a cursor. `next` moves it on and returns whether there is
 anything there; `current` reads what it is. `for` calls `next` first, so a
 cursor starts before the first element.
 
@@ -209,8 +209,7 @@ println($"{new string[] { "a", "b" }.size()}");
 
 > [!NOTE]
 > `for` over an array is still a plain index loop rather than a walk through the
-> protocol, so nothing about this costs the most common loop in the language
-> anything.
+> protocol, so the most common loop in the language pays nothing for it.
 
 A type is walkable one way. `iter` differs only in what it returns, and
 [two functions cannot](xref:language.functions#overloading), so a type that reads more than one way

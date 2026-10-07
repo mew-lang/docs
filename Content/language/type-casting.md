@@ -162,7 +162,7 @@ let circle = boxed as Circle;
 Unhandled error: Cannot convert a 'Point' to 'Circle'
 ```
 
-[`is`](xref:language.type-checking) is what asks first.
+Ask first with [`is`](xref:language.type-checking).
 
 ```mew
 use std;

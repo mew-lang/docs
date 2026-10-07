@@ -5,8 +5,8 @@ order: 16
 ---
 
 A function can be held in a value, passed to another function and written
-inline. That is what makes `map` and `filter` possible, and it is what a sort
-takes to know which order you meant.
+inline. `map` and `filter` take one to know what to do with each element, and a
+sort takes one to know which order you meant.
 
 ## A function type
 
@@ -50,7 +50,7 @@ println($"{apply(twice, 21)}");
 
 A function type reads the same wherever it is written, so two of them with the
 same parameters and result are the same type. `fn() -> void` takes nothing and
-answers nothing.
+returns nothing.
 
 ```mew
 // [!code exclude-start]
@@ -80,7 +80,7 @@ println($"{held(4)}");
 
 > [!NOTE]
 > A name that means more than one function has no single type, so it cannot be
-> held on its own. Nothing at that point says which one was meant.
+> held on its own. The compiler cannot tell which one was meant.
 
 ## A lambda
 
@@ -190,7 +190,7 @@ pub fn apply(f: fn(i32) -> i32, v: i32) -> i32 {
 apply(|n| n * 2, 21);
 ```
 
-Where nothing says, write the types down and the lambda describes itself.
+Otherwise, write the types down and the lambda describes itself.
 
 ```mew
 use std;
@@ -263,7 +263,7 @@ println($"{apply(|n| n * factor, 14)}");
 ## Generic higher-order functions
 
 A [type parameter](xref:language.generics) can appear in a function type, and the lambda
-handed in is what settles it.
+handed in settles it.
 
 ```mew
 use std;
@@ -309,12 +309,12 @@ println(texts[1]);
 <2>
 ```
 
-`U` is worked out from the lambda's body, so `mapped` answers an `i32[]` in the
+`U` is worked out from the lambda's body, so `mapped` returns an `i32[]` in the
 first call and a `string[]` in the second. The arguments that already have a
 type settle what they can first, which is how `T` is known by the time the
 lambda is read.
 
-Where nothing pins a type parameter, the compiler says which one.
+When a type parameter cannot be worked out, the compiler says which one.
 
 ```mew error=MEW2066
 pub fn only<T, U>(f: fn(T) -> U) -> i32 { return 1; }

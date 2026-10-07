@@ -59,7 +59,7 @@ produces text writes into a buffer it was handed rather than returning one.
 
 `char` crosses in neither direction, and neither does `any`, a type you declare, a
 [union](xref:language.unions) or an [interface](xref:language.interfaces). Anything
-else is an error at the declaration rather than a surprise at run time.
+else is an error at the declaration.
 
 ```mew error=MEW2070
 pub type Point {
@@ -75,10 +75,10 @@ To hand a declared type across, take it apart and pass what it holds.
 ## Nothing checks the other side
 
 A declaration is a promise about a library the compiler cannot see. If the
-signature does not match what is really there, nothing says so until the program
-runs, and what happens then is the operating system's business rather than Mew's.
+signature does not match what is really there, the mismatch goes unnoticed until
+the program runs, and what happens then is up to the operating system.
 
-If the function ends the program rather than returning, say so with
+If the function ends the program, say so with
 [`[noreturn]`](xref:language.attributes#noreturn). That is exactly the case the
-attribute exists for, and why the compiler takes it on trust rather than checking
-a body it does not have.
+attribute exists for, and the compiler takes it on trust because there is no
+body to check.

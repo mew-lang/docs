@@ -122,8 +122,7 @@ pub fn cleared(ip: IpAddress) -> IpAddress {
 }
 ```
 
-Where nothing says which union is wanted, there is nothing to work it out
-from.
+Where no union is expected, the union cannot be worked out.
 
 ```mew error=MEW2087
 use std;
@@ -147,9 +146,9 @@ Nothing here expects a union, so there is no union for 'none' to be a case of
 > thing that could say what the variable holds and `.none` does not say. Write
 > `IpAddress::none`, or annotate the `let`.
 
-When a function is overloaded, the case name is what picks between two
-candidates taking different unions. Two candidates whose unions both have the
-case make the call ambiguous, and writing the union out is how to say which one.
+When a function is overloaded, the case name picks between two candidates
+taking different unions. Two candidates whose unions both have the case make the
+call ambiguous, and writing the union out is how to say which one.
 
 ```mew
 use std;
@@ -261,7 +260,7 @@ pub fn first(ip: IpAddress) -> i32 {
 }
 ```
 
-It is a discard rather than a name, so nothing can be read back out of it.
+`_` is a discard, so nothing can be read back out of it.
 
 ```mew error=MEW2009
 use std;
@@ -287,7 +286,7 @@ Error [MEW2009]: Undeclared variable
 Undeclared variable '_'
 ```
 
-An arm written `_` on its own is a different thing: that is the
+An arm written `_` on its own is the
 [catch-all pattern](#every-case-has-to-be-covered), which matches any case.
 
 ### Every case has to be covered
@@ -344,8 +343,8 @@ An arm written after `_` can never run, and the compiler says so.
 
 > [!NOTE]
 > A case added to a union later lands in an existing `_` without a word from the
-> compiler. Naming each case instead is what makes the compiler point at every
-> match that has not thought about the new one.
+> compiler. Naming each case instead makes the compiler point at every match
+> that does not handle the new one.
 
 ## Matching as a value
 
@@ -566,4 +565,4 @@ and still look inside it, and no way to give a case's values names in the
 declaration and match on those names.
 
 `is` and `as` do not reach a case. A case is not a type, so the only thing to
-ask about a value is which case it is, and `match` is what asks.
+ask about a value is which case it is, and `match` asks that.

@@ -5,8 +5,8 @@ order: 3
 ---
 
 An editor asks what could go where the cursor is, and the answer arrives while
-the line is still half written. That is the only state that matters, because a
-suggestion after the code is already complete is a suggestion nobody needed.
+the line is still half written. That is the only state that matters, because
+nobody needs a suggestion once the code is complete.
 
 Completion is offered on `.` and on `::`, and is triggered by typing either.
 
@@ -38,8 +38,7 @@ instance members.
 What an [interface supplies](xref:language.interfaces#members-the-interface-supplies)
 is offered as well, on every type that implements it and on arrays, which are
 [sequences](xref:stdlib.std#enumerablet). Completion asks the compiler what
-members a type has rather than reading the declaration, so a member nobody
-wrote on the type still comes up.
+members a type has, so a member nobody wrote on the type still comes up.
 
 | Written                       | Offered                                     |
 | :---------------------------- | :------------------------------------------ |
@@ -91,13 +90,13 @@ pub fn held(slot: Slot) -> i32 { return 0; }
 | `new Holder { slot: . }`     | the field                         |
 | `new Slot[] { . }`           | the array's element type          |
 
-Where nothing says which union is wanted, there are no cases to offer and the
-ordinary list of names in scope comes up instead. `let s = .` with no
+Where no union is expected, there are no cases to offer, and the ordinary list
+of names in scope comes up instead. `let s = .` with no
 annotation is one such place, and so is `let n: i32 = .`.
 
 > [!NOTE]
-> Where two overloads take different unions, the case name is what picks between
-> them, so `held(.` offers the cases of whichever union that call could want.
+> Where two overloads take different unions, the case name picks between them,
+> so `held(.` offers the cases of whichever union that call could want.
 > Where both could want a case of that name, one of them is offered. Writing the
 > union out says which.
 
@@ -125,8 +124,8 @@ pub fn log(level: i32, parts: ...string) -> i32 {
 
 A parameter drops out once something fills it, whether an argument named it or
 reached it by position. `log` offers nothing after its first argument because
-`parts` [gathers](xref:language.functions#gathering-what-is-left), and nothing
-gathers by name.
+`parts` [gathers](xref:language.functions#gathering-what-is-left), and gathering
+works only by position.
 
 ## Everywhere else
 

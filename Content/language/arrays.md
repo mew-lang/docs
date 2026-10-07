@@ -56,7 +56,7 @@ An initializer whose length is not the size is an error.
 let wrong = new i32[3] { 1, 2 };
 ```
 
-So is giving neither, since nothing then says how long the array is.
+So is giving neither, which leaves the length unknown.
 
 ```mew error=MEW2026
 let unknown = new i32[];
@@ -88,7 +88,7 @@ counts[0] = 7;
 println($"{counts[0]}");
 ```
 
-Nothing checks an index before it is used. One outside the array ends the
+An index is not checked before it is used. One outside the array ends the
 program, so checking against `count` is up to the program.
 
 ```mew
@@ -106,7 +106,7 @@ println($"{at(new i32[] { 1, 2, 3 }, 9)}");
 ```
 
 Only an array can be indexed. `[` on anything else is an error, which is why a
-`string` is walked through `chars()` rather than indexed directly.
+`string` is walked through `chars()`.
 
 ```mew error=MEW2028
 let text = "hello";
@@ -202,8 +202,7 @@ println($"{how_many(new i32[] { 1, 2, 3 })}");
 
 ## What an array is not
 
-An array is not a named type. It is written as its element type followed by `[]`
-rather than declared, so it cannot be the target of an
+An array is not a named type, so it cannot be the target of an
 [`impl` block](xref:language.extending): `impl i32[]` is an error. To give every
 array a member, write the block on `Enumerable<T>` instead.
 

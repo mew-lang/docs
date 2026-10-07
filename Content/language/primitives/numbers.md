@@ -21,8 +21,8 @@ as its code point, so it appears in the tables below.
 | 32-bit | `u32` |       | 0 to 4,294,967,295                                      |
 | 64-bit | `u64` |       | 0 to 18,446,744,073,709,551,615                         |
 
-An alias is another spelling of the same type rather than a distinct one. `int`
-and `i32` are interchangeable everywhere.
+An alias is another spelling of the same type. `int` and `i32` are
+interchangeable everywhere.
 
 ## Floating point
 
@@ -52,7 +52,7 @@ There is no negative literal. `-1` is the [unary minus](xref:language.operators#
 applied to `1`, which matters only where precedence does.
 
 A `.` begins a fraction only when a digit follows it, so `1.max()` is a member
-access on `1` rather than a malformed number. That is what lets a number carry
+access on `1` rather than a malformed number. That is how a number can carry
 methods added by an [`impl` block](xref:language.extending#extending-a-primitive).
 
 ## What type a literal is
@@ -69,8 +69,8 @@ let wide: i64 = 9_000_000_000;
 println($"{byte} {wide}");
 ```
 
-A value that does not fit is an error, and it is about the value rather than about
-the type: nothing is being converted, and the literal cannot be that type.
+A value that does not fit is an error about the value rather than the type.
+Nothing is being converted, and the literal cannot be that type.
 
 ```mew error=MEW2004
 let byte: u8 = 300;
@@ -81,8 +81,8 @@ has a fraction.
 
 ## Suffixes
 
-A suffix pins a literal to one type, which is how to write a value where nothing
-else says what it should be.
+A suffix pins a literal to one type, which is how to give a literal a type when
+the code around it does not.
 
 ```mew
 use std;
@@ -144,8 +144,6 @@ _Adding an `i8` to a `u32` gives an `i64`._
 | **f64**  | f64 | f64 | f64 | f64 | f64 | f64 | f64 | f64 | f64 | f64 | f64  |
 | **char** | i32 | i32 | i32 | i64 | i32 | i32 | u32 | u64 | f32 | f64 | i32  |
 
-Two things in it are worth reading off directly.
-
 Nothing narrower than `i32` comes out. Adding two `i8` values gives an `i32`,
 which is why an expression widens even when both sides are the same narrow type.
 
@@ -160,7 +158,7 @@ println($"{sum}");
 ```
 
 `u64` has no result with any signed type, because no type in the table holds
-every value of both. Mixing them is an error rather than a silent choice.
+every value of both. Mixing them is an error.
 
 ```mew error=MEW2008
 let unsigned: u64 = 1;
@@ -196,9 +194,9 @@ target.
 
 A widening conversion is implicit. One that can lose information needs a cast.
 
-The blanks are the surprise. Narrowing to a smaller type of the same signedness
-does not exist at all, and a cast does not help. `i64` to `i16`, `u16` to `u8`
-and `f64` to `f32` are all rejected.
+Narrowing to a smaller type of the same signedness does not exist at all, and a
+cast does not help. `i64` to `i16`, `u16` to `u8` and `f64` to `f32` are all
+rejected.
 
 ```mew error=MEW2007
 let wide: i64 = 1;

@@ -110,8 +110,8 @@ println($"{new Box<i32> { value: 7 }.get()}");
 
 ## What cannot be extended
 
-The target has to be a named type. An array is written as its element type
-followed by `[]` rather than named, so `impl i32[]` is an error.
+The target has to be a named type, and an array is not one, so `impl i32[]` is
+an error.
 
 ## Adding members and implementing an interface
 

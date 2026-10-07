@@ -157,14 +157,14 @@ println("x" + 'y');             // xy
 println('a' as string);         // a
 ```
 
-A character does not become a string on its own, only where `+` says the
-answer is text or where a cast asks for it. So `let text: string = 'a';` is an
-error, and so is comparing a string with a character.
+A character becomes a string only when `+` joins it to a string or a cast
+converts it. So `let text: string = 'a';` is an error, and so is comparing a
+string with a character.
 
 ## Characters
 
-The `char` type holds a single character. Any character, including one outside
-the first 65,536.
+The `char` type holds any single character, including one outside the first
+65,536.
 
 ```mew
 let space = ' ';

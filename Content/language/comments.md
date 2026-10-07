@@ -7,9 +7,9 @@ order: 5
 A comment is trivia. It separates tokens and carries no other meaning, so nothing
 in a program depends on one.
 
-The compiler keeps comments on the syntax tree rather than throwing them away,
-which is how the [formatter](xref:compiler.formatting) can put them back where
-they were and how the language server can show a doc comment on hover.
+The compiler keeps comments on the syntax tree, which is how the
+[formatter](xref:compiler.formatting) can put them back where they were and how
+the language server can show a doc comment on hover.
 
 ## Line comments
 
@@ -55,7 +55,7 @@ pub type Counter {
     /// The number of steps taken so far.
     pub field steps: i32;
 
-    /// Answers the count after one more step.
+    /// Returns the count after one more step.
     pub fn next() -> i32 {
         return self.steps + 1;
     }

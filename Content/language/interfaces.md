@@ -92,8 +92,8 @@ println(new Point { x: 32, y: 40 }.shouted());
 `self` inside one is the interface, so it can call the members the interface
 requires and nothing else.
 
-A type that wants its own answer declares the member, and that replaces what the
-interface supplied.
+A type that wants its own version declares the member, and that replaces what
+the interface supplied.
 
 ```mew
 // [!code exclude-start]

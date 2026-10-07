@@ -38,7 +38,7 @@ The field 'x' does not exist within type 'any'
 ```
 
 Getting the value back out is a [cast](xref:language.type-casting), and
-[`is`](xref:language.type-checking) is what asks what is in there first.
+[`is`](xref:language.type-checking) asks what is in there first.
 
 ```mew
 use std;

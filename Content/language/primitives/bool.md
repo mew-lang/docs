@@ -15,7 +15,7 @@ let done = false;
 println($"{ready} {done}");
 ```
 
-It is what the comparison operators answer with, and what
+It is what the comparison operators produce, and what
 [`if`](xref:language.control.conditions) and `while` require. Nothing converts to
 a `bool`, so a number is never a condition on its own.
 
@@ -48,10 +48,11 @@ println($"{ready != false}");
 ## Short circuiting
 
 `&&` and `||` evaluate their right operand only when the left has not already
-settled the answer. `false && x` never looks at `x`, and neither does `true || x`.
+decided the result. `false && x` never looks at `x`, and neither does
+`true || x`.
 
-That is what lets a cheap test guard an expensive or unsafe one, because the
-guard is evaluated first and the rest is skipped when it fails.
+This lets a cheap test guard an expensive or unsafe one, because the guard is
+evaluated first and the rest is skipped when it fails.
 
 ```mew
 use std;

@@ -4,8 +4,7 @@ uid: language.names
 order: 19
 ---
 
-A name written on its own has to be resolved to exactly one thing. This page is
-about how that is decided, and about how long a name lasts.
+A name written on its own has to be resolved to exactly one thing.
 
 ## Scopes
 
@@ -79,9 +78,9 @@ A name that resolves to nothing is an error, and the compiler says which kind it
 was looking for: a variable it could not find is reported differently from a type
 or a function.
 
-A name that two visible declarations both answer for is ambiguous, and writing the
+A name that matches two visible declarations is ambiguous, and writing the
 [namespace out](xref:language.namespaces#reaching-a-namespace-without-importing-it)
-is what says which was meant.
+says which was meant.
 
 ## A member is not a name
 
@@ -157,4 +156,4 @@ spells: `pub type int` reports a duplicate `i32`.
 The [keywords](https://github.com/mew-lang/mew/blob/main/spec/02-lexical-structure.md)
 proper cannot be used as names at all. `new` is the one that bends, because it
 is only a keyword at the start of an expression, where it creates a value. That
-is what lets a type give itself a [static method called `new`](xref:language.types#constructors).
+is why a type can give itself a [static method called `new`](xref:language.types#constructors).

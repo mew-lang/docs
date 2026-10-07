@@ -71,7 +71,7 @@ pub fn pick(flag: bool) -> i32 {
 
 [`panic`](xref:stdlib.std#functions) carries the attribute, which is why `pick`
 compiles. Without it the compiler reports that not all code paths return a
-value, since nothing says the last statement is the end.
+value, since it cannot tell that `panic` never returns.
 
 A function that never returns has nothing to return, so its return type has to
 be `void`.
