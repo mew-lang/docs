@@ -314,3 +314,201 @@ impl Describable for Bag {
     }
 }
 ```
+
+## Associated types
+
+Some interfaces need a type that each implementation chooses for itself. A
+container holds items, but what the items are depends on the container. Declare
+that type in the interface with `type`, and bind it in each `impl` block:
+
+```mew
+use std;
+
+pub interface Container {
+    type Item;
+    fn get(index: i32) -> Item;
+}
+
+pub type Bag {
+    pub field values: i32[];
+}
+
+impl Container for Bag {
+    type Item = i32;
+
+    pub fn get(index: i32) -> Item {
+        return self.values[index];
+    }
+}
+
+println($"{new Bag { values: new i32[] { 3, 1 } }.get(0)}");
+```
+
+```
+3
+```
+
+Inside both blocks, `Item` works like any other type name. In the `impl` block
+for `Bag` it is `i32`, so `get` could return `i32` just as well.
+
+When you use the interface as the type of a value, say which item type you
+mean:
+
+```mew
+// [!code exclude-start]
+use std;
+
+pub interface Container {
+    type Item;
+    fn get(index: i32) -> Item;
+}
+
+pub type Bag {
+    pub field values: i32[];
+}
+
+impl Container for Bag {
+    type Item = i32;
+
+    pub fn get(index: i32) -> Item {
+        return self.values[index];
+    }
+}
+// [!code exclude-end]
+pub fn sum_two(source: Container<Item = i32>) -> i32 {
+    return source.get(0) + source.get(1);
+}
+
+println($"{sum_two(new Bag { values: new i32[] { 3, 1 } })}");
+```
+
+```
+4
+```
+
+If the interface also takes type parameters, they come first:
+`Parse<string, Output = Version>`.
+
+Generic code doesn't have to name the item type at all. Constrain a type
+parameter by the interface, and write `C::Item` wherever the item type goes:
+
+```mew
+// [!code exclude-start]
+use std;
+
+pub interface Container {
+    type Item;
+    fn get(index: i32) -> Item;
+}
+
+pub type Bag {
+    pub field values: i32[];
+}
+
+impl Container for Bag {
+    type Item = i32;
+
+    pub fn get(index: i32) -> Item {
+        return self.values[index];
+    }
+}
+// [!code exclude-end]
+pub fn first<C: Container>(source: C) -> C::Item {
+    return source.get(0);
+}
+
+let head = first(new Bag { values: new i32[] { 3, 1 } });
+println($"{head + 1}");
+```
+
+```
+4
+```
+
+`first` returns an `i32` here because that is what `Bag` binds `Item` to. You
+can write `Bag::Item` directly as well, and it is `i32` too.
+
+> [!NOTE]
+> An associated type can't have a constraint of its own. If a function needs one,
+> give the item type a name with a type parameter and constrain that:
+> `fn show<T: Display, C: Container<Item = T>>(source: C)`.
+
+### Compared with a type parameter
+
+You could write the interface as `Container<T>` instead, with the item type as a
+type parameter. Then `Bag` could implement `Container<i32>` and
+`Container<string>` at the same time, and Mew can't tell which `get` a call like
+this one means:
+
+```mew error=MEW2120
+use std;
+
+pub interface Container<T> {
+    fn get(index: i32) -> T;
+}
+
+pub type Bag {
+    pub field values: i32[];
+}
+
+impl Container<i32> for Bag {
+    pub fn get(index: i32) -> i32 {
+        return self.values[index];
+    }
+}
+
+impl Container<string> for Bag {
+    pub fn get(index: i32) -> string {
+        return "three";
+    }
+}
+
+let item = new Bag { values: new i32[] { 3 } }.get(0);
+```
+
+```
+Error [MEW2120]: 'get' can produce more than one type here, and nothing says which
+```
+
+The item type also has to travel with the container. Every generic function or
+type that takes a container needs a second type parameter for it, and you write
+it out every time you name the type:
+
+```mew
+// [!code exclude-start]
+use std;
+
+pub interface Container<T> {
+    fn get(index: i32) -> T;
+}
+
+pub type Bag {
+    pub field values: i32[];
+}
+
+impl Container<i32> for Bag {
+    pub fn get(index: i32) -> i32 {
+        return self.values[index];
+    }
+}
+// [!code exclude-end]
+pub fn first<T, C: Container<T>>(source: C) -> T {
+    return source.get(0);
+}
+
+pub type Cursor<T, C: Container<T>> {
+    pub field source: C;
+}
+
+let bag = new Bag { values: new i32[] { 3 } };
+let cursor = new Cursor<i32, Bag> { source: bag };
+println($"{cursor.source.get(0)}");
+```
+
+With `type Item`, the same function is
+`fn first<C: Container>(source: C) -> C::Item`, and the cursor is a
+`Cursor<Bag>`.
+
+A type parameter is still the right tool when one type should implement the
+interface several times, the way a type can implement `Into<T>` once for each
+type it converts into.
