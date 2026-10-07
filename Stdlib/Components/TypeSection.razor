@@ -1,0 +1,70 @@
+@using MewDocs.Stdlib.Model
+@inject StdlibHtml Html
+@inject StdlibModel Model
+
+<h2 id="@Type.Anchor"><code>@Type.DisplayName</code></h2>
+
+@if (Type.Summary is not null)
+{
+    <p>@StdlibHtml.Summary(Type.Summary)</p>
+}
+
+@if (Type.Implements.Length > 0)
+{
+    <p>Implements @StdlibHtml.JoinWithAnd(Type.Implements.Select(i => Html.Code(i, _scope, Namespace))).</p>
+}
+
+@if (_implementors.Count > 0)
+{
+    <p>Implemented by @StdlibHtml.JoinWithAnd(_implementors).</p>
+}
+
+@if (Type.Cases.Length > 0)
+{
+    <ReferenceTable FirstColumn="Case" SecondColumn="Description"
+                    Rows="Type.Cases.Select(c => new ReferenceTable.Row(Html.Case(c, _scope, Namespace), StdlibHtml.Summary(c.Summary))).ToList()" />
+}
+
+@if (Type.Fields.Length > 0)
+{
+    <ReferenceTable FirstColumn="Field" SecondColumn="Description"
+                    Rows="Type.Fields.Select(f => new ReferenceTable.Row(Html.Field(f, _scope, Namespace), StdlibHtml.Summary(f.Summary))).ToList()" />
+}
+
+@if (Type.Methods.Length > 0)
+{
+    <MemberTable Namespace="Namespace"
+                 Members="Type.Methods"
+                 Owner="@Type.DisplayName"
+                 Scope="_scope"
+                 RequiredMarker="Type.Kind == StdlibTypeKind.Interface"
+                 AttributesPageUrl="@AttributesPageUrl" />
+}
+
+@code {
+    [Parameter, EditorRequired] public StdlibNamespace Namespace { get; set; } = default!;
+    [Parameter, EditorRequired] public StdlibType Type { get; set; } = default!;
+    [Parameter] public string? AttributesPageUrl { get; set; }
+
+    private HashSet<string> _scope = new(StringComparer.Ordinal);
+    private IReadOnlyList<MarkupString> _implementors = [];
+
+    protected override void OnParametersSet()
+    {
+        _scope = new HashSet<string>(Type.TypeParameters, StringComparer.Ordinal);
+
+        if (Type.Kind == StdlibTypeKind.Interface && Model.Implementors.TryGetValue(Type.Name, out var implementors))
+        {
+            _implementors = implementors
+                .OrderBy(i => i.Namespace.Name, StringComparer.Ordinal)
+                .ThenBy(i => i.Type.Name, StringComparer.Ordinal)
+                .Select(i => StdlibHtml.Link(i.Namespace, i.Type,
+                    i.Namespace == Namespace ? i.Type.DisplayName : $"{i.Namespace.Name}.{i.Type.DisplayName}"))
+                .ToList();
+        }
+        else
+        {
+            _implementors = (List<MarkupString>)[];
+        }
+    }
+}

@@ -1,0 +1,38 @@
+@* A two-column table for browsers, plus a list twin for the llms.txt sidecar. Pennington turns each
+   page into Markdown by walking its HTML, and that walker knows headings, paragraphs, lists and code
+   but not tables, so the table is marked humans-only and the list robots-only. *@
+
+<div class="humans-only">
+    <table>
+        <thead>
+            <tr><th>@FirstColumn</th><th>@SecondColumn</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Rows)
+            {
+                <tr><td>@row.Label</td><td>@row.Description</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+<ul class="robots-only">
+    @foreach (var row in Rows)
+    {
+        <li>
+            @row.Label
+            @if (row.Description.Value.Length > 0)
+            {
+                <text> — </text>@row.Description
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter, EditorRequired] public string FirstColumn { get; set; } = "";
+    [Parameter, EditorRequired] public string SecondColumn { get; set; } = "";
+    [Parameter, EditorRequired] public IReadOnlyList<Row> Rows { get; set; } = [];
+
+    /// <summary>One table row: the thing being described, then its description.</summary>
+    public sealed record Row(MarkupString Label, MarkupString Description);
+}

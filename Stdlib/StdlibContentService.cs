@@ -30,7 +30,7 @@ public sealed class StdlibContentService : IContentService
     public int SearchPriority => 5;
 
     public static ContentRoute RouteFor(StdlibNamespace ns) =>
-        ContentRouteFactory.FromUrl(new UrlPath($"{StdlibHtmlRenderer.RoutePrefix}{ns.Slug}/"));
+        ContentRouteFactory.FromUrl(new UrlPath($"{StdlibHtml.RoutePrefix}{ns.Slug}/"));
 
     public async IAsyncEnumerable<DiscoveredItem> DiscoverAsync()
     {
@@ -44,7 +44,7 @@ public sealed class StdlibContentService : IContentService
             var metadata = new DocFrontMatter
             {
                 Title = ns.Name,
-                Description = StdlibHtmlRenderer.Describe(ns),
+                Description = StdlibHtml.Describe(ns),
                 Uid = ns.Uid,
                 Order = order++,
                 SectionLabel = DefaultSectionLabel,
@@ -77,7 +77,7 @@ public sealed class StdlibContentService : IContentService
                 SectionLabel: DefaultSectionLabel,
                 Locale: null)
             {
-                Description = StdlibHtmlRenderer.Describe(ns),
+                Description = StdlibHtml.Describe(ns),
             });
         }
 

@@ -1,0 +1,38 @@
+@using MewDocs.Stdlib.Model
+@inject StdlibHtml Html
+
+<ReferenceTable FirstColumn="@FirstColumn" SecondColumn="Description" Rows="_rows" />
+
+@code {
+    /// <summary>The namespace the page belongs to; unqualified type names resolve against it first.</summary>
+    [Parameter, EditorRequired] public StdlibNamespace Namespace { get; set; } = default!;
+
+    [Parameter, EditorRequired] public IEnumerable<StdlibFunction> Members { get; set; } = [];
+
+    /// <summary>The type the members belong to, shown before <c>::</c> on static members. Null for free functions.</summary>
+    [Parameter] public string? Owner { get; set; }
+
+    /// <summary>Type parameters in scope from the owning type, so they render plain rather than as links.</summary>
+    [Parameter] public ISet<string>? Scope { get; set; }
+
+    /// <summary>Prefixes members without a default body with "Required.", for interfaces.</summary>
+    [Parameter] public bool RequiredMarker { get; set; }
+
+    [Parameter] public string FirstColumn { get; set; } = "Member";
+
+    [Parameter] public string? AttributesPageUrl { get; set; }
+
+    private IReadOnlyList<ReferenceTable.Row> _rows = [];
+
+    protected override void OnParametersSet()
+    {
+        var scope = Scope ?? new HashSet<string>(StringComparer.Ordinal);
+        _rows =
+        [
+            .. Members
+                .Select(m => new ReferenceTable.Row(
+                    Html.Signature(m, Owner, Namespace, scope),
+                    StdlibHtml.Description(m, AttributesPageUrl, required: RequiredMarker && !m.IsDefault)))
+        ];
+    }
+}

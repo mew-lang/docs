@@ -9,7 +9,6 @@
 @using Pennington.Infrastructure
 @using Pennington.Navigation
 @inject StdlibModel Model
-@inject StdlibHtmlRenderer Renderer
 @inject DocSiteContentResolver ContentResolver
 @inject DocSiteOptions DocSiteOptions
 @inject XrefResolver Xrefs
@@ -30,13 +29,14 @@ else
     <DocSiteArticle
         Title="@_namespace.Name"
         Description="@_description"
-        HtmlContent="@_html"
         AreaTitle="@_area?.Title"
         AreaIconHtml="@_area?.Icon"
         PreviousPageName="@_navigation?.PreviousPage?.Title"
         PreviousPageHref="@_navigation?.PreviousPage?.Route.CanonicalPath.Value"
         NextPageName="@_navigation?.NextPage?.Title"
-        NextPageHref="@_navigation?.NextPage?.Route.CanonicalPath.Value" />
+        NextPageHref="@_navigation?.NextPage?.Route.CanonicalPath.Value">
+        <NamespaceReference Namespace="_namespace" AttributesPageUrl="@_attributesPageUrl" />
+    </DocSiteArticle>
 }
 
 @code {
@@ -44,7 +44,7 @@ else
 
     private StdlibNamespace? _namespace;
     private string _description = "";
-    private string _html = "";
+    private string? _attributesPageUrl;
     private ContentArea? _area;
     private NavigationInfo? _navigation;
 
@@ -56,7 +56,7 @@ else
             return;
         }
 
-        var url = $"{StdlibHtmlRenderer.RoutePrefix}{_namespace.Slug}/";
+        var url = $"{StdlibHtml.RoutePrefix}{_namespace.Slug}/";
         _area = ContentResolver.ResolveCurrentArea(url);
         _navigation = await ContentResolver.GetNavigationInfoForAreaAsync(url, _area);
 
@@ -64,7 +64,7 @@ else
         // the link survives that page moving.
         var attributes = await Xrefs.ResolveAsync("language.attributes");
 
-        _description = StdlibHtmlRenderer.Describe(_namespace);
-        _html = Renderer.RenderNamespace(_namespace, attributes?.Route.CanonicalPath.Value);
+        _attributesPageUrl = attributes?.Route.CanonicalPath.Value;
+        _description = StdlibHtml.Describe(_namespace);
     }
 }

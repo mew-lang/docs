@@ -180,7 +180,7 @@ builder.Services.AddPenningtonBeck(beck =>
 // hand: one page per namespace, published into the "Standard Library" area by a content service.
 builder.Services.AddSingleton(_ =>
     StdlibXmlLoader.Load(Path.Combine(builder.Environment.ContentRootPath, "resources", "stdlib.xml")));
-builder.Services.AddSingleton<StdlibHtmlRenderer>();
+builder.Services.AddSingleton<StdlibHtml>();
 builder.Services.AddSingleton<StdlibContentService>();
 builder.Services.AddSingleton<IContentService>(sp => sp.GetRequiredService<StdlibContentService>());
 
