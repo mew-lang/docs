@@ -78,6 +78,108 @@ for prime in primes {
 }
 ```
 
+## Counting
+
+To loop over numbers, write a range. `a..b` counts from `a` up to `b`, and stops
+just before it:
+
+```mew
+use std;
+
+for n in 1..4 {
+    println($"{n}");
+}
+```
+
+```
+1
+2
+3
+```
+
+Without a range, the same loop needs a counter of its own, and you have to
+remember to move it on:
+
+```mew
+use std;
+
+let mut n = 1;
+while n < 4 {
+    println($"{n}");
+    n += 1;
+}
+```
+
+Both ends are `i32`, and either can be any expression. `..` binds more loosely
+than arithmetic, so `0..count + 1` runs up to and including `count`:
+
+```mew
+use std;
+
+let count = 3;
+
+for n in 0..count + 1 {
+    println($"{n}");
+}
+```
+
+```
+0
+1
+2
+3
+```
+
+A range whose end comes before its start is empty. The loop below doesn't run at
+all, and that isn't an error:
+
+```mew
+use std;
+
+for n in 5..2 {
+    println("never printed");
+}
+```
+
+A range is also a value, a [`Range`](xref:stdlib.std#range), so you can keep one
+in a variable or pass it to a function. `start` and `end` are its two ends,
+`contains` checks whether a number falls between them, and `count` returns how
+many numbers it holds:
+
+```mew
+use std;
+
+let span = 2..6;
+
+println($"{span.start} {span.end}");
+println($"{span.contains(4)} {span.contains(6)}");
+println($"{span.count()}");
+```
+
+```
+2 6
+true false
+4
+```
+
+It's a sequence like an array is, so `map`, `filter` and the rest work on it:
+
+```mew
+use std;
+
+let squares = (1..5).map(|n| n * n).to_array();
+
+println($"{squares}");
+```
+
+```
+[1, 4, 9, 16]
+```
+
+> [!NOTE]
+> A `for` over a range is a plain counting loop. It reads both ends once, before
+> the first iteration, and allocates nothing.
+
 ## Walking your own types
 
 An array is not the only thing `for` walks. A type is walkable when it
@@ -215,4 +317,4 @@ A type is walkable one way. `iter` differs only in what it returns, and
 [two functions cannot](xref:language.functions#overloading), so a type that reads more than one way
 offers each as its own method returning its own collection.
 
-Walking something that is neither an array nor an `Enumerable<T>` is an error.
+Walking something that is not an array, a range or an `Enumerable<T>` is an error.

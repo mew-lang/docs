@@ -23,12 +23,17 @@ in this table.
 | 6 | `==`&nbsp;&nbsp;`!=` | left |
 | 5 | `&&` | left |
 | 4 | `\|\|` | left |
+| 2 | `a..b` | none |
 | 1 | `=`&nbsp;&nbsp;`+=`&nbsp;&nbsp;`-=`&nbsp;&nbsp;`*=`&nbsp;&nbsp;`/=`&nbsp;&nbsp;`%=` | right |
 
 Parentheses group, and a grouped expression is whatever is inside it.
 
 `a?` is [error propagation](xref:language.error-propagation), which passes a
 failed `Result` or an empty `Option` on to the caller.
+
+`a..b` is a [range](xref:language.control.loops#counting) of the numbers from
+`a` up to, and not including, `b`. Everything but assignment binds tighter, so
+`0..n + 1` is `0..(n + 1)`. Ranges don't chain: `0..5..10` is an error.
 
 > [!IMPORTANT]
 > `as` and `is` bind looser than arithmetic, which is not how they read. Both

@@ -22,14 +22,15 @@ order: 1
 
 ## Types
 
-| Type                                        | Description                            |
-| :------------------------------------------ | :------------------------------------- |
-| [`ArrayEnumerable<T>`](#arrayenumerablet)   | Wraps an array as an `Enumerable<T>`.  |
-| [`ArrayEnumerator<T>`](#arrayenumeratort)   | Iterates over an array.                |
-| [`FilterEnumerable<T>`](#filterenumerablet) | What `filter` returns.                 |
-| [`FilterEnumerator<T>`](#filterenumeratort) | Iterates over a `FilterEnumerable<T>`. |
-| [`MapEnumerable<T, U>`](#mapenumerablet-u)  | What `map` returns.                    |
-| [`MapEnumerator<T, U>`](#mapenumeratort-u)  | Iterates over a `MapEnumerable<T, U>`. |
+| Type                                        | Description                                                                                                |
+| :------------------------------------------ | :--------------------------------------------------------------------------------------------------------- |
+| [`ArrayEnumerable<T>`](#arrayenumerablet)   | Wraps an array as an `Enumerable<T>`.                                                                      |
+| [`ArrayEnumerator<T>`](#arrayenumeratort)   | Iterates over an array.                                                                                    |
+| [`FilterEnumerable<T>`](#filterenumerablet) | What `filter` returns.                                                                                     |
+| [`FilterEnumerator<T>`](#filterenumeratort) | Iterates over a `FilterEnumerable<T>`.                                                                     |
+| [`MapEnumerable<T, U>`](#mapenumerablet-u)  | What `map` returns.                                                                                        |
+| [`MapEnumerator<T, U>`](#mapenumeratort-u)  | Iterates over a `MapEnumerable<T, U>`.                                                                     |
+| [`Range`](#range)                           | The `i32` values from `start` up to, and not including, `end`. [`struct`](xref:language.attributes#struct) |
 
 ## Functions
 
@@ -171,6 +172,20 @@ Implements `Enumerator<U>`.
 | :---------------------- | :------------------------------------- |
 | `source: Enumerator<T>` | The enumerator to map.                 |
 | `apply: fn(T) -> U`     | The function to apply to each element. |
+
+## `Range`
+
+Implements `Enumerable<i32>`.
+
+| Field        | Description                       |
+| :----------- | :-------------------------------- |
+| `start: i32` | The first value.                  |
+| `end: i32`   | The value the range stops before. |
+
+| Member                         | Description                                                        |
+| :----------------------------- | :----------------------------------------------------------------- |
+| `contains(value: i32) -> bool` | Whether `value` is at least `start` and less than `end`.           |
+| `count() -> i32`               | Returns the number of values, or `0` when `end` is before `start`. |
 
 ## `string`
 
