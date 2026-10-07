@@ -330,6 +330,3 @@ Error [MEW2066]: 'T' cannot be worked out from the arguments to 'only'
 
 A lambda's return type is never written down. It is whatever the body produces,
 and where that is wrong the error is about the body.
-
-There is no partial application and no way to combine two functions into a
-third. A lambda that closes over what it needs covers the same ground.

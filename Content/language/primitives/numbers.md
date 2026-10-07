@@ -152,9 +152,9 @@ which is why an expression widens even when both sides are the same narrow type.
 ```mew
 use std;
 
-let small: i8 = 3;
-let wide: i64 = 4;
-let sum = small + wide;
+let a: i8 = 3;
+let b: i8 = 4;
+let sum = a + b; // i32
 
 println($"{sum}");
 ```

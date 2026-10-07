@@ -91,5 +91,6 @@ Error [MEW2086]: Nothing to return
 > [!NOTE]
 > The compiler takes the promise at its word. It does not check that the body
 > never reaches its end, because the thing that ends the program is usually
-> behind the [FFI](xref:language.ffi), where there is nothing to check. A function that
-> says it never returns and then does ends the program with an error naming it.
+> behind the [FFI](xref:language.ffi), where there is nothing to check. What
+> happens when a function says it never returns and then does is
+> [undefined](xref:language.undefined#a-noreturn-function-that-returns).

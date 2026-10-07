@@ -27,8 +27,8 @@ let text = "Hello World";
 let greeting = "Hello, " + "world" + "!";
 ```
 
-Only strings can be joined this way. To put a number or a `bool` into text, use
-[interpolation](#string-interpolation).
+Only a string or a `char` can be joined onto a string this way. To put a number
+or a `bool` into text, use [interpolation](#string-interpolation).
 
 ### Escape sequences
 

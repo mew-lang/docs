@@ -553,9 +553,10 @@ let ip: IpAddress = null;
 
 > [!NOTE]
 > An array with a size and no initializer is the one way around this, because its
-> elements start out as `null` like any other array of a declared type. A `match`
-> on one of them fails at run time. Give the array an initializer, or fill it
-> before reading it.
+> elements start out as `null` like any other array of a declared type. Reading
+> one before writing it is
+> [undefined](xref:language.undefined#reading-an-array-element-that-was-never-written).
+> Give the array an initializer, or fill it before reading it.
 
 ## Not yet
 
