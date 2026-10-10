@@ -1,4 +1,7 @@
+using Mdazor;
+using MewDocs.Components;
 using MewDocs.Highlighting;
+using MewDocs.Pipeline;
 using Pennington.DocSite;
 using Pennington.Favicon;
 
@@ -132,8 +135,16 @@ builder.Services.AddDocSite(() => new DocSiteOptions
         new ContentArea("Future", "future"),
     ],
 
-    ConfigurePennington = penn => penn.Highlighting.AddHighlighter(new MewHighlighter()),
+    ConfigurePennington = penn =>
+    {
+        penn.Highlighting.AddHighlighter(new MewHighlighter());
+        penn.Highlighting.AddHighlighter(new IlHighlighter());
+    },
 });
+
+// <MewPipeline> in Markdown compiles its program while the page renders and shows every stage.
+builder.Services.AddSingleton<MewCompiler>();
+builder.Services.AddMdazorComponent<MewPipeline>();
 
 var app = builder.Build();
 app.UseDocSite();

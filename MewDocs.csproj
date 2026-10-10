@@ -5,15 +5,56 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>MewDocs</RootNamespace>
+    <!-- The compiler ships only as the `Mew` dotnet tool, so the package is downloaded (not
+         referenced) and its assemblies are picked out of the tool folder by hand. -->
+    <MewVersion>0.0.0-preview.0.262</MewVersion>
+    <MewToolDir>$(NuGetPackageRoot)mew/$(MewVersion)/tools/net10.0/any/</MewToolDir>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pennington.DocSite" Version="0.1.8" />
+    <PackageReference Include="Pennington.DocSite" Version="0.1.10" />
+    <!-- IL listing and the C# view of what the compiler emitted, for <MewPipeline>. -->
+    <PackageReference Include="ICSharpCode.Decompiler" Version="11.1.0.9782" />
+    <!-- Restores the compiler tool package into the global packages folder without
+         referencing it, since a DotnetTool package carries no lib/ assets. -->
+    <PackageDownload Include="Mew" Version="[$(MewVersion)]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mew.CodeAnalysis">
+      <HintPath>$(MewToolDir)Mew.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Mew.Runtime">
+      <HintPath>$(MewToolDir)Mew.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Mew.Std">
+      <HintPath>$(MewToolDir)Mew.Std.dll</HintPath>
+    </Reference>
+    <Reference Include="Spectre.IO">
+      <HintPath>$(MewToolDir)Spectre.IO.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Highlighting/mew.tmLanguage.json" />
+    <EmbeddedResource Include="Highlighting/il.tmLanguage.json" />
+    <!-- The standard library is compiled from source into every program, as the CLI does. -->
+    <EmbeddedResource Include="$(MewToolDir)stdlib/lib/**/*.mew" LogicalName="stdlib/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- The symbol model reads .NET types out of Mew.Runtime through the same index as the
+         framework reference assemblies, so it rides along with them. -->
+    <EmbeddedResource Include="$(MewToolDir)Mew.Runtime.dll" LogicalName="refs/Mew.Runtime.dll" />
   </ItemGroup>
+
+  <!-- The decompiler resolves the types a program uses from reference assemblies. The three
+       the standard library needs are embedded, taken from the same targeting pack this
+       project compiles against, so the C# view does not depend on what is installed. -->
+  <Target Name="EmbedMewReferenceAssemblies" AfterTargets="ResolveAssemblyReferences" BeforeTargets="PrepareResources">
+    <ItemGroup>
+      <_MewReferenceAssembly Include="@(ReferencePath)" Condition="'%(Filename)' == 'System.Runtime' Or '%(Filename)' == 'System.Console' Or '%(Filename)' == 'System.Runtime.Numerics'" />
+      <EmbeddedResource Include="@(_MewReferenceAssembly)" LogicalName="refs/%(Filename)%(Extension)" />
+    </ItemGroup>
+    <Error Condition="@(_MewReferenceAssembly->Count()) != 3" Text="Expected System.Runtime, System.Console and System.Runtime.Numerics among the resolved references, found: @(_MewReferenceAssembly->'%(Filename)', ', ')" />
+  </Target>
 
   <ItemGroup>
     <Watch Include="Content/**/*.*" />
