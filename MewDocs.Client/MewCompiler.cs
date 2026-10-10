@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Loader;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.Disassembler;
@@ -7,12 +8,12 @@ using ICSharpCode.Decompiler.Metadata;
 using Mew;
 using Mew.Serialization;
 
-namespace MewDocs.Pipeline;
+namespace MewDocs.Client;
 
 /// <summary>
-/// Drives the Mew compiler library while the site renders: parses a program against the
-/// embedded standard library, serializes every intermediate stage, emits an assembly to
-/// memory, and can disassemble and decompile what came out.
+/// Drives the Mew compiler library in the browser: parses a program against the embedded
+/// standard library, serializes every intermediate stage, emits an assembly to memory, and
+/// can disassemble, decompile and run what came out.
 /// </summary>
 public sealed class MewCompiler
 {
@@ -22,13 +23,19 @@ public sealed class MewCompiler
     private List<SyntaxTree>? _standardLibrary;
     private Dictionary<string, byte[]>? _references;
 
+    public static IReadOnlyList<Example> Examples { get; } = LoadExamples();
+
     /// <summary>
     /// Parses the standard library once and makes sure the compiler can find the reference
     /// assemblies it needs. The compiler builds its type index lazily from the
     /// trusted-platform-assembly list, so that list has to be right before the first
-    /// compilation touches it. The runtime's own list already covers the framework; only
-    /// Mew.Runtime is appended when it is missing.
+    /// compilation touches it.
     /// </summary>
+    /// <remarks>
+    /// In the browser the list is empty, so the embedded reference assemblies are written into
+    /// the in-memory file system and the list is pointed at them. On the server the runtime's
+    /// own list already covers the framework; only Mew.Runtime is appended when it is missing.
+    /// </remarks>
     public void Prepare()
     {
         if (_standardLibrary != null)
@@ -49,7 +56,23 @@ public sealed class MewCompiler
                 references[Path.GetFileNameWithoutExtension(name)] = ReadResource(name);
             }
 
-            EnsureRuntimeIsTrusted(references["Mew.Runtime"]);
+            if (OperatingSystem.IsBrowser())
+            {
+                Directory.CreateDirectory("/refs");
+                var paths = new List<string>();
+                foreach (var (name, bytes) in references)
+                {
+                    var path = $"/refs/{name}.dll";
+                    File.WriteAllBytes(path, bytes);
+                    paths.Add(path);
+                }
+
+                AppContext.SetData("TRUSTED_PLATFORM_ASSEMBLIES", string.Join(Path.PathSeparator, paths));
+            }
+            else
+            {
+                EnsureRuntimeIsTrusted(references["Mew.Runtime"]);
+            }
 
             _references = references;
             _standardLibrary = Self.GetManifestResourceNames()
@@ -65,7 +88,7 @@ public sealed class MewCompiler
     }
 
     /// <summary>
-    /// The trusted-platform-assembly list only has Mew.Runtime in it when the host's
+    /// The server's trusted-platform-assembly list only has Mew.Runtime in it when the host's
     /// dependency manifest lists it. If it does not, the embedded copy is written to a temp
     /// folder and appended, which the runtime ignores but the compiler's type index reads.
     /// </summary>
@@ -104,14 +127,14 @@ public sealed class MewCompiler
 
         if (diagnostics.HasErrors)
         {
-            return new CompileResult(diagnostics, syntax, hir, mir, null, null);
+            return new CompileResult(diagnostics, syntax, hir, mir, null, null, null);
         }
 
         var lir = LirSerializer.Serialize(compilation.ToLir());
         var emitted = Compiler.Emit(compilation);
         return emitted.Success
-            ? new CompileResult(emitted.Diagnostics, syntax, hir, mir, lir, emitted.Assembly)
-            : new CompileResult(emitted.Diagnostics, syntax, hir, mir, lir, null);
+            ? new CompileResult(emitted.Diagnostics, syntax, hir, mir, lir, emitted.Assembly, emitted.DebugInformation)
+            : new CompileResult(emitted.Diagnostics, syntax, hir, mir, lir, null, null);
     }
 
     public string Disassemble(byte[] assembly)
@@ -148,6 +171,47 @@ public sealed class MewCompiler
             return !type.GetDeclaringType().IsNil ? false : metadata.GetString(type.Name) != "<Module>";
         });
         return decompiler.DecompileTypesAsString(types).Trim();
+    }
+
+    /// <summary>
+    /// Loads the emitted program and calls its entry point on this thread, with both console
+    /// streams captured. The standard library and runtime resolve from this app's own copies.
+    /// </summary>
+    public RunResult Run(byte[] assembly, byte[] debugInformation)
+    {
+        var loaded = AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(assembly), new MemoryStream(debugInformation));
+        var entry = loaded.EntryPoint ?? throw new InvalidOperationException("The program has no entry point.");
+
+        var captured = new StringWriter();
+        var output = Console.Out;
+        var error = Console.Error;
+        Console.SetOut(captured);
+        Console.SetError(captured);
+        try
+        {
+            var exitCode = (int)entry.Invoke(null, null)!;
+            return new RunResult(captured.ToString(), exitCode);
+        }
+        finally
+        {
+            Console.SetOut(output);
+            Console.SetError(error);
+        }
+    }
+
+    private static IReadOnlyList<Example> LoadExamples()
+    {
+        return Self.GetManifestResourceNames()
+            .Where(n => n.StartsWith("examples/", StringComparison.Ordinal))
+            .OrderBy(n => n, StringComparer.Ordinal)
+            .Select(n =>
+            {
+                var file = n["examples/".Length..];
+                var stem = Path.GetFileNameWithoutExtension(file);
+                var title = stem.Length > 3 && char.IsDigit(stem[0]) ? stem[3..] : stem;
+                return new Example(file, char.ToUpperInvariant(title[0]) + title[1..], ReadText(n));
+            })
+            .ToList();
     }
 
     private static byte[] ReadResource(string name)
@@ -200,11 +264,18 @@ public sealed record CompileResult(
     string Hir,
     string Mir,
     string? Lir,
-    byte[]? Assembly)
+    byte[]? Assembly,
+    byte[]? DebugInformation)
 {
     public bool HasErrors => Diagnostics.HasErrors;
 
     /// <summary>The diagnostics as one line each, for hosts that cannot see the Mew types.</summary>
     public string DiagnosticsText =>
         string.Join("\n", Diagnostics.Select(d => $"{d.Severity.ToString().ToLowerInvariant()} {d.Code}: {d.Message}"));
+
+    public bool CanRun => Assembly != null && DebugInformation != null;
 }
+
+public sealed record RunResult(string Output, int ExitCode);
+
+public sealed record Example(string File, string Title, string Source);

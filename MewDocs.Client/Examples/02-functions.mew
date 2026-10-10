@@ -1,0 +1,11 @@
+use std;
+
+fn add(a: i32, b: i32) -> i32 {
+    return a + b;
+}
+
+let mut i = 0;
+while i < 3 {
+    println($"{i} + 1 = {add(i, 1)}");
+    i += 1;
+}

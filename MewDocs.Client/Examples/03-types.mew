@@ -1,0 +1,16 @@
+use std;
+
+pub type Counter {
+    pub mut field total: i32;
+    pub field name: string;
+
+    pub fn add(amount: i32) -> void {
+        self.total = self.total + amount;
+    }
+}
+
+let counter = new Counter { total: 0, name: "hits" };
+counter.add(2);
+counter.add(3);
+
+println($"{counter.name}: {counter.total}");

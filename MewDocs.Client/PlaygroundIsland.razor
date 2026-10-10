@@ -1,0 +1,380 @@
+@* The playground island. Prerendered by the host inside the static /playground page, then
+   activated as WebAssembly in the browser, where it compiles the editor's program with the
+   real Mew compiler and shows every stage of the pipeline beside it. Not routable: the host
+   page owns the route so Pennington's crawler emits it. *@
+@rendermode InteractiveWebAssembly
+@inject IJSRuntime Js
+@inject MewCompiler Compiler
+@using Mew
+@implements IDisposable
+
+<div class="flex flex-col h-full min-h-0">
+    <div class="flex items-center gap-3 px-4 py-2 border-b border-base-200 dark:border-base-800 bg-base-50 dark:bg-base-900">
+        <label class="flex items-center gap-2 text-sm text-base-600 dark:text-base-400">
+            <span>Example</span>
+            <select class="text-sm rounded-md border border-base-300 dark:border-base-700 bg-white dark:bg-base-950 text-base-800 dark:text-base-200 px-2 py-1" @onchange="LoadExample">
+                @foreach (var example in MewCompiler.Examples)
+                {
+                    <option value="@example.File" selected="@(example.File == _exampleFile)">@example.Title</option>
+                }
+            </select>
+        </label>
+        <button type="button" class="ml-auto inline-flex items-center gap-2 rounded-md bg-primary-700 hover:bg-primary-600 text-white text-sm font-medium px-3 py-1.5 disabled:opacity-50 disabled:cursor-not-allowed" @onclick="RunAsync" disabled="@(!_ready || _result?.CanRun != true)" title="Ctrl+Enter">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            Run
+        </button>
+    </div>
+
+    <div class="flex-1 grid grid-cols-2 min-h-0 max-md:grid-cols-1 max-md:grid-rows-2">
+        <div class="flex flex-col min-h-0 border-r border-base-200 dark:border-base-800">
+            <div class="flex items-center px-4 py-1.5 border-b border-base-200 dark:border-base-800 font-mono text-xs text-base-500 bg-base-50 dark:bg-base-900">main.mew</div>
+            <div class="relative flex-1 min-h-0 bg-white dark:bg-base-950">
+                <StandaloneCodeEditor @ref="_editor" Id="pg-source" CssClass="absolute inset-0"
+                                      ConstructionOptions="SourceOptions"
+                                      OnDidInit="EditorInitAsync"
+                                      OnDidChangeModelContent="SourceChanged" />
+            </div>
+        </div>
+        <div class="flex flex-col min-h-0">
+            <div class="flex items-stretch border-b border-base-200 dark:border-base-800 bg-base-50 dark:bg-base-900 font-mono text-xs overflow-x-auto">
+                @foreach (var tab in Tabs)
+                {
+                    <button type="button"
+                            class="px-3 py-1.5 border-b-2 whitespace-nowrap @(tab == _tab ? "border-primary-600 text-base-900 dark:text-base-50" : "border-transparent text-base-500 hover:text-base-800 dark:hover:text-base-200")"
+                            @onclick="() => SelectTabAsync(tab)">@tab.Title</button>
+                }
+            </div>
+            <div class="relative flex-1 min-h-0 bg-white dark:bg-base-950">
+                <StandaloneCodeEditor @ref="_view" Id="pg-view" CssClass="absolute inset-0"
+                                      ConstructionOptions="ViewOptions"
+                                      OnDidInit="ViewInitAsync" />
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-4 px-4 py-1.5 border-t border-base-200 dark:border-base-800 bg-base-50 dark:bg-base-900 font-mono text-xs text-base-500">
+        <span class="@(_statusIsError ? "text-red-600 dark:text-red-400" : "")">@_status</span>
+        <span class="ml-auto">Compiled in the browser by the Mew compiler</span>
+    </div>
+</div>
+
+@code {
+    private sealed record Tab(string Title, string Language);
+
+    private static readonly Tab OutputTab = new("Output", "plaintext");
+    private static readonly Tab[] Tabs =
+    [
+        OutputTab,
+        new("Syntax", "xml"),
+        new("HIR", "mew"),
+        new("MIR", "mew"),
+        new("LIR", "msil"),
+        new("IL", "msil"),
+        new("C#", "csharp"),
+    ];
+
+    private StandaloneCodeEditor _editor = null!;
+    private StandaloneCodeEditor _view = null!;
+    private DotNetObjectReference<PlaygroundIsland>? _self;
+    private CancellationTokenSource? _debounce;
+
+    private bool _ready;
+    private bool _editorReady;
+    private bool _viewReady;
+    private bool _suppressNextChange;
+    private string _exampleFile = MewCompiler.Examples[0].File;
+    private Tab _tab = OutputTab;
+    private string _status = "Loading the compiler…";
+    private bool _statusIsError;
+
+    private CompileResult? _result;
+    private string _output = "";
+    private string? _il;
+    private string? _csharp;
+
+    private static StandaloneEditorConstructionOptions SourceOptions(StandaloneCodeEditor _) => new()
+    {
+        Language = "mew",
+        Value = MewCompiler.Examples[0].Source,
+        AutomaticLayout = true,
+        Minimap = new EditorMinimapOptions { Enabled = false },
+        ScrollBeyondLastLine = false,
+        FontSize = 13,
+        Padding = new EditorPaddingOptions { Top = 12 },
+        RenderLineHighlight = "none",
+        FixedOverflowWidgets = true,
+    };
+
+    private static StandaloneEditorConstructionOptions ViewOptions(StandaloneCodeEditor _) => new()
+    {
+        Language = "plaintext",
+        Value = "",
+        ReadOnly = true,
+        AutomaticLayout = true,
+        Minimap = new EditorMinimapOptions { Enabled = false },
+        ScrollBeyondLastLine = false,
+        FontSize = 13,
+        Padding = new EditorPaddingOptions { Top = 12 },
+        RenderLineHighlight = "none",
+        LineNumbers = "off",
+        Folding = false,
+        GlyphMargin = false,
+        LineDecorationsWidth = 16,
+        FixedOverflowWidgets = true,
+    };
+
+    private async Task EditorInitAsync()
+    {
+        _self = DotNetObjectReference.Create(this);
+        var theme = await Js.InvokeAsync<string>("mewPlayground.observeTheme", _self);
+        await ApplyThemeAsync(theme);
+        await _editor.AddCommand((int)KeyMod.CtrlCmd | (int)KeyCode.Enter, args => _ = RunAsync());
+
+        _editorReady = true;
+        await WhenEditorsReadyAsync();
+    }
+
+    private async Task ViewInitAsync()
+    {
+        _viewReady = true;
+        await WhenEditorsReadyAsync();
+    }
+
+    private async Task WhenEditorsReadyAsync()
+    {
+        if (!_editorReady || !_viewReady || _ready)
+        {
+            return;
+        }
+
+        // Let the editors paint before the compiler's first, slowest pass.
+        await Task.Yield();
+        Compiler.Prepare();
+        _ready = true;
+        await CompileAsync();
+        await Js.InvokeVoidAsync("mewPlayground.ready");
+    }
+
+    private void SourceChanged(ModelContentChangedEvent change)
+    {
+        if (_suppressNextChange)
+        {
+            _suppressNextChange = false;
+            return;
+        }
+
+        if (!_ready)
+        {
+            return;
+        }
+
+        _debounce?.Cancel();
+        var debounce = _debounce = new CancellationTokenSource();
+        _ = DebouncedCompileAsync(debounce.Token);
+    }
+
+    private async Task DebouncedCompileAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(300, token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        await CompileAsync();
+        StateHasChanged();
+    }
+
+    private async Task CompileAsync()
+    {
+        var source = await _editor.GetValue();
+        _il = null;
+        _csharp = null;
+        _output = "";
+
+        try
+        {
+            _result = Compiler.Compile(source);
+        }
+        catch (Exception ex)
+        {
+            _result = null;
+            SetStatus("The compiler failed: " + ex.Message, error: true);
+            await SetMarkersAsync(source, []);
+            await ShowTabAsync();
+            return;
+        }
+
+        var diagnostics = _result.Diagnostics;
+        await SetMarkersAsync(source, diagnostics);
+
+        if (diagnostics.HasErrors)
+        {
+            var errors = diagnostics.Count(d => d.Severity == Severity.Error);
+            SetStatus(errors == 1 ? "1 error" : $"{errors} errors", error: true);
+        }
+        else if (_result.CanRun)
+        {
+            var warnings = diagnostics.Count(d => d.Severity == Severity.Warning);
+            SetStatus(warnings == 0 ? "Compiled" : $"Compiled with {warnings} warning{(warnings == 1 ? "" : "s")}", error: false);
+        }
+        else
+        {
+            SetStatus("Not a program, so nothing was emitted", error: true);
+        }
+
+        await ShowTabAsync();
+    }
+
+    private async Task RunAsync()
+    {
+        if (_result?.CanRun != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var run = Compiler.Run(_result.Assembly!, _result.DebugInformation!);
+            _output = run.Output;
+            SetStatus($"Exited with {run.ExitCode}", error: run.ExitCode != 0);
+        }
+        catch (Exception ex)
+        {
+            _output = "The program could not be run: " + ex.Message;
+            SetStatus("Run failed", error: true);
+        }
+
+        _tab = OutputTab;
+        await ShowTabAsync();
+        StateHasChanged();
+    }
+
+    private async Task SelectTabAsync(Tab tab)
+    {
+        _tab = tab;
+        await ShowTabAsync();
+    }
+
+    private async Task ShowTabAsync()
+    {
+        if (!_viewReady)
+        {
+            return;
+        }
+
+        var text = _tab.Title switch
+        {
+            "Output" => _result == null ? "" : _result.CanRun ? (_output.Length == 0 ? "Press Run (Ctrl+Enter) to execute the program." : _output) : FormatDiagnostics(_result.Diagnostics),
+            "Syntax" => _result?.Syntax ?? "",
+            "HIR" => _result?.Hir ?? "",
+            "MIR" => _result?.Mir ?? "",
+            "LIR" => _result?.Lir ?? NeedsBuild(),
+            "IL" => _result?.Assembly is { } il ? _il ??= Compiler.Disassemble(il) : NeedsBuild(),
+            "C#" => _result?.Assembly is { } cs ? _csharp ??= Compiler.Decompile(cs) : NeedsBuild(),
+            _ => "",
+        };
+
+        var model = await _view.GetModel();
+        await BlazorMonaco.Editor.Global.SetModelLanguage(Js, model, _tab.Language);
+        await _view.SetValue(text);
+    }
+
+    private string NeedsBuild() => _result == null ? "" : "Fix the errors to see this stage.";
+
+    private static string FormatDiagnostics(Diagnostics diagnostics) =>
+        string.Join("\n", diagnostics.Select(d => $"{d.Severity.ToString().ToLowerInvariant()} {d.Code}: {d.Message}"));
+
+    private async Task SetMarkersAsync(string source, IEnumerable<Diagnostic> diagnostics)
+    {
+        var lines = LineStarts(source);
+        var markers = diagnostics
+            .Where(d => d.Location.Path == "main.mew")
+            .Select(d =>
+            {
+                var (startLine, startColumn) = Locate(lines, d.Location.Span.Start);
+                var (endLine, endColumn) = Locate(lines, Math.Max(d.Location.Span.End, d.Location.Span.Start + 1));
+                return new MarkerData
+                {
+                    Message = d.Message,
+                    CodeAsString = d.Code,
+                    Source = "mew",
+                    Severity = d.Severity switch
+                    {
+                        Severity.Error => MarkerSeverity.Error,
+                        Severity.Warning => MarkerSeverity.Warning,
+                        _ => MarkerSeverity.Info,
+                    },
+                    StartLineNumber = startLine,
+                    StartColumn = startColumn,
+                    EndLineNumber = endLine,
+                    EndColumn = endColumn,
+                };
+            })
+            .ToList();
+
+        var model = await _editor.GetModel();
+        await BlazorMonaco.Editor.Global.SetModelMarkers(Js, model, "mew", markers);
+    }
+
+    private static List<int> LineStarts(string source)
+    {
+        var starts = new List<int> { 0 };
+        for (var i = 0; i < source.Length; i++)
+        {
+            if (source[i] == '\n')
+            {
+                starts.Add(i + 1);
+            }
+        }
+
+        return starts;
+    }
+
+    private static (int Line, int Column) Locate(List<int> lineStarts, int offset)
+    {
+        var line = lineStarts.BinarySearch(offset);
+        if (line < 0)
+        {
+            line = ~line - 1;
+        }
+
+        return (line + 1, offset - lineStarts[line] + 1);
+    }
+
+    private async Task LoadExample(ChangeEventArgs e)
+    {
+        var file = e.Value?.ToString();
+        var example = MewCompiler.Examples.FirstOrDefault(x => x.File == file);
+        if (example == null)
+        {
+            return;
+        }
+
+        _exampleFile = example.File;
+        _suppressNextChange = true;
+        await _editor.SetValue(example.Source);
+        await CompileAsync();
+    }
+
+    private void SetStatus(string text, bool error)
+    {
+        _status = text;
+        _statusIsError = error;
+    }
+
+    [JSInvokable]
+    public Task OnHostThemeChanged(string theme) => ApplyThemeAsync(theme);
+
+    private Task ApplyThemeAsync(string theme) =>
+        BlazorMonaco.Editor.Global.SetTheme(Js, theme == "dark" ? "mew-dark" : "mew-light");
+
+    public void Dispose()
+    {
+        _debounce?.Cancel();
+        _self?.Dispose();
+    }
+}

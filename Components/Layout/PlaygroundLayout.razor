@@ -1,0 +1,12 @@
+@* Full-viewport shell for the playground: the site header on top, and the rest of the
+   viewport handed to the page so the editors can fill it. There is no SPA region here on
+   purpose, so Pennington's in-page navigation falls back to a full load on the way in and
+   out, which is what the WebAssembly island needs. *@
+@inherits LayoutComponentBase
+
+<div class="dark:scheme-dark font-sans box-border bg-base-100 dark:bg-base-950 text-base-900 dark:text-base-50 flex flex-col h-screen">
+    <DocSiteHeader ShowMobileMenuButton="false" CenterSearch="true" />
+    <main id="main-content" class="flex-1 min-h-0">
+        @Body
+    </main>
+</div>

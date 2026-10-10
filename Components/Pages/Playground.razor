@@ -1,0 +1,21 @@
+@* The /playground route. Rendered statically so the site build emits it; the island inside
+   takes over in the browser. Monaco and the Blazor runtime are loaded only here. *@
+@page "/playground"
+@layout PlaygroundLayout
+
+<PageTitle>Playground · Mew</PageTitle>
+
+<HeadContent>
+    @* BlazorMonaco resolves Monaco's chunk files against document.baseURI, which without
+       this is the page URL itself. *@
+    <base href="/" />
+    <meta name="description" content="Write Mew in the browser and watch it compile: syntax tree, HIR, MIR, LIR, IL and C#." />
+    <link rel="stylesheet" href="/_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" />
+    <script src="/_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="/_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="/_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="/js/mew-playground.js"></script>
+    <script src="/_framework/blazor.web.js" defer></script>
+</HeadContent>
+
+<PlaygroundIsland />
