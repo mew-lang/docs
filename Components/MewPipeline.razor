@@ -1,0 +1,190 @@
+@* Shows a Mew program at every stage of the compiler, as the tabs the playground has, but
+   rendered once on the server while the page is built. Used from Markdown as
+
+       <MewPipeline>
+
+       ```mew
+       use std;
+       println("Hello");
+       ```
+
+       </MewPipeline>
+
+   The fence is the program. The tabs are the same markup Pennington emits for adjacent
+   `tabs=true` fences, so the site's tab script and code-block styles apply unchanged. *@
+@using System.Net
+@using System.Text
+@using AngleSharp.Html.Parser
+@using Microsoft.AspNetCore.Components.RenderTree
+@using Pennington.Markdown.Extensions
+@using Pennington.Markdown.Extensions.Tabs
+@inject CodeBlockRenderingService CodeBlocks
+@inject MewCompiler Compiler
+
+@((MarkupString)_html)
+
+@code {
+    private static int _groupId;
+
+    /// <summary>The Markdown body: a single <c>mew</c> fenced code block holding the program.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Which stages to show, in order, as a comma-separated list of
+    /// <c>mew</c>, <c>syntax</c>, <c>hir</c>, <c>mir</c>, <c>lir</c>, <c>il</c> and <c>csharp</c>.
+    /// </summary>
+    [Parameter] public string Tabs { get; set; } = "mew,syntax,hir,mir,lir,il,csharp";
+
+    private string _html = "";
+
+    protected override void OnParametersSet()
+    {
+        var source = ExtractSource();
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            _html = Error("MewPipeline needs a ```mew code block as its content.");
+            return;
+        }
+
+        var stages = Stages.Select(s => s.Key).ToList();
+        var requested = Tabs
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(t => t.ToLowerInvariant())
+            .ToList();
+        var unknown = requested.Where(t => !stages.Contains(t)).ToList();
+        if (unknown.Count > 0)
+        {
+            _html = Error($"MewPipeline does not know the tab{(unknown.Count == 1 ? "" : "s")} {string.Join(", ", unknown)}. Choose from {string.Join(", ", stages)}.");
+            return;
+        }
+
+        CompileResult result;
+        try
+        {
+            result = Compiler.Compile(source);
+        }
+        catch (Exception ex)
+        {
+            _html = Error("The Mew compiler failed: " + ex.Message);
+            return;
+        }
+
+        var tabs = new List<(string Title, string Language, string Text)>();
+        string? il = null;
+        string? csharp = null;
+
+        foreach (var key in requested)
+        {
+            var stage = Stages.First(s => s.Key == key);
+            var text = key switch
+            {
+                "mew" => source,
+                "syntax" => result.Syntax,
+                "hir" => result.Hir,
+                "mir" => result.Mir,
+                "lir" => result.Lir,
+                "il" => result.Assembly is { } a ? il ??= Compiler.Disassemble(a) : null,
+                "csharp" => result.Assembly is { } b ? csharp ??= Compiler.Decompile(b) : null,
+                _ => null,
+            };
+
+            if (text != null)
+            {
+                tabs.Add((stage.Title, stage.Language, text));
+            }
+        }
+
+        if (result.HasErrors)
+        {
+            tabs.Add(("Errors", "", result.DiagnosticsText));
+        }
+
+        _html = RenderTabs(tabs);
+    }
+
+    private static readonly (string Key, string Title, string Language)[] Stages =
+    [
+        ("mew", "Mew", "mew"),
+        ("syntax", "Syntax", "xml"),
+        ("hir", "HIR", "mew"),
+        ("mir", "MIR", "mew"),
+        ("lir", "LIR", "il"),
+        ("il", "IL", "il"),
+        ("csharp", "C#", "csharp"),
+    ];
+
+    /// <summary>
+    /// Mirrors Pennington's tabbed-code renderer: a tablist of buttons and one panel per
+    /// fence, each panel holding a code block rendered without its standalone chrome.
+    /// </summary>
+    private string RenderTabs(List<(string Title, string Language, string Text)> tabs)
+    {
+        var options = TabbedCodeBlockRenderOptions.Default;
+        var group = $"mew-{Interlocked.Increment(ref _groupId)}";
+        var html = new StringBuilder();
+
+        html.AppendLine($"<div class=\"{options.OuterWrapperCss}\">");
+        html.AppendLine($"<div class=\"{options.ContainerCss}\">");
+        html.AppendLine($"<div role=\"tablist\" id=\"tablist{group}\" aria-orientation=\"horizontal\" class=\"{options.TabListCss}\">");
+
+        for (var i = 0; i < tabs.Count; i++)
+        {
+            var selected = i == 0 ? "true" : "false";
+            var state = i == 0 ? "active" : "inactive";
+            html.AppendLine($"<button type=\"button\" role=\"tab\" aria-selected=\"{selected}\" aria-controls=\"tab-content{group}-{i}\" data-state=\"{state}\" id=\"tabButton{group}-{i}\" class=\"{options.TabButtonCss}\" tabindex=\"-1\" data-orientation=\"horizontal\">{WebUtility.HtmlEncode(tabs[i].Title)}</button>");
+        }
+
+        html.AppendLine("</div>");
+
+        for (var i = 0; i < tabs.Count; i++)
+        {
+            html.AppendLine($"<div aria-labelledby=\"tabButton{group}-{i}\" id=\"tab-content{group}-{i}\" class=\"{options.TabPanelCss}\">");
+            html.Append(CodeBlocks.Render(tabs[i].Text.Trim(), tabs[i].Language, options: null, isInTabGroup: true));
+            html.AppendLine("</div>");
+        }
+
+        html.AppendLine("</div>");
+        html.AppendLine("</div>");
+        return html.ToString();
+    }
+
+    /// <summary>
+    /// The child content arrives already rendered: the Markdown fence has become a highlighted
+    /// code block. The program is its text, which survives highlighting unchanged.
+    /// </summary>
+    private string ExtractSource()
+    {
+        if (ChildContent == null)
+        {
+            return "";
+        }
+
+#pragma warning disable BL0006 // RenderTree types are the only way to look inside a fragment.
+        var builder = new Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder();
+        ChildContent(builder);
+        var markup = new StringBuilder();
+        foreach (var frame in builder.GetFrames().Array)
+        {
+            switch (frame.FrameType)
+            {
+                case RenderTreeFrameType.Markup:
+                    markup.Append(frame.MarkupContent);
+                    break;
+                case RenderTreeFrameType.Text:
+                    markup.Append(WebUtility.HtmlEncode(frame.TextContent));
+                    break;
+            }
+        }
+#pragma warning restore BL0006
+
+        var document = new HtmlParser().ParseDocument(markup.ToString());
+        var code = document.QuerySelector("pre code") ?? document.Body;
+
+        // The code transformer pads blank lines with two spaces so they keep their height.
+        var lines = (code?.TextContent ?? "").Split('\n').Select(l => l.TrimEnd());
+        return string.Join('\n', lines).Trim();
+    }
+
+    private static string Error(string message) =>
+        $"<div class=\"not-prose rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200\">{WebUtility.HtmlEncode(message)}</div>";
+}

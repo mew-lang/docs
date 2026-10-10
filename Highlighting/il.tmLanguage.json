@@ -1,0 +1,92 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "IL",
+  "scopeName": "source.il",
+  "fileTypes": ["il"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#directives" },
+    { "include": "#labels" },
+    { "include": "#assembly-references" },
+    { "include": "#member-references" },
+    { "include": "#opcodes" },
+    { "include": "#modifiers" },
+    { "include": "#types" },
+    { "include": "#numbers" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.il", "match": "//.*$" },
+        { "name": "comment.block.il", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.il",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [{ "name": "constant.character.escape.il", "match": "\\\\." }]
+        },
+        {
+          "comment": "A quoted identifier such as '<Module>' or '<entry>' names something rather than holding text.",
+          "name": "variable.other.quoted.il",
+          "match": "'[^']*'"
+        }
+      ]
+    },
+    "directives": {
+      "comment": ".class, .method, .maxstack, .locals, .try and the rest.",
+      "name": "keyword.other.directive.il",
+      "match": "(?<![\\w.])\\.[a-z][a-z0-9]*\\b"
+    },
+    "labels": {
+      "comment": "IL_0000: at the start of a line defines a label; elsewhere it is a branch target.",
+      "name": "entity.name.label.il",
+      "match": "\\bIL_[0-9A-Fa-f]+\\b"
+    },
+    "assembly-references": {
+      "name": "entity.name.namespace.assembly.il",
+      "match": "\\[[A-Za-z_][A-Za-z0-9_.]*\\]"
+    },
+    "member-references": {
+      "comment": "Type::member and the method name that follows it.",
+      "match": "(::)('[^']*'|[A-Za-z_$<>.`][A-Za-z0-9_$<>.`]*)",
+      "captures": {
+        "1": { "name": "punctuation.separator.member.il" },
+        "2": { "name": "entity.name.function.il" }
+      }
+    },
+    "opcodes": {
+      "comment": "CIL opcodes with their dotted forms (ldarg.0, conv.ovf.i4.un, ...), plus the ops Mew's LIR adds.",
+      "name": "support.function.opcode.il",
+      "match": "\\b(add|and|arglist|beq|bge|bgt|ble|blt|bne|box|br|break|brfalse|brinst|brnull|brtrue|brzero|call|calli|callvirt|castclass|ceq|cgt|ckfinite|clt|constrained|conv|cpblk|cpobj|div|dup|endfault|endfilter|endfinally|initblk|initobj|isinst|jmp|ldarg|ldarga|ldc|ldelem|ldelema|ldfld|ldflda|ldftn|ldind|ldlen|ldloc|ldloca|ldnull|ldobj|ldsfld|ldsflda|ldstr|ldtoken|ldvirtftn|leave|localloc|mkrefany|mul|neg|newarr|newobj|no|nop|not|or|pop|readonly|refanytype|refanyval|rem|ret|rethrow|shl|shr|sizeof|starg|stelem|stfld|stind|stloc|stobj|stsfld|sub|switch|tail|throw|unaligned|unbox|volatile|xor|tostr)(\\.[a-z0-9]+)*\\b"
+    },
+    "modifiers": {
+      "name": "storage.modifier.il",
+      "match": "\\b(abstract|ansi|assembly|auto|autochar|beforefieldinit|catch|cil|class|default|explicit|extends|family|famandassem|famorassem|filter|final|finally|fn|forwardref|hidebysig|implements|import|init|initonly|instance|interface|internalcall|literal|main|managed|native|nested|newslot|noinlining|nooptimization|pinvokeimpl|private|privatescope|public|rtspecialname|runtime|sealed|sequential|serializable|specialname|static|synchronized|unicode|unmanaged|valuetype|vararg|virtual)\\b"
+    },
+    "types": {
+      "name": "entity.name.type.primitive.il",
+      "match": "\\b(void|bool|char|string|object|typedref|int8|int16|int32|int64|uint8|uint16|uint32|uint64|float32|float64|unsigned|native|i8|i16|i32|i64|u8|u16|u32|u64|f32|f64|isize|usize|int|uint|float|double|long|short|byte|sbyte|decimal)\\b"
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hex.il", "match": "\\b0[xX][0-9A-Fa-f]+\\b" },
+        { "name": "constant.numeric.decimal.il", "match": "(?<![\\w.])-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?\\b" }
+      ]
+    },
+    "operators": {
+      "name": "keyword.operator.il",
+      "match": "->|::|[=!&|^]"
+    },
+    "punctuation": {
+      "name": "punctuation.il",
+      "match": "[{}()\\[\\],:]"
+    }
+  }
+}

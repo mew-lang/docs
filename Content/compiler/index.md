@@ -22,6 +22,22 @@ flowchart LR;
 
 The backend writes MSIL, and it is reached through `LIR`.
 
+Here is a small program at every stage, from the source to the IL the backend wrote:
+
+<MewPipeline>
+
+```mew
+use std;
+
+fn square(x: i32) -> i32 {
+    return x * x;
+}
+
+println($"{square(7)}");
+```
+
+</MewPipeline>
+
 ## 1. AST parsing
 
 The parsing step iterates through all source files, and
