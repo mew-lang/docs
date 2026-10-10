@@ -33,7 +33,9 @@ fn square(x: i32) -> i32 {
     return x * x;
 }
 
-println($"{square(7)}");
+for i in 1..5 {
+    println($"{square(i)}");
+}
 ```
 
 </MewPipeline>

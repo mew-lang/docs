@@ -7,7 +7,7 @@
     <RootNamespace>MewDocs</RootNamespace>
     <!-- The compiler ships only as the `Mew` dotnet tool, so the package is downloaded (not
          referenced) and its assemblies are picked out of the tool folder by hand. -->
-    <MewVersion>0.0.0-preview.0.262</MewVersion>
+    <MewVersion>0.0.0-preview.0.282</MewVersion>
     <MewToolDir>$(NuGetPackageRoot)mew/$(MewVersion)/tools/net10.0/any/</MewToolDir>
   </PropertyGroup>
 
