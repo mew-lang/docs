@@ -15,13 +15,10 @@ builder.Services.AddDocSite(() => new DocSiteOptions
     GitHubUrl = "https://github.com/mew-lang",
 
     HeaderContent = """
-        <div class="flex items-center gap-6">
-          <a href="/" class="flex items-center gap-2 font-semibold">
-            <img src="/img/logo.svg" alt="" width="28" height="28" class="rounded bg-white p-px" />
-            <span>Mew</span>
-          </a>
-          <a href="/playground" data-spa-reload class="text-sm font-medium text-base-600 hover:text-primary-700 dark:text-base-400 dark:hover:text-primary-400">Playground</a>
-        </div>
+        <a href="/" class="flex items-center gap-2 font-semibold">
+          <img src="/img/logo.svg" alt="" width="28" height="28" class="rounded bg-white p-px" />
+          <span>Mew</span>
+        </a>
         """,
 
     // The /playground page lives in this assembly.
@@ -139,6 +136,10 @@ builder.Services.AddDocSite(() => new DocSiteOptions
         new ContentArea("Language", "language"),
         new ContentArea("Standard Library", "stdlib"),
         new ContentArea("Future", "future"),
+        // The /playground route is a Razor page in this assembly. The area lists it in the
+        // sidebar; its index.md exists only so the entry is a direct link rather than a
+        // TOC toggle, and the Razor route wins over it when the URL is served.
+        new ContentArea("Playground", "playground"),
     ],
 
     ConfigurePennington = penn =>
