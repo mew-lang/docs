@@ -1,0 +1,22 @@
+use std;
+
+pub fn apply(f: fn(i32) -> i32, v: i32) -> i32 {
+    return f(v);
+}
+
+pub fn combine(f: fn(i32, i32) -> i32) -> i32 {
+    return f(3, 4);
+}
+
+println($"{apply(|n| n * 2, 21)}");
+println($"{combine(|a, b| a + b)}");
+
+let primes = new i32[] { 2, 3, 5, 7, 11 };
+let mut total = 0;
+for prime in primes {
+    if prime > 7 {
+        break;
+    }
+    total += prime;
+}
+println($"total: {total}");

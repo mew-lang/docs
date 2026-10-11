@@ -1,0 +1,25 @@
+use std;
+
+pub fn divide(left: i32, right: i32) -> Result<i32, string> {
+    if right == 0 {
+        return .err("cannot divide by zero");
+    }
+
+    return .ok(left / right);
+}
+
+pub fn halve_twice(value: i32) -> Result<i32, string> {
+    let once = divide(value, 2)?;
+    return divide(once, 2);
+}
+
+match divide(10, 0) {
+    .ok(value) => {
+        println($"ok: {value}");
+    },
+    .err(reason) => {
+        println($"error: {reason}");
+    },
+}
+
+println($"{halve_twice(20).unwrap()}");

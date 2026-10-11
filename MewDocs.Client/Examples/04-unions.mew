@@ -1,0 +1,25 @@
+use std;
+
+pub union IpAddress {
+    none,
+    v4(u8, u8, u8, u8),
+    v6(string),
+}
+
+pub fn show(ip: IpAddress) -> void {
+    match ip {
+        .none => {
+            println("no address");
+        },
+        .v4(a, b, c, d) => {
+            println($"{a}.{b}.{c}.{d}");
+        },
+        .v6(text) => {
+            println(text);
+        },
+    }
+}
+
+show(.none);
+show(.v4(127, 0, 0, 1));
+show(.v6("fd1a::1"));

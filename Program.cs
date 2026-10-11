@@ -1,7 +1,7 @@
 using Mdazor;
 using MewDocs.Components;
 using MewDocs.Highlighting;
-using MewDocs.Pipeline;
+using MewDocs.Client;
 using Pennington.DocSite;
 using Pennington.Favicon;
 
@@ -20,6 +20,9 @@ builder.Services.AddDocSite(() => new DocSiteOptions
           <span>Mew</span>
         </a>
         """,
+
+    // The /playground page lives in this assembly.
+    AdditionalRoutingAssemblies = [typeof(Program).Assembly],
 
     FooterContent = """
         <footer class="mt-16 py-8 text-center text-sm text-base-500">
@@ -133,6 +136,10 @@ builder.Services.AddDocSite(() => new DocSiteOptions
         new ContentArea("Language", "language"),
         new ContentArea("Standard Library", "stdlib"),
         new ContentArea("Future", "future"),
+        // The /playground route is a Razor page in this assembly. The area lists it in the
+        // sidebar; its index.md exists only so the entry is a direct link rather than a
+        // TOC toggle, and the Razor route wins over it when the URL is served.
+        new ContentArea("Playground", "playground"),
     ],
 
     ConfigurePennington = penn =>
@@ -142,10 +149,14 @@ builder.Services.AddDocSite(() => new DocSiteOptions
     },
 });
 
-// <MewPipeline> in Markdown compiles its program while the page renders and shows every stage.
+// The playground island renders as WebAssembly in the browser. It is prerendered here first,
+// which constructs it, so its service has to exist on the server as well. <MewPipeline> in
+// Markdown uses the same service to compile its program while the page renders.
 builder.Services.AddSingleton<MewCompiler>();
 builder.Services.AddMdazorComponent<MewPipeline>();
 
 var app = builder.Build();
+
 app.UseDocSite();
+
 await app.RunDocSiteAsync(args);
