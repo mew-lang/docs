@@ -91,10 +91,27 @@ public sealed partial class StdlibHtml
     /// <summary>
     /// The function's summary followed by its attributes as badges, each linked to the attributes page
     /// when one is known. <paramref name="required"/> prefixes "Required." for interface members without a default.
+    /// A method that implements an interface member and has no summary of its own borrows the interface's,
+    /// and gets a badge linking to that member, so <c>iter()</c> on an adapter type is not a blank row.
     /// </summary>
-    public static MarkupString Description(StdlibFunction f, string? attributesPageUrl, bool required = false)
+    public MarkupString Description(StdlibFunction f, StdlibNamespace ns, string? attributesPageUrl, bool required = false)
     {
         var text = SummaryHtml(f.Summary);
+        var badges = new List<string>();
+
+        if (f.Implements is not null && Resolve(StdlibModel.BareName(f.Implements), ns) is var (interfaceNs, @interface))
+        {
+            var member = @interface.Methods.FirstOrDefault(m => m.Name == f.Name);
+            if (text.Length == 0 && member is not null)
+            {
+                text = SummaryHtml(member.Summary);
+            }
+
+            var label = $"{@interface.DisplayName}.{f.Name}";
+            var anchor = MemberAnchor(@interface.DisplayName, f.Name);
+            badges.Add($"<a href=\"{RoutePrefix}{interfaceNs.Slug}/#{anchor}\"><code>{Escape(label)}</code></a>");
+        }
+
         if (required)
         {
             text = "Required. " + text;
@@ -108,11 +125,23 @@ public sealed partial class StdlibHtml
                 badge = $"<a href=\"{Escape(attributesPageUrl)}#{Escape(attribute)}\">{badge}</a>";
             }
 
+            badges.Add(badge);
+        }
+
+        foreach (var badge in badges)
+        {
             text = text.Length == 0 ? badge : $"{text} {badge}";
         }
 
         return new MarkupString(text);
     }
+
+    /// <summary>
+    /// The id of a member's row: the owner's anchor and the member name, so <c>Enumerable&lt;T&gt;.filter</c>
+    /// is <c>#enumerablet-filter</c>. Free functions use the name alone.
+    /// </summary>
+    public static string MemberAnchor(string? owner, string name) =>
+        Anchors.For(owner is null ? name : $"{owner}-{name}");
 
     /// <summary>A union case with its payload types, as code: <c>Some(T)</c>.</summary>
     public MarkupString Case(StdlibCase c, ISet<string> scope, StdlibNamespace current)
@@ -174,29 +203,33 @@ public sealed partial class StdlibHtml
                 continue;
             }
 
-            var dot = text.LastIndexOf('.');
-            StdlibNamespace? ns;
-            StdlibType? declared;
-            if (dot >= 0)
-            {
-                ns = _model.FindNamespace(text[..dot]);
-                declared = ns?.FindType(text[(dot + 1)..]);
-            }
-            else
-            {
-                ns = current;
-                declared = current.FindType(text);
-                if (declared is null)
-                {
-                    ns = _model.FindNamespace("std");
-                    declared = ns?.FindType(text);
-                }
-            }
-
-            sb.Append(ns is not null && declared is not null ? LinkHtml(ns, declared, text) : Escape(text));
+            sb.Append(Resolve(text, current) is var (ns, declared) ? LinkHtml(ns, declared, text) : Escape(text));
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Finds the type a bare name refers to: qualified names look in their namespace, unqualified ones in
+    /// the current namespace and then <c>std</c>, which is in scope everywhere. Null when nothing declares it.
+    /// </summary>
+    private (StdlibNamespace Namespace, StdlibType Type)? Resolve(string name, StdlibNamespace current)
+    {
+        var dot = name.LastIndexOf('.');
+        if (dot >= 0)
+        {
+            var ns = _model.FindNamespace(name[..dot]);
+            var type = ns?.FindType(name[(dot + 1)..]);
+            return ns is not null && type is not null ? (ns, type) : null;
+        }
+
+        if (current.FindType(name) is { } local)
+        {
+            return (current, local);
+        }
+
+        var std = _model.FindNamespace("std");
+        return std?.FindType(name) is { } shared ? (std, shared) : null;
     }
 
     private static string LinkHtml(StdlibNamespace ns, StdlibType type, string text) =>

@@ -27,12 +27,22 @@
     protected override void OnParametersSet()
     {
         var scope = Scope ?? new HashSet<string>(StringComparer.Ordinal);
+
+        // Overloads share a name, so the second `string::join` becomes `#string-join-2`.
+        var seen = new Dictionary<string, int>(StringComparer.Ordinal);
         _rows =
         [
             .. Members
                 .Select(m => new ReferenceTable.Row(
                     Html.Signature(m, Owner, Namespace, scope),
-                    StdlibHtml.Description(m, AttributesPageUrl, required: RequiredMarker && !m.IsDefault)))
+                    Html.Description(m, Namespace, AttributesPageUrl, required: RequiredMarker && !m.IsDefault),
+                    Unique(StdlibHtml.MemberAnchor(Owner, m.Name))))
         ];
+
+        string Unique(string anchor)
+        {
+            var n = seen[anchor] = seen.GetValueOrDefault(anchor) + 1;
+            return n == 1 ? anchor : $"{anchor}-{n}";
+        }
     }
 }
