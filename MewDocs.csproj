@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Pennington.DocSite" Version="0.1.10" />
+    <!-- ```beck fences render to inline SVG while the page is built. -->
+    <PackageReference Include="Pennington.Beck" Version="0.1.10" />
   </ItemGroup>
 
   <ItemGroup>
