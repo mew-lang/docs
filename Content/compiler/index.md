@@ -19,19 +19,24 @@ type: architecture
 meta:
   direction: LR
   spacing: { rank: 28, node: 32 }
+groups:
+  - { id: frontend, label: Frontend, members: [ast, hir, mir, lir] }
+  - { id: backend, label: Backend, members: [msil] }
 nodes:
   - { id: source, title: Source, subtitle: .mew files, kind: user, shape: pill }
   - { id: ast, title: AST, subtitle: 1. Parsing, shape: pill }
   - { id: hir, title: HIR, subtitle: 2. Binding, shape: pill }
   - { id: mir, title: MIR, subtitle: 3. Lowering, shape: pill }
   - { id: lir, title: LIR, subtitle: 4. Lowering, accent: success, shape: pill }
-  - { id: out, title: .mew/, subtitle: 5. Emitting, shape: pill }
+  - { id: msil, title: MSIL, subtitle: 5. Emitting, shape: pill }
+  - { id: out, title: .NET assembly, subtitle: .mew/, kind: external, shape: pill }
 edges:
   - { from: source, to: ast }
   - { from: ast, to: hir }
   - { from: hir, to: mir }
   - { from: mir, to: lir }
-  - { from: lir, to: out }
+  - { from: lir, to: msil }
+  - { from: msil, to: out }
 flow:
   repeatDelay: 2
   steps:
@@ -39,7 +44,8 @@ flow:
     - packet: { from: ast, to: hir }
     - packet: { from: hir, to: mir }
     - packet: { from: mir, to: lir }
-    - packet: { from: lir, to: out, color: success }
+    - packet: { from: lir, to: msil, color: success }
+    - packet: { from: msil, to: out, color: success }
     - pulse: { node: out, color: success }
     - reset:
 ```

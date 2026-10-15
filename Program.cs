@@ -4,6 +4,8 @@ using MewDocs.Highlighting;
 using MewDocs.Client;
 using MewDocs.Styling;
 using Beck;
+using Beck.Skia;
+using Beck.Text;
 using Pennington.Beck;
 using Pennington.DocSite;
 using Pennington.Favicon;
@@ -137,9 +139,38 @@ builder.Services.AddMdazorComponent<MewPipeline>();
 // Diagrams are Beck YAML in ```beck fences, rendered to SVG on the server. The DocSite
 // template switches themes with a .dark class on <html>, not a data-theme attribute, so the
 // SVG is told to key its dark palette off that class.
+//
+// Labels are measured with the same faces the page renders (IBM Plex Sans and JetBrains Mono)
+// rather than Beck's embedded Inter metrics, so a card is sized to the text it will actually
+// hold. The browser loads the woff2 files under wwwroot/fonts; Skia reads the TTF cuts of the
+// same faces from resources/fonts, which are never served.
+var fontDir = Path.Combine(builder.Environment.ContentRootPath, "resources", "fonts");
+var beckFont = new BeckFontSpec
+{
+    Family = "IBM Plex Sans",
+    MonoFamily = "JetBrains Mono",
+    Files = new Dictionary<int, string>
+    {
+        [400] = Path.Combine(fontDir, "IBMPlexSans-Regular.ttf"),
+        [500] = Path.Combine(fontDir, "IBMPlexSans-Medium.ttf"),
+        [600] = Path.Combine(fontDir, "IBMPlexSans-SemiBold.ttf"),
+        [700] = Path.Combine(fontDir, "IBMPlexSans-Bold.ttf"),
+    },
+    MonoFiles = new Dictionary<int, string>
+    {
+        [400] = Path.Combine(fontDir, "JetBrainsMono-Regular.ttf"),
+        [500] = Path.Combine(fontDir, "JetBrainsMono-Medium.ttf"),
+        [700] = Path.Combine(fontDir, "JetBrainsMono-Bold.ttf"),
+    },
+};
 builder.Services.AddPenningtonBeck(beck =>
 {
-    beck.RenderOptions = new SvgRenderOptions { ThemeHooks = ThemeHooks.Class };
+    beck.RenderOptions = new SvgRenderOptions
+    {
+        ThemeHooks = ThemeHooks.Class,
+        Font = beckFont,
+        Measurer = new SkiaTextMeasurer(beckFont),
+    };
 });
 
 var app = builder.Build();
