@@ -47,7 +47,8 @@ public abstract class EmbeddedGrammarHighlighter : ICodeHighlighter
         ("punctuation.definition.string", "hljs-string"),
 
         ("support.function", "hljs-built_in"),
-        ("support.type", "hljs-keyword"),
+        // Primitive types (i32, string, bool) read as types, the same as named ones.
+        ("support.type", "hljs-type"),
         ("support.constant", "hljs-literal"),
 
         ("meta.attribute", "hljs-meta"),

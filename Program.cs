@@ -2,8 +2,17 @@ using Mdazor;
 using MewDocs.Components;
 using MewDocs.Highlighting;
 using MewDocs.Client;
+using MewDocs.Stdlib;
+using MewDocs.Stdlib.Model;
+using MewDocs.Styling;
+using Pennington.Content;
+using Beck;
+using Beck.Skia;
+using Beck.Text;
+using Pennington.Beck;
 using Pennington.DocSite;
 using Pennington.Favicon;
+using Pennington.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,109 +23,84 @@ builder.Services.AddDocSite(() => new DocSiteOptions
     CanonicalBaseUrl = "https://mew-lang.org",
     GitHubUrl = "https://github.com/mew-lang",
 
+    // The logo is inlined so the cat follows the text color in both themes; only the ear
+    // keeps the brand orange. The wordmark is set in the code face, like the language.
     HeaderContent = """
-        <a href="/" class="flex items-center gap-2 font-semibold">
-          <img src="/img/logo.svg" alt="" width="28" height="28" class="rounded bg-white p-px" />
-          <span>Mew</span>
+        <a href="/" class="flex items-center gap-2.5 text-base-900 dark:text-base-50">
+          <svg viewBox="150 30 1480 1720" class="h-7 w-auto" aria-hidden="true">
+            <g transform="translate(-363.35308,-362.98301)" fill="currentColor">
+              <path fill="#f68104" d="m 693.261,1880.06 c 0,0 54.006,0.396 117.645,-25.223 126.358,-50.868 291.581,-175.62 245.509,-417.003 L 710.086,995.991 642.345,1607.669 Z" />
+              <path d="M 1834.43,2083.83 1557.095,993.82 1352.197,1509.098 c -89.264,-57.675 -187.831,-48.844 -291.364,-4.512 l -281.961,-297.905 -85.609,673.369 -149.764,-0.082 0.694,-1263.1 593.384,626.936 658.219,-826.64 162.613,1666.67 H 1834.43 Z" />
+              <circle cx="1127.77" cy="1815.73" r="63.457" />
+              <circle cx="1474.37" cy="1815.73" r="63.457" />
+              <path d="m 1379.7,1922.25 -51.327,51.327 -51.327,-51.327 c 28.347,-28.347 74.307,-28.347 102.654,0 z" />
+            </g>
+          </svg>
+          <span class="font-mono font-bold text-lg tracking-tight">mew</span>
         </a>
+        <span class="hidden sm:inline-block font-mono text-[12px] leading-none text-base-500 dark:text-base-400 border border-base-200 dark:border-base-800 rounded px-1.5 py-1">draft spec</span>
         """,
 
     // The /playground page lives in this assembly.
     AdditionalRoutingAssemblies = [typeof(Program).Assembly],
 
     FooterContent = """
-        <footer class="mt-16 py-8 text-center text-sm text-base-500">
-          Mew is a programming language under construction.
+        <footer class="mt-16 py-8 border-t border-base-200 dark:border-base-800 text-center text-sm text-base-500">
+          <span class="font-mono">mew</span> is a programming language under construction.
         </footer>
         """,
 
-    ExtraStyles = """
-        #nav-sidebar nav > ul > li > ul {
-            margin-left: 0.625rem;
-            margin-bottom: 0.5rem;
-            padding-left: 0.75rem;
-            border-left: 1px solid var(--color-base-200);
+    // Warm stone grays, one orange, and a code-first look: IBM Plex Sans for prose and
+    // JetBrains Mono for code and the small labels around it. See Styling/.
+    ColorScheme = new MewColorScheme(),
+    SyntaxTheme = MewStyling.SyntaxTheme,
+    CustomCssFrameworkSettings = settings => settings with
+    {
+        Applies = settings.Applies.SetItems(MewStyling.Applies),
+    },
+    ExtendProseCustomization = MewStyling.ExtendProse,
+
+    DisplayFontFamily = "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif",
+    BodyFontFamily = "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif",
+    MonoFontFamily = "'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace",
+    FontPreloads =
+    [
+        new FontPreload("/fonts/ibm-plex-sans.woff2"),
+        new FontPreload("/fonts/jetbrains-mono.woff2"),
+    ],
+
+    ExtraStyles = $$"""
+        /* Both faces are variable and cut to Latin; anything outside the range falls back
+           to the system stack. */
+        @font-face {
+            font-family: 'IBM Plex Sans';
+            font-style: normal;
+            font-weight: 100 700;
+            font-display: swap;
+            src: url(/fonts/ibm-plex-sans.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
         }
 
-        .dark #nav-sidebar nav > ul > li > ul {
-            border-left-color: var(--color-base-800);
+        @font-face {
+            font-family: 'JetBrains Mono';
+            font-style: normal;
+            font-weight: 100 800;
+            font-display: swap;
+            src: url(/fonts/jetbrains-mono.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
         }
 
-        /* The prose defaults only switch inline code to a monospace font, so a
-           name like `count` reads like the words around it. Give it a tinted
-           pill instead. The fill is one step from the page background toward
-           the text, and the border one step further, in both themes. Code
-           blocks are `pre > code` and keep their own styling. */
-        .prose :not(pre) > code:not(.not-prose *) {
-            padding: 1px 0.25rem;
-            border: 1px solid var(--color-base-300);
-            border-radius: 0.25rem;
-            background-color: var(--color-base-200);
-            -webkit-box-decoration-break: clone;
-            box-decoration-break: clone;
+        body {
+            -webkit-font-smoothing: antialiased;
         }
 
-        .dark .prose :not(pre) > code:not(.not-prose *) {
-            border-color: var(--color-base-700);
-            background-color: var(--color-base-800);
+        /* JetBrains Mono draws == and -> as single glyphs. A language reference should show
+           the characters you type. */
+        code, kbd, pre {
+            font-variant-ligatures: none;
         }
 
-        .prose :not(pre) > code::before,
-        .prose :not(pre) > code::after {
-            content: none;
-        }
-
-        /* Mermaid renders client-side by swapping the <code> for an <svg>, which
-           leaves the code-block chrome and its "mermaid" language label wrapped
-           around a diagram. Drop the chrome and centre the figure. */
-        [data-language="mermaid"] .codeblock-head {
-            display: none;
-        }
-
-        [data-language="mermaid"],
-        [data-language="mermaid"] .standalone-code-container,
-        [data-language="mermaid"] .standalone-code-highlight,
-        [data-language="mermaid"] pre {
-            background: none;
-            border: 0;
-            padding: 0;
-            margin: 0;
-        }
-
-        [data-language="mermaid"] .mermaid-diagram {
-            display: flex;
-            justify-content: center;
-        }
-
-        /* Pennington maps mermaid's subgraph fill to primary-700 and its label to
-           the accent, which on this palette is a solid purple panel captioned in
-           lime. Redraw subgraphs as quiet panels instead. Mermaid inlines its own
-           <style> into the SVG under a generated id, so these need !important. */
-        .mermaid-diagram .cluster rect {
-            fill: var(--color-base-200) !important;
-            stroke: var(--color-base-300) !important;
-        }
-
-        .mermaid-diagram .cluster text,
-        .mermaid-diagram .cluster span,
-        .mermaid-diagram .cluster-label text,
-        .mermaid-diagram .cluster-label span {
-            fill: var(--color-base-700) !important;
-            color: var(--color-base-700) !important;
-        }
-
-        .dark .mermaid-diagram .cluster rect {
-            fill: var(--color-base-900) !important;
-            stroke: var(--color-base-700) !important;
-        }
-
-        .dark .mermaid-diagram .cluster text,
-        .dark .mermaid-diagram .cluster span,
-        .dark .mermaid-diagram .cluster-label text,
-        .dark .mermaid-diagram .cluster-label span {
-            fill: var(--color-base-200) !important;
-            color: var(--color-base-200) !important;
-        }
+        {{MewStyling.ArticleChrome}}
         """,
 
     Favicons = new FaviconOptions
@@ -154,6 +138,51 @@ builder.Services.AddDocSite(() => new DocSiteOptions
 // Markdown uses the same service to compile its program while the page renders.
 builder.Services.AddSingleton<MewCompiler>();
 builder.Services.AddMdazorComponent<MewPipeline>();
+
+// Diagrams are Beck YAML in ```beck fences, rendered to SVG on the server. The DocSite
+// template switches themes with a .dark class on <html>, not a data-theme attribute, so the
+// SVG is told to key its dark palette off that class.
+//
+// Labels are measured with the same faces the page renders (IBM Plex Sans and JetBrains Mono)
+// rather than Beck's embedded Inter metrics, so a card is sized to the text it will actually
+// hold. The browser loads the woff2 files under wwwroot/fonts; Skia reads the TTF cuts of the
+// same faces from resources/fonts, which are never served.
+var fontDir = Path.Combine(builder.Environment.ContentRootPath, "resources", "fonts");
+var beckFont = new BeckFontSpec
+{
+    Family = "IBM Plex Sans",
+    MonoFamily = "JetBrains Mono",
+    Files = new Dictionary<int, string>
+    {
+        [400] = Path.Combine(fontDir, "IBMPlexSans-Regular.ttf"),
+        [500] = Path.Combine(fontDir, "IBMPlexSans-Medium.ttf"),
+        [600] = Path.Combine(fontDir, "IBMPlexSans-SemiBold.ttf"),
+        [700] = Path.Combine(fontDir, "IBMPlexSans-Bold.ttf"),
+    },
+    MonoFiles = new Dictionary<int, string>
+    {
+        [400] = Path.Combine(fontDir, "JetBrainsMono-Regular.ttf"),
+        [500] = Path.Combine(fontDir, "JetBrainsMono-Medium.ttf"),
+        [700] = Path.Combine(fontDir, "JetBrainsMono-Bold.ttf"),
+    },
+};
+builder.Services.AddPenningtonBeck(beck =>
+{
+    beck.RenderOptions = new SvgRenderOptions
+    {
+        ThemeHooks = ThemeHooks.Class,
+        Font = beckFont,
+        Measurer = new SkiaTextMeasurer(beckFont),
+    };
+});
+
+// The standard library reference is generated from resources/stdlib.xml rather than written by
+// hand: one page per namespace, published into the "Standard Library" area by a content service.
+builder.Services.AddSingleton(_ =>
+    StdlibXmlLoader.Load(Path.Combine(builder.Environment.ContentRootPath, "resources", "stdlib.xml")));
+builder.Services.AddSingleton<StdlibHtml>();
+builder.Services.AddSingleton<StdlibContentService>();
+builder.Services.AddSingleton<IContentService>(sp => sp.GetRequiredService<StdlibContentService>());
 
 var app = builder.Build();
 

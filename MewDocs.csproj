@@ -10,7 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pennington.DocSite" Version="0.1.10" />
+    <PackageReference Include="Pennington.DocSite" Version="0.1.11" />
+    <!-- ```beck fences render to inline SVG while the page is built. -->
+    <PackageReference Include="Pennington.Beck" Version="0.1.11" />
+    <!-- Beck measures labels against the site's real font files (resources/fonts) instead of its
+         embedded Inter table, so cards fit IBM Plex Sans and JetBrains Mono exactly. -->
+    <PackageReference Include="Beck" Version="0.6.1" />
+    <PackageReference Include="Beck.Skia" Version="0.6.1" />
+    <!-- Pages builds on ubuntu, and the SkiaSharp and HarfBuzzSharp base packages ship only the
+         Windows and macOS natives. The font files are loaded explicitly, so Skia needs no
+         fontconfig and the NoDependencies build is enough. Versions track Beck.Skia's pins. -->
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="7.3.0.3" />
   </ItemGroup>
 
   <ItemGroup>

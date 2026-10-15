@@ -1,0 +1,59 @@
+@* The body of a namespace page: overview tables, one per kind, then a section per declaration.
+   Same shape as the hand-written Markdown pages, so the heading ids the rest of the site links to stay put. *@
+@using MewDocs.Stdlib.Model
+
+@foreach (var (heading, column, types) in _overviews)
+{
+    <h2 id="@Anchors.For(heading)">@heading</h2>
+    <ReferenceTable FirstColumn="@column" SecondColumn="Description"
+                    Rows="types.Select(t => new ReferenceTable.Row(StdlibHtml.AnchorLink(t.Anchor, t.DisplayName), StdlibHtml.Summary(t.Summary))).ToList()" />
+}
+
+@if (Namespace.Functions.Length > 0)
+{
+    <h2 id="functions">Functions</h2>
+    <MemberTable Namespace="Namespace" Members="Namespace.Functions" FirstColumn="Function" AttributesPageUrl="@AttributesPageUrl" />
+}
+
+@if (Namespace.Extensions.Length > 0)
+{
+    <h2 id="extensions">Extensions</h2>
+    <ReferenceTable FirstColumn="Type" SecondColumn="Description"
+                    Rows="Namespace.Extensions.Select(e => new ReferenceTable.Row(StdlibHtml.AnchorLink(e.Anchor, e.Type), ExtensionSummary(e))).ToList()" />
+}
+
+@foreach (var type in _overviews.SelectMany(o => o.Types))
+{
+    <TypeSection Namespace="Namespace" Type="type" AttributesPageUrl="@AttributesPageUrl" />
+}
+
+@foreach (var extension in Namespace.Extensions)
+{
+    <h2 id="@extension.Anchor"><code>@extension.Type</code></h2>
+    <p>The members <code>@Namespace.Name</code> adds to <code>@extension.Type</code>.</p>
+    <MemberTable Namespace="Namespace" Members="extension.Methods" Owner="@extension.Type" AttributesPageUrl="@AttributesPageUrl" />
+}
+
+@code {
+    [Parameter, EditorRequired] public StdlibNamespace Namespace { get; set; } = default!;
+
+    /// <summary>Where the language docs describe attributes, so <c>noreturn</c> can link to it. Null leaves it unlinked.</summary>
+    [Parameter] public string? AttributesPageUrl { get; set; }
+
+    private List<(string Heading, string Column, List<StdlibType> Types)> _overviews = [];
+
+    protected override void OnParametersSet()
+    {
+        // One overview table per kind, in the order the hand-written pages used; empty kinds are skipped.
+        _overviews =
+        [
+            ("Unions", "Union", Namespace.Unions.ToList()),
+            ("Interfaces", "Interface", Namespace.Interfaces.ToList()),
+            ("Types", "Type", Namespace.PlainTypes.ToList()),
+        ];
+        _overviews.RemoveAll(o => o.Types.Count == 0);
+    }
+
+    private MarkupString ExtensionSummary(StdlibExtension e) =>
+        new($"What <code>{StdlibHtml.Escape(Namespace.Name)}</code> adds to <code>{StdlibHtml.Escape(e.Type)}</code>");
+}
