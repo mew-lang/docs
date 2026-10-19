@@ -12,14 +12,14 @@ way a `use` of a Mew namespace does.
 use std;
 use System.Text;
 
-let builder = new StringBuilder { };
+let builder = StringBuilder::new();
 builder.Append("counted: ");
 builder.Append("2");
 
 println(builder.ToString());
 ```
 
-A `use` only shortens the name. `new System.Text.StringBuilder { }` works too.
+A `use` only shortens the name. `System.Text.StringBuilder::new()` works too.
 
 ## What can be named
 
@@ -108,6 +108,32 @@ literal it applies to, so a variable called `out` is still a variable.
 
 ## Constructing one
 
-`new T { }` calls the constructor that takes no arguments. There is no way to
-pass one, so a type without such a constructor cannot be built this way. An
-imported type has no fields to initialize, so the braces are always empty.
+You create a platform type by calling its `new`. Where C# writes
+`new DateTime(2026, 10, 8)`, Mew writes `DateTime::new(2026, 10, 8)`. There's a
+`new` for each public constructor the type has, and the arguments you pass pick
+one, the same way they pick between a method's overloads.
+
+```mew
+use std;
+use System;
+use System.Text;
+
+let date = DateTime::new(2026, 10, 8);
+let builder = StringBuilder::new("year ");
+builder.Append($"{date.Year}");
+
+println(builder.ToString());
+```
+
+```
+year 2026
+```
+
+A struct always has a `new` that takes no arguments, even when the platform
+doesn't declare one. It gives you the value with every field zero, so
+`TimeSpan::new()` is a span of no time at all.
+
+`new StringBuilder { }` doesn't compile. Braces build a Mew type out of its
+fields, and the error tells you to write `StringBuilder::new()` instead. A type
+with no public constructor, like `Console`, or an abstract one, like `Stream`,
+has no `new` at all.
