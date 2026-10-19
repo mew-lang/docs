@@ -49,6 +49,26 @@ if String::IsNullOrEmpty("") {
 A property with a public getter reads like a field, and one with a setter can be
 assigned. It keeps the name the platform gave it.
 
+A public field works the same way, and you can assign it unless the platform
+made it `readonly`. Constants come along too, so you don't have to spell out
+pi yourself:
+
+```mew
+use std;
+use System;
+
+println($"{MathF::PI} {Int32::MaxValue}");
+println(ConsoleColor::Red.ToString());
+```
+
+```
+3.1415927 2147483647
+Red
+```
+
+An enum's members are constants, and `ConsoleColor::Red` has the type
+`ConsoleColor`, so you can hand it to anything that takes one.
+
 ## Passing a function
 
 A method that takes a callback takes a lambda, or the name of a function. The
