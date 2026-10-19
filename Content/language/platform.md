@@ -1,7 +1,7 @@
 ---
 title: Platform
 uid: language.platform
-order: 24
+order: 25
 ---
 
 A Mew program is built into a .NET assembly, and it can name what that platform
@@ -246,5 +246,5 @@ Add a method to a platform interface, like `IDisposable`, and every platform
 type that implements it gets the method too.
 
 A method added to a struct like `Vector2` is handed a copy of the value it's
-called on, so it can read `self` but not write to its fields. Doing that is an
-error rather than a change that quietly goes nowhere.
+called on, so it can read `self` but not write to its fields. Writing to one is
+an error, since the change would only reach the copy.

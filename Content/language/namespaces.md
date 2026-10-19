@@ -100,14 +100,18 @@ other, so each file says for itself what it depends on.
 
 ## Visibility
 
-`pub` is the only visibility modifier, and what it means depends on what carries
-it.
+`pub` and `internal` are the visibility modifiers, and what they mean depends on
+what carries them.
 
-| On | Without `pub` | With `pub` |
-| :- | :------------ | :--------- |
-| A type, union or interface | The file that declares it | Every file in the compilation |
-| A free function | The file that declares it | Every file in the compilation |
-| A field or a method | The type that declares it | Every file in the compilation |
+| On | Without either | With `internal` | With `pub` |
+| :- | :------------- | :-------------- | :--------- |
+| A type, union or interface | The file that declares it | Every file of its library | Every file in the compilation |
+| A free function | The file that declares it | Every file of its library | Every file in the compilation |
+| A field or a method | The type that declares it | Every file of its library | Every file in the compilation |
+
+`internal` is for [libraries](xref:language.libraries). It opens a declaration to
+the rest of the library and keeps it from the programs that use it. In a program,
+every file is part of the program, so `internal` works just like `pub`.
 
 A declaration without `pub` belongs to its file, which is narrower than its
 namespace, so two files sharing a namespace still cannot see each other's

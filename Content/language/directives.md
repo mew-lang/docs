@@ -5,7 +5,8 @@ order: 21
 ---
 
 A directive begins with `#` and tells the compiler something about the
-compilation itself. There is one.
+compilation itself. There are three: `#load` brings in another file, and
+`#name` and `#reference` are for [libraries](xref:language.libraries).
 
 ## `#load`
 
@@ -89,3 +90,45 @@ Nor does loading import a namespace. A loaded file that declares one still needs
 > A directive is trivia rather than a statement, so it may be written anywhere in a
 > file and no name resolves at one. Putting the `#load` lines at the top is a
 > convention that helps a reader, not a rule.
+
+## `#name`
+
+`#name` names what a file builds. A library has to have one, and it's also the
+namespace the library's declarations live in. In `main.mew` it's optional and
+names the program's output, so `#name "snake"` builds `snake.dll`.
+
+```mew
+#name "snake"
+
+use std;
+
+println("Hello from snake");
+```
+
+## `#reference`
+
+`#reference` brings a library into the compilation. Its string starts with where
+the library comes from. `local:` means a folder on your machine. The path after
+it is relative to the file and names the folder the library's `lib.mew` is in.
+
+```mew
+// file: engine/lib.mew
+#name "engine"
+
+namespace engine;
+
+pub fn twice(value: i32) -> i32 {
+    return value * 2;
+}
+
+// file: main.mew
+#reference "local:engine"
+
+use engine;
+use std;
+
+println($"{twice(21)}");
+```
+
+`#name` and `#reference` only go in the file a build starts from: `main.mew`,
+`lib.mew` or a build file. [Libraries](xref:language.libraries) covers the rest.
