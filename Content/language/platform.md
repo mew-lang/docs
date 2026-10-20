@@ -58,7 +58,7 @@ use std;
 use System;
 
 println($"{MathF::PI} {Int32::MaxValue}");
-println(ConsoleColor::Red.ToString());
+println($"{ConsoleColor::Red}");
 ```
 
 ```
@@ -68,6 +68,10 @@ Red
 
 An enum's members are constants, and `ConsoleColor::Red` has the type
 `ConsoleColor`, so you can hand it to anything that takes one.
+
+Any platform value can go into an interpolated string, and it's written the way
+.NET writes it: an enum member as its name, a `StringBuilder` as what it holds.
+Numbers and dates come out the same whatever culture the machine is set to.
 
 ## Passing a function
 
