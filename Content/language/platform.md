@@ -67,7 +67,23 @@ Red
 ```
 
 An enum's members are constants, and `ConsoleColor::Red` has the type
-`ConsoleColor`, so you can hand it to anything that takes one.
+`ConsoleColor`, so you can hand it to anything that takes one. Two values of the
+same enum compare with `==` and `!=`:
+
+```mew
+use std;
+use System;
+
+let color = ConsoleColor::Red;
+println($"{color == ConsoleColor::Red}");
+```
+
+```
+true
+```
+
+That's the only `==` platform types get. Two `StringBuilder`s, or two different
+enums, don't compare.
 
 Any platform value can go into an interpolated string, and it's written the way
 .NET writes it: an enum member as its name, a `StringBuilder` as what it holds.
