@@ -157,3 +157,42 @@ doesn't declare one. It gives you the value with every field zero, so
 fields, and the error tells you to write `StringBuilder::new()` instead. A type
 with no public constructor, like `Console`, or an abstract one, like `Stream`,
 has no `new` at all.
+
+## Interfaces
+
+A platform type can be handed on as any interface it implements, the same way a
+Mew type can:
+
+```mew
+use std;
+use System.Collections;
+
+let list = ArrayList::new();
+list.Add("a");
+list.Add("b");
+
+let items: IList = list;
+println($"{items.Count}");
+```
+
+```
+2
+```
+
+`Count` is declared by `ICollection`, which `IList` extends, and an interface
+gets the members of the ones it extends. A struct like `TimeSpan` is boxed on
+its way into an interface, the way a `[struct]` is. Going back the other way
+takes a cast, `items as ArrayList`, which is checked while the program runs.
+
+A platform interface can also constrain a type parameter:
+
+```mew
+use System;
+
+pub fn close<T: IDisposable>(value: T) -> void {
+    value.Dispose();
+}
+```
+
+A Mew type can't implement a platform interface, though. Writing
+`impl IDisposable for Handle` is an error.
