@@ -52,6 +52,11 @@ copied.n = 2;
 
 `counter.n` is still `1`.
 
+Writing a field of a copied value changes the value itself, so the variable that
+holds it has to be `mut`. That's why `copied` is a `let mut`, and `counter.n = 2`
+would be an error. The same goes for a parameter: a function that writes a field
+of a `[struct]` it was handed takes it as `mut`.
+
 ## `noreturn`
 
 Says that a function never hands control back. Nothing after a call to one
