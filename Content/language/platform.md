@@ -216,3 +216,35 @@ pub fn close<T: IDisposable>(value: T) -> void {
 
 A Mew type can't implement a platform interface, though. Writing
 `impl IDisposable for Handle` is an error.
+
+## Adding methods
+
+An `impl` block can add methods to a platform type, the same way it can to a
+type from another library:
+
+```mew
+use std;
+use System.Text;
+
+impl StringBuilder {
+    pub fn twice(text: string) -> void {
+        self.Append(text);
+        self.Append(text);
+    }
+}
+
+let builder = StringBuilder::new();
+builder.twice("ab");
+println(builder.ToString());
+```
+
+```
+abab
+```
+
+Add a method to a platform interface, like `IDisposable`, and every platform
+type that implements it gets the method too.
+
+A method added to a struct like `Vector2` is handed a copy of the value it's
+called on, so it can read `self` but not write to its fields. Doing that is an
+error rather than a change that quietly goes nowhere.
